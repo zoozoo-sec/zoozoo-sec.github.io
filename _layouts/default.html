@@ -4,26 +4,31 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <head>
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <meta name="description" content="Portfolio - A showcase of my Cybersecurity Blogs, skills, and writeups.">
-      <meta name="keywords" content="Sarvesh Aadhithya, zoozoo, zoozoo-sec, Portfolio, Cybersecurity, Web Security, Penetration Testing, BInary exploitation, Pwning, Reverse Engineering">
-      <meta name="author" content="Sarvesh Aadhithya">
-      <meta property="og:title" content="Sarvesh Aadhithya">
-      <meta property="og:description" content="Explore my cybersecurity blogs, CTF writeups, and research.">
-      <meta property="og:image" content="https://yourwebsite.com/assets/img/profile.png">
-      <meta property="og:url" content="https://zoozoo-sec.github.io">
-      <link rel="canonical" href="https://zoozoo-sec.github.io">
-  
-    </head>    
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Portfolio - A showcase of my Cybersecurity Blogs, skills, and writeups." />
+    <meta name="keywords" content="Sarvesh Aadhithya, zoozoo, zoozoo-sec, Portfolio, Cybersecurity, Web Security, Penetration Testing, Binary Exploitation, Pwning, Reverse Engineering" />
+    <meta name="author" content="Sarvesh Aadhithya" />
+    
+    <!-- Open Graph Meta Tags for Social Media -->
+    <meta property="og:title" content="Sarvesh Aadhithya" />
+    <meta property="og:description" content="Explore my cybersecurity blogs, CTF writeups, and research." />
+    <meta property="og:image" content="https://yourwebsite.com/assets/img/profile.png" />
+    <meta property="og:url" content="https://zoozoo-sec.github.io" />
+    <meta property="og:type" content="website" /> 
+    
+    <link rel="canonical" href="https://zoozoo-sec.github.io" />
+
+    <!-- Title and Favicon -->
     <title>{{ page.title }}</title>
+    <link rel="icon" type="image/png" href="{{ '/assets/img/favicon.ico' | relative_url }}" />
+
+    <!-- Stylesheets -->
     <link rel="stylesheet" href="{{ '/assets/css/style.css' | relative_url }}" />
     <link rel="stylesheet" href="{{ '/assets/css/mediaqueries.css' | relative_url }}" />
     <link rel="stylesheet" href="{{ '/assets/css/blogs.css' | relative_url }}" />
-    <link rel="icon" type="image/png" href="{{ "/assets/img/favicon.ico" | relative_url }}">
-
   </head>
+  
   <body>
     {% include header.html %}
     
@@ -32,9 +37,10 @@
     </main>
 
     {% include footer.html %}
+    
+    <!-- Scripts -->
     <script src="{{ '/assets/js/script.js' | relative_url }}"></script>
     <canvas id="matrix"></canvas>
     <script src="{{ '/assets/js/matrix.js' | relative_url }}"></script>
-
   </body>
 </html>
