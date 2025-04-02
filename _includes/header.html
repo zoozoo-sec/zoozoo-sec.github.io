@@ -1,0 +1,27 @@
+ <nav id="desktop-nav">
+  <div class="logo">zoozoo</div>
+  <div>
+    <ul class="nav-links">
+      <li><a href="{{ '/index' | relative_url }}">Home</a></li>
+      <li><a href="{{ '/blogs/' | relative_url }}">Blogs</a></li>
+      <li><a href="{{ '/writeups/' | relative_url }}">Writeups</a></li>
+      
+    </ul>
+  </div>
+</nav>
+
+<nav id="hamburger-nav">
+  <h class="nav-name">zoozoo</h> 
+  <div class="hamburger-menu">
+    <div class="hamburger-icon" onclick="toggleMenu()">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+    <div class="menu-links">
+      <li><a href="{{ '/index' | relative_url }}">Home</a></li>
+      <li><a href="{{ '/blogs/' | relative_url }}" onclick="toggleMenu()">Blogs</a></li>
+      <li><a href="{{ '/writeups/' | relative_url }}" onclick="toggleMenu()">Writeups</a></li>
+    </div>
+  </div>
+</nav>

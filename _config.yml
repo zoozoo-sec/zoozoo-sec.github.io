@@ -1,0 +1,27 @@
+# Site settings
+title: "Sarvesh Aadhithya's Portfolio"
+description: "CTF Writeups, Blogs, and Cybersecurity Research"
+baseurl: ""
+url: "https://zoozoo-sec.github.io"
+
+# Navigation links
+navbar-links:
+  Writeups: "/writeups"
+  Blogs: "/blogs"
+  Home: "/"
+
+# Social Links
+social-network-links:
+  email: "this.sarvesh@example.com"
+
+# Jekyll plugins
+plugins:
+  - jekyll-paginate
+  - jekyll-sitemap
+
+# Exclude from production
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - README.md
+  - node_modules
