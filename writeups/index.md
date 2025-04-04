@@ -13,7 +13,7 @@ og_description: "Explore my CTF writeups."
 <section id="writeups">
   <div class="writeup-grid">
 
-    <a href="{{ '/writeups/HackTheBox-CyberApocalyspe2025' | relative_url }}" class="writeup-card">
+    <a href="{{ '/writeups/HackTheBox-CyberApocalypse2025' | relative_url }}" class="writeup-card">
       <h2>HackTheBox</h2>
       <p>Cyber Apocalypse 2025<br>🔹Pwn Challenges</p>
       <span class="date">March 2025</span>

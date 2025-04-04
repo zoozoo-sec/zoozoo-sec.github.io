@@ -6,7 +6,7 @@ og_description: "Writeups of pwn challenges."
 og_type: "ctf writeup"
 keywords: "writeups,Sarvesh Aadhithya,CTFs, Hackthebox, HTB, Cyber Apocalypse, Tales from eldoria,zoozoo-sec, zoozoo"
 
-permalink: /writeups/HackTheBox-CyberApocalyspe2025/
+permalink: /writeups/HackTheBox-CyberApocalypse2025/
 ---
 
 <!-- Link Bootstrap CSS (add this to your <head> if it's not already included) -->
