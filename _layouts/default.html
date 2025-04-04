@@ -1,27 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    
-    <!-- SEO Meta Tags -->
-    <meta name="description" content="Portfolio - A showcase of my Cybersecurity Blogs, skills, and writeups." />
-    <meta name="keywords" content="Sarvesh Aadhithya, zoozoo, zoozoo-sec, Portfolio, Cybersecurity, Web Security, Penetration Testing, Binary Exploitation, Pwning, Reverse Engineering" />
-    <meta name="author" content="Sarvesh Aadhithya" />
-    
+<!-- SEO Meta Tags -->
+    <meta name="description" content="{{ page.description | default: 'Portfolio - A showcase of my Cybersecurity Blogs, skills, and writeups.' }}">
+    <meta name="keywords" content="{{ page.keywords | default: 'Sarvesh Aadhithya, zoozoo, zoozoo-sec, Portfolio, Cybersecurity, Web Security, Penetration Testing, Binary Exploitation, Pwning, Reverse Engineering' }}">
+    <meta name="author" content="{{ page.author | default: 'Sarvesh Aadhithya' }}">
+
     <!-- Open Graph Meta Tags for Social Media -->
-    <meta property="og:title" content="Sarvesh Aadhithya" />
-    <meta property="og:description" content="Explore my cybersecurity blogs, CTF writeups, and research." />
-    <meta property="og:image" content="https://zoozoo-sec.github.io/assets/img/profile.png" />
-    <meta property="og:url" content="https://zoozoo-sec.github.io" />
-    <meta property="og:type" content="website" /> 
+    <meta property="og:title" content="{{ page.og_title | default: page.title | default: 'Sarvesh Aadhithya' }}">
+    <meta property="og:description" content="{{ page.og_description | default: page.description | default: 'Explore my cybersecurity blogs, CTF writeups, and research.' }}">
+    <meta property="og:image" content="{{ page.og_image | default: 'https://zoozoo-sec.github.io/assets/img/profile.png' }}">
+    <meta property="og:url" content="{{ page.url | absolute_url }}">
+    <meta property="og:type" content="{{ page.og_type | default: 'website' }}">
+
     <meta name="google-site-verification" content="EkoD8s1_tAO9DoNE-wVHKgf472-GAPUwxLL1RjLf9BU" />
     
-    <link rel="canonical" href="https://zoozoo-sec.github.io" />
+    
+    <link rel="canonical" href="{{ page.url | absolute_url }}">
 
     <!-- Title and Favicon -->
-    <title>{{ page.title }}</title>
+    <title>{{ page.title | default: 'Sarvesh Aadhithya' }}</title>
     <link rel="icon" type="image/png" href="{{ '/assets/img/favicon.ico' | relative_url }}" />
 
     <!-- Stylesheets -->

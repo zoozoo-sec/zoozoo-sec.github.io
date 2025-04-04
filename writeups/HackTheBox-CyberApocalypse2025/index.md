@@ -1,6 +1,11 @@
 ---
 layout: default
-title: "HTB Cyber Apocalypse"
+title: "HTB Cyber Apocalypse 2025 - Tales from Eldoria"
+description: "Writeups of pwn challenges."
+og_description: "Writeups of pwn challenges."
+og_type: "ctf writeup"
+keywords: "writeups,Sarvesh Aadhithya,CTFs, Hackthebox, HTB, Cyber Apocalypse, Tales from eldoria,zoozoo-sec, zoozoo"
+
 permalink: /writeups/HackTheBox-CyberApocalyspe2025/
 ---
 

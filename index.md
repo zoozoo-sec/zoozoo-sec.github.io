@@ -1,7 +1,10 @@
 ---
 layout: default
 title: "Home"
+author: "Sarvesh Aadhithya"
 ---
+
+
 <section id="profile">
   <div class="section__pic-container">
     <img src="{{ '/assets/img/profile.png' | relative_url }}" alt="Profile picture" />

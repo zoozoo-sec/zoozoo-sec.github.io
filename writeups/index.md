@@ -2,6 +2,11 @@
 layout: default   # or any layout you're using
 title: "CTF Writeups"
 permalink: /writeups/
+description: "Explore my CTF writeups."
+keywords: "Ctf writeups ,Sarvesh Aadhithya, writeups,zoozoo-sec, zoozoo"
+og_type: "CTF Writeups"
+og_description: "Explore my CTF writeups."
+
 ---
 <link rel="stylesheet" href="{{ '/writeups/writeups.css' | relative_url }}" />
 
