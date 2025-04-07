@@ -31,7 +31,7 @@ ul.list-unstyled a {
         height: auto;  
     }
     
-    p {
+    #container p {
         text-align: justify;
       }   
       
