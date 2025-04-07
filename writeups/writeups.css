@@ -22,23 +22,20 @@
 
 /* Grid container */
 .writeup-grid {
-  gap: 10px 10px;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));  
-  grid-auto-rows: 1fr;               /* Force uniform row heights */
-              /* No row gap, only 10px column gap */
-  justify-content: space-around;;  
-  align-items: start;                  
-  width: 100%;
-  min-height: 85vh;  
-  padding-bottom: 60px;                  /* Prevent footer overlap */
+  display: flex;
+  flex-direction: row;
+  gap: 40px;                        /* Increased gap between tiles */
+  overflow-x: auto;
+  padding: 40px;
+  scroll-behavior: smooth;
 }
 
 
 /* Uniform card sizing */
 .writeup-card {
-
-  max-height: 260px;  
+  flex: 0 0 auto;
+  width: 360px;                    /* Increased tile width */
+  height: 280px;                   /* Increased tile height */
   display: flex;
   flex-direction: column;
   background: rgba(0, 0, 0, 0.6);
@@ -47,10 +44,7 @@
   border-radius: 12px;
   transition: transform 0.3s, box-shadow 0.3s;
   text-decoration: none;
-  min-height: 200px;                 /* Force uniform height */
-  height: 100%;                      /* Ensure all cards occupy same height */
-  box-shadow:  0 4px 12px rgba(0, 255, 204, 0.6); 
-  margin-bottom: -12px;              /* Reduce space between adjacent rows */
+  box-shadow: 0 4px 12px rgba(0, 255, 204, 0.6);
 }
 
 /* Hover effect */
@@ -99,16 +93,10 @@
   }
 }
 
-/* Mobile screens (768px and below) */
-@media screen and (max-width: 768px) {
-
-  .writeup-card:only-child {
-    width: 280px;                     /* Smaller square size on mobile */
-    height: 280px;                    
-  }
 
   .writeup-grid {
     grid-template-columns: 1fr;   
+    gap: 1rem; /* reduce spacing between cards */
     min-height: 130vh;              /* Prevent footer overlap on mobile */
   }
 }
@@ -116,18 +104,42 @@
 @media screen and (max-width: 480px) {
   .writeup-grid {
       grid-template-columns: 1fr;
+      gap: 1rem; /* reduce spacing between cards */
   }
 }
 
 @media screen and (max-width: 768px) {
   #writeups {
-    margin-bottom: 0; /* Reduce the bottom margin */
-    padding-bottom: 30px; /* Add slight padding */
+    margin-bottom: 0;
+    padding-bottom: 30px;
   }
+
   .writeup-grid {
-    gap: 15px; /* Reduce the gap between cards */
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;      /* Makes cards full width */
+    justify-content: flex-start; /* ✅ Starts from the top */
+    padding: 0 10px;
+    gap: 1;
+  }
+
+  .writeup-card {
+    width: 100%;
+    margin: 0 0 10px 0;     /* Adds only bottom spacing */
+    padding: 12px;
+    height: auto;
+    box-sizing: border-box;
+  }
+
+  .writeup-card h2,
+  .writeup-card p,
+  .writeup-card .date {
+    margin: 0;
+    padding: 0.25rem 0;
   }
 }
+
+
 
 /* Add padding from green border on large screens */
 @media screen and (min-width: 1200px) {

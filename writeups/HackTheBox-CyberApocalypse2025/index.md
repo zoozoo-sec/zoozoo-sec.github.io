@@ -1,6 +1,6 @@
 ---
 layout: default
-title: "HTB Cyber Apocalypse 2025 - Tales from Eldoria"
+title: "HTB Cyber Apocalypse 2025 - Tales from Eldoria Writeups"
 description: "Writeups of pwn challenges."
 og_description: "Writeups of pwn challenges."
 og_type: "ctf writeup"
@@ -11,18 +11,18 @@ permalink: /writeups/HackTheBox-CyberApocalypse2025/
 
 <!-- Link Bootstrap CSS (add this to your <head> if it's not already included) -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-<link rel="stylesheet" href="{{ '/writeups/HackTheBox-CyberApocalypse2025/assets/writeup-page.css' | relative_url }}" />
+<link rel="stylesheet" href="{{ '/writeups/writeup-page.css' | relative_url }}" />
 
 <section id="back">
 <div id="challenge-links">
-        <h1 class="text">HackTheBox Cyber Apocalypse 2025</h1>
+        <h1 class="text"><code>HackTheBox Cyber Apocalypse 2025</code></h1>
         <ul class="list-unstyled">
-            <li><a href="#quack-quack">Quack-Quack</a></li>
-            <li><a href="#blessing">Blessing</a></li>
-            <li><a href="#laconic">Laconic</a></li>
-            <li><a href="#crossbow">Crossbow</a></li>
-            <li><a href="#contractor">Contractor</a></li>
-            <li><a href="#strategist">Strategist</a></li>
+            <li><a href="#quack-quack"><code>Quack-Quack</code></a></li>
+            <li><a href="#blessing"><code>Blessing</code></a></li>
+            <li><a href="#laconic"><code>Laconic</code></a></li>
+            <li><a href="#crossbow"><code>Crossbow</code></a></li>
+            <li><a href="#contractor"><code>Contractor</code></a></li>
+            <li><a href="#strategist"><code>Strategist</code></a></li>
         </ul>
     </div>
 </section>
@@ -112,8 +112,6 @@ io.interactive()</code></pre>
     </div>
 </section>
 </section>
-
-
 
 
 <section id="back">
