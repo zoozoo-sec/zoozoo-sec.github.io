@@ -99,7 +99,7 @@
     gap: 1rem; /* reduce spacing between cards */
     min-height: 130vh;              /* Prevent footer overlap on mobile */
   }
-}
+
 /* Mobile screens (480px and below) */
 @media screen and (max-width: 480px) {
   .writeup-grid {
