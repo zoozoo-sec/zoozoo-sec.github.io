@@ -1,8 +1,8 @@
 ---
 layout: default
-title: "Pentathon-2025 Writeups"
+title: "Pentathon-2025 Qualifier Round Writeups"
 description: "Writeups of Pentathon 2025 Qualifier round pwn challenges."
-og_description: "Writeups of pwn challenges.(Placeholder & Handler)"
+og_description: "Writeups of pwn challenges(Placeholder & Handler)."
 og_type: "ctf writeup"
 keywords: "writeups,Sarvesh Aadhithya,CTFs, Pentathon, 2025,zoozoo-sec, zoozoo"
 
@@ -51,11 +51,11 @@ NCIIPC-AICTE Pentathon 2025</code></h1>
         <div class="section-content">
             <h3>Possible Attack Surface</h3>
             <ul>
-                <li>ROP one stack? Nah.<code>No return instruction.</code></li>
-                <li>GOT overwrite? Forget it. — <code>FULLRELRO</code> is enabled.</li>
+                <li>ROP on stack? Nah.<code> No return instruction.</code></li>
+                <li>GOT overwrite? Forget it.<code> FULLRELRO</code> is enabled.</li>
             </ul>
             <p>
-                Even though we can leak libc via puts from the GOT, we can't overwrite GOT entries.<br>At this point, you'd think it's a dead end. But then...<br><code>Suspicious. Very suspicious.</code>
+                Even though we can leak libc via puts from the GOT, we can't overwrite GOT entries.<br>At this point, you'd think it's a dead end. But then...<br>Why would the author place the <code>exit()</code> in the <code>exit_program()</code>? Is he trying to hint something ?<br><code>Suspicious. Very suspicious.</code>
             </p>
         </div>
         <div class="section-content">
@@ -251,14 +251,14 @@ if __name__ == "__main__":
             <p>
                 I massaged the heap into a setup where I had:
                 <ul>
-                    <li>A large chunk (the <code>overlappe</code>)</li>
-                    <li>A smaller chunk sitting inside it (the <code>victim</code>)</li>
+                    <li>A large chunk (the <code>Overlapper</code>)</li>
+                    <li>A smaller chunk sitting inside it (the <code>Victim</code>)</li>
                 </ul>
-                By leveraging the <code>OOB write</code> from the large chunk, I nuked the metadata of the smaller one and teed up a tcache poisoning attack.<br>
+                By leveraging the <code>OOB write</code> from the large chunk, I nuked the metadata of the larger one using <code>test</code> chunk and teed up a tcache poisoning attack.<br>
                 <pre><code>test3_chunk = create(15,"test")
 overlapper4_chunk = create(15,"Overlapper")
 victim5_chunk = create(15,"Victim")
-write(2, 24, 0xf1)</code></pre>
+write(2, 24, 0xf1) #the 2 points to the index of chunk "test"</code></pre>
              I poisoned tcache with an arbitrary malloc target. So far, so clean. From here, we’re just going to play with the dynamic allocator
             </p>
         </div>
@@ -280,7 +280,7 @@ write(2, 24, 0xf1)</code></pre>
             <h2>Fsrop, but make it Angry</h2>
             <p>
                 With no classic read/write primitives, no stack leak, and no easy ROP setup... I knew where this was heading.<br>
-                Angry Fsrop.<br>
+                <h4><code>Angry-Fs(r)op.</code></h4><br>
                 This one’s beautifully explained in <a href="https://blog.kylebot.net/2022/10/22/angry-FSROP/" target="_blank">Kylebot's blog</a>, so I won’t repeat it all.<br><br>
                 <b>TL;DR:</b> Overwrite entities such as <code>vtable</code>, <code>wide_data</code> etc of file structs like stderr, stdout, stdin, get code execution when libc uses it in functions like printf(), scanf(), fwrite(), fread() etc.
             </p>
