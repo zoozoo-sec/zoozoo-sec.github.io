@@ -88,8 +88,10 @@ payload2 += b"\x7f\x13"  # Address of duck_attack()</code></pre>
 io.interactive()</code></pre>
         </div>
         <div class="section-content">
-            <h3>Final Exploit Code</h3>
-<pre><code>from pwn import *
+            <div class="h4-wrapper">
+        <h4>Complete Exploit:</h4>
+             <button class="copy-btn">Copy</button>
+    </div><pre><code>from pwn import *
 io = process("quack_quack")
 
 # Leak Canary
@@ -212,8 +214,10 @@ frame.rip = syscall</code></pre>
 io.sendline(payload)</code></pre>
         </div>
         <div class="section-content">
-            <h3>Final Exploit Code</h3>
-<pre><code>#!/usr/bin/env python3
+            <div class="h4-wrapper">
+        <h4>Complete Exploit:</h4>
+             <button class="copy-btn">Copy</button>
+    </div><pre><code>#!/usr/bin/env python3
 from pwn import *
 
 elf = context.binary = ELF('./laconic')
@@ -299,8 +303,10 @@ Partial RELRO   Canary found    NX enabled    No PIE</code></pre>
                 </ul>
             </div>
             <div class="section-content">
-                <h3>Final Exploit Code</h3>
-                <pre><code>from pwn import *
+                <<div class="h4-wrapper">
+        <h4>Complete Exploit:</h4>
+             <button class="copy-btn">Copy</button>
+    </div><pre><code>from pwn import *
 
 # Connect to remote or local process
 # io = remote("94.237.58.215", 40276)
@@ -392,8 +398,10 @@ payload += p64(contract_leak)  # Redirect execution</code></pre>
 io.sendline(b"Yes")  # Confirm input</code></pre>
             </div>
             <div class="section-content">
-                <h3>Final Exploit Code</h3>
-                <pre><code>from pwn import *
+                <div class="h4-wrapper">
+        <h4>Complete Exploit:</h4>
+             <button class="copy-btn">Copy</button>
+    </div><pre><code>from pwn import *
 
 while True:
     io = process("./contractor")
@@ -476,8 +484,10 @@ print(f"Libc base: {hex(libc_base)}")</code></pre>
             <pre><code># Use tcache poisoning to hijack execution and gain shell</code></pre>
         </div>
         <div class="section-content">
-            <h3>Final Exploit Code</h3>
-<pre><code>#!/usr/bin/env python3
+            <div class="h4-wrapper">
+        <h4>Complete Exploit:</h4>
+             <button class="copy-btn">Copy</button>
+    </div><pre><code>#!/usr/bin/env python3
 
 from pwn import *
 
@@ -577,4 +587,5 @@ main()</code></pre>
 <!-- Link Bootstrap JS and Popper.js (add these at the end of the <body>) -->
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+<script src="{{ '/writeups/copy.js' | relative_url }}"></script>
 

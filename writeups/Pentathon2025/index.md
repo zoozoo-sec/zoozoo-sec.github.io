@@ -113,9 +113,11 @@ def encrypt(v, key):
     return list(p64(rol(v ^ key, 0x11, 64)))</code></pre>
         </div>
         <div class="section-content">
-            <h3>Exploit Code</h3>
             <p>Here’s the full Python script skeleton used to perform the attack:</p>
-            <pre><code>#!/bin/python3
+            <div class="h4-wrapper">
+                <h4>Complete Exploit:</h4>
+             <button class="copy-btn">Copy</button>
+    </div><pre><code>#!/bin/python3
 
 from pwn import *
 memory  = 0x404030
@@ -353,8 +355,11 @@ $
 </code></pre>
 </p>
 </div>
-        <div class="section-content">
-            <h4>Complete Exploit:</h4><pre><code>#!/bin/python3
+<div class="section-content">
+    <div class="h4-wrapper">
+        <h4>Complete Exploit:</h4>
+             <button class="copy-btn">Copy</button>
+    </div><pre><code>#!/bin/python3
 
 from pwn import *
 import warnings
@@ -512,3 +517,5 @@ io.interactive()
 </section>
 </section>
 
+
+<script src="{{ '/writeups/copy.js' | relative_url }}"></script>

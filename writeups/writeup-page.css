@@ -101,12 +101,31 @@ pre code {
 #challenge-links a:hover {
     color: #ffcc00;
 }
-.copy-btn-container {
-    position: absolute; /* Position the button absolutely inside the section */
-    top: 0;  /* Align it to the top */
-    right: 0; /* Align it to the right */
-    padding: 5px; /* Some padding around the button */
-}
+.h4-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+  }
+  
+  .copy-btn {
+    background-color: #19927e;        /* dark background */
+    color: #ffffff;                      /* light text */
+    border: 1px solid #444;           /* subtle border */
+    border-radius: 4px;
+    padding: 4px 10px;
+    font-size: 12px;
+    font-family: inherit;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+  
+  .copy-btn:hover {
+    background-color: #3a3a3a;
+    color: #fff;
+    border-color: #666;
+  }
+  
 
 #back {
   text-align: center;
@@ -117,24 +136,6 @@ pre code {
   color: #ffffff;
 }
 
-.copy-btn {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background-color: #ff9900;
-    color: #ffffff;
-    border: none;
-    padding: 5px 10px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 0.9rem;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-    z-index: 1;
-}
-
-.copy-btn:hover {
-    background-color: #00ffcc;
-}
 
 .code-screenshot {
     display: block;
