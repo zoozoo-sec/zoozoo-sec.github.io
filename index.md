@@ -54,7 +54,6 @@ author: "Sarvesh Aadhithya"
         <div class="skill">Linux Kernel Security</div>
         <div class="skill">Exploit Development</div>
       </div>
-
      <h2>Tools and Frameworks</h2>
     <div class="tools-box">    
       <div class="skill">Burp Suite</div>
@@ -137,7 +136,6 @@ author: "Sarvesh Aadhithya"
     </div>
   </div>
 </section>
-
 
 
 

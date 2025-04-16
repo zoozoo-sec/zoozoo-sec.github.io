@@ -590,3 +590,82 @@ p {
   margin: 20px auto;   /* Center the image */
   transition: transform 0.3s ease-in-out;
 }
+
+
+
+
+
+
+
+
+
+body.light {
+  background-color: #f9f9f9;
+  color: #1a1a1a;
+}
+
+body.light nav {
+  background: #ffffff;
+  color: #111;
+}
+
+body.light a {
+  color: #0066cc;
+}
+body.light a:hover {
+  color: #004499;
+}
+
+body.light .logo {
+  color: #111;
+}
+
+body.light .menu-links {
+  background-color: #f4f4f4;
+}
+
+body.light section,
+body.light .about-container,
+body.light .done-container,
+body.light .experience-details-container,
+body.light .contact-info-container {
+  background-color: #ffffff !important;
+  color: #111;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.08);
+}
+
+body.light .btn {
+  background-color: #006633;
+  border: 1px solid #00994d;
+  color: #ffffff;
+}
+
+body.light .btn:hover {
+  background-color: #00994d;
+  color: #ffffff;
+}
+
+body.light .icon {
+  filter: invert(20%);
+}
+
+body.light .section__pic-container {
+  box-shadow: 0 10px 16px rgba(0, 0, 0, 0.15);
+}
+
+body.light .contact-card {
+  background-color: #f5f5f5;
+}
+
+body.light .footer {
+  background-color: #eeeeee;
+  color: #222;
+  border-top: 1px solid #ccc;
+}
+
+body.light .footer-links a {
+  color: #0066cc;
+}
+body.light .footer-links a:hover {
+  color: #004499;
+}

@@ -53,26 +53,19 @@ ul.list-unstyled a {
 }
 
 /* Adjust pre code box */
-pre {
-    margin-top: 1%;
-    background: #0d1117;
-    padding: 10px 10px;
-    border-radius: 5px;
-    overflow-x: auto;
-    display: inline-block; 
-    max-width: 100%;
-    width: 100%;  /* Ensure pre takes full width */
-    position: relative;  /* Allow positioning the copy button */
+pre[class*="language-"],
+code[class*="language-"] {
+    background: #282c34 !important; /* Use !important to ensure it overrides */
 }
+
+/* You might also need to override the inline background on the `code` element in some themes */
+pre > code[class*="language-"] {
+    background: transparent !important; /* Make the code background transparent if the pre has the desired color */
+}
+
 h3 {
         text-decoration: underline;
     }
-
-pre code {
-    color: #00ffcc;
-    font-size: 1.1rem;
-}
-
 
 /* Links Section */
 #challenge-links {
