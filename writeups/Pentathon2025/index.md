@@ -41,7 +41,7 @@ NCIIPC-AICTE Pentathon 2025</code></h1>
             <h2>Initial Observations</h2>
             <p>Take a look at this main() snippet:</p>
              <img src="{{ '/writeups/Pentathon2025/assets/first.png' | relative_url }}" alt="snippet" class="code-screenshot" />
-            <pre><code>strtoul(nptr, 0LL, 16);</code></pre>
+            <pre><code class="language-c">strtoul(nptr, 0LL, 16);</code></pre>
             <p>
                 Yeah, that right there. It takes the parsed DOB, strips the dashes, and parses it as a hexadecimal address.<br><code>For example</code>, inputting: <code>41-41-4141</code> turns into <code>0x41414141</code>. That value is then used as an offset to a memory array with read/write access. This gives us a byte-wise arbitrary read/write primitive.<br>Boom. User input is now being interpreted as a memory address.
                 <br>They go and treat this value as an offset for the memory array. And allow read/write access.<br>You see where this is going?
