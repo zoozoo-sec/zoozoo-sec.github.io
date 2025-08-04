@@ -4,7 +4,7 @@ title: "JustCTF 2025 Pwn Writeups"
 description: "Writeups of JustCTF 2025 pwn challenges."
 og_description: "Writeups of pwn challenges."
 og_type: "ctf writeup"
-keywords: "writeups,Sarvesh Aadhithya,CTFs, JustCTF, 2025,zoozoo-sec, zoozoo"
+keywords: "writeups,Sarvesh Aadhithya,CTFs, JustCTF, 2025,zoozoo-sec, zoozoo, baby heap, shellcode printer, prospector"
 
 permalink: /writeups/JustCTF2025/
 ---
@@ -13,6 +13,7 @@ permalink: /writeups/JustCTF2025/
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/9000.0.1/themes/prism-tomorrow.min.css" integrity="sha512-kSwGoyIkfz4+hMo5jkJngSByil9jxJPKbweYec/UgS+S1EgE45qm4Gea7Ks2oxQ7qiYyyZRn66A9df2lMtjIsw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 <link rel="stylesheet" href="{{ '/writeups/writeup-page.css' | relative_url }}" />
+
 
 <section id="back" class="back">
 <div id="challenge-links">
@@ -216,7 +217,7 @@ IBT:      Enabled</code></pre>
           Using the UAF, we read a freed chunk and get two things:
           <ul>
             <li><code>Tcache key</code> — used for pointer mangling (introduced in glibc 2.32+).</li>
-            <li><code>Mangled pointer</span> — XORing this with the key gives us a heap leak.</li>
+            <li><code>Mangled pointer</code> — XORing this with the key gives us a heap leak.</li>
           </ul>
         </p>
         <h4>Step 2: Tcache Poisoning for Controlled Allocation</h4>
