@@ -179,7 +179,7 @@ if __name__ == "__main__":
       </div>
 
       <div class="section-content">
-        <h5>Checksec output</h5>
+        <h5><code>Checksec output</code></h5>
         <pre><code>RELRO:    Full RELRO  
 Canary:   Yes  
 NX:       Yes  
@@ -234,7 +234,7 @@ IBT:      Enabled</code></pre>
             <li>Next chunk’s <code>prev_size</code> and <code>size</code> fields must line up correctly.</li>
             <li>If you corrupt a chunk’s size, make sure you don't accidentally mark it as <code>IS_MMAPPED</code> or you'll crash.</li>
           </ul>
-          <p style="margin-top: 15px;">For a deeper dive into how these checks work internally, you can browse the <a href="https://codebrowser.dev/glibc/glibc/malloc/malloc.c.html" target="_blank" rel="noopener noreferrer"><code>malloc.c</code></a>source in glibc.</p>
+          <p style="margin-top: 15px;">For a deeper dive into how these checks work internally, you can browse the <a href="https://codebrowser.dev/glibc/glibc/malloc/malloc.c.html" target="_blank" rel="noopener noreferrer"><code>malloc.c</code></a> source in glibc.</p>
           <img src="{{ '/writeups/JustCTF2025/assets/babyheap1.png' | relative_url }}" alt="snippet" class="code-screenshot" />
         </p>
         <h4>Step 3: Trigger Unsorted Bin Insertion</h4>
