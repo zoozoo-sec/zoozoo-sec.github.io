@@ -180,7 +180,7 @@ if __name__ == "__main__":
       </div>
 
       <div class="section-content">
-        <h5><code>Checksec output</code></h5>
+        <h5><code>Checksec</code></h5>
         <pre><code>RELRO:    Full RELRO  
 Canary:   Yes  
 NX:       Yes  
@@ -416,7 +416,7 @@ if __name__ == "__main__":
         <b>Category:</b> Binary Exploitation
         <p><br>
           This challenge looked quite ugly at first, due to the symbols and function names being stripped.<br><br>
-          The first thing I did — as always — was to run checksec on the binary:
+          <h5><code>Checksec</code></h5>
         </p>
         <pre><code>Arch:     amd64
 RELRO:    Full RELRO
@@ -454,12 +454,12 @@ IBT:      Enabled</code></pre>
           As I continued exploring the binary, I noticed a function </p>
           <img src="{{ '/writeups/JustCTF2025/assets/pro2.png' | relative_url }}" alt="snippet" class="code-screenshot" />
           <p>This function was never called directly, but had a conditional check guarding it:
-          <pre><code>if ((_DWORD)result == 1)
-    return int_to_string(a2);</code></pre>
+          <pre><code class="language-c">if ((_DWORD)result == 1)
+    return sub_1000(a2);</code></pre>
           And elsewhere:
-          <pre><code>if (*(_DWORD *)(a1 + 8) == 1)
-    int_to_string((__int64)a2);</code></pre>
-          In both cases, the condition for calling <code>int_to_string()</code> was a comparison against the value 1. Interesting.
+          <pre><code class="language-c">if (*(_DWORD *)(a1 + 8) == 1)
+    sub_1000((__int64)a2);</code></pre>
+          In both cases, the condition for calling <code>sub_1000()</code> was a comparison against the value 1. Interesting.
         </p>
       </div>
       <div class="section-content">
@@ -468,40 +468,42 @@ IBT:      Enabled</code></pre>
         <img src="{{ '/writeups/JustCTF2025/assets/pro3.png' | relative_url }}" alt="snippet" class="code-screenshot" />
           I discovered that the buffer used to take the input for <code>Nick</code> is located at <code>0x7fffffffe360</code>,
           while the memory being checked for the value <code>1</code> is at <code>0x7fffffffe3a8</code>.<br><br>
-          With the overflow primitive, I could write all the way up to that location and overwrite it with <code>1</code>, thereby triggering a call to <code>int_to_string()</code>.<br>
+          With the overflow primitive, I could write all the way up to that location and overwrite it with <code>1</code>, thereby triggering a call to <code>sub_1000()</code>.<br>
           But why does that matter?
         </p>
       </div>
       <div class="section-content">
         <h2>The Real Leak</h2>
         <p>
-          Looking inside <code>int_to_string()</code>, I found that it prints a transformed value derived from a memory address.<br>
+          Looking inside <code>sub_1000()</code>, 
+          <img src="{{ '/writeups/JustCTF2025/assets/pro5.png' | relative_url }}" alt="snippet" class="code-screenshot" />
+          I found that it prints a transformed value derived from a memory address.<br>
           This value — the player's score — was actually a disguised pointer.<br><br>
           The transformation? Some bit shifting and arithmetic, which could be reversed:
         </p>
-        <pre><code>reverse_score = lambda score: 0x700000000000 | ((score >> 1) << 16)</code></pre>
+        <pre><code class="language-python">reverse_score = lambda score: 0x700000000000 | ((score >> 1) << 16)</code></pre>
         <p>
           This function seemed useless at first glance — but in reality, it gave us a leaked pointer, disguised as a score.<br>
           Once reversed, I confirmed the address pointed inside the <code>linker</code> (<code>ld.so</code>).<br>
           <img src="{{ '/writeups/JustCTF2025/assets/pro4.png' | relative_url }}" alt="snippet" class="code-screenshot" />
-          That’s right — this was setting up for a <strong>ret2linker</strong> attack.
+          That’s right — this was setting up for a <code>ret2linker</code> attack.
         </p>
       </div>
       <div class="section-content">
         <h2>Attack Plan</h2>
         <ul>
-          <li><strong>Step 1: Calculate Linker Base Address</strong><br>
+          <li><h5>Step 1: Calculate Linker Base Address</h5><br>
             Use the leaked address to compute the base address of the linker by subtracting known offsets (you'll need to extract the same <code>ld.so</code> from the Docker image to match remote offsets).<br><br>
             <em>Be aware:</em> Players in the Discord server <strong>raged</strong> that their exploit broke due to varying linker offsets — likely caused by mismatched kernel versions.<br>
             Thankfully, I mean very thankfully, my WSL kernel version just chilled and gave me consistent offsets.
           </li><br>
-          <li><strong>Step 2: ROP Gadgets from the Linker</strong><br>
-            Extract ROP gadgets from the linker using tools like <code>ROPgadget --binary ./ld.so</code>.
+          <li><h5>Step 2: ROP Gadgets from the Linker</h5><br>
+            Extract ROP gadgets from the linker 
           </li><br>
-          <li><strong>Step 3: Multi-Stage ROP Chain</strong>
+          <li><h5>Step 3: Multi-Stage ROP Chain</h5>
             <ul>
-              <li><strong>Stage 1:</strong> Read "/bin/sh" into memory (via read syscall).</li>
-              <li><strong>Stage 2:</strong> Execute <code>execve("/bin/sh")</code> syscall with that pointer.</li>
+              <li>Stage 1: Read "/bin/sh" into memory (via read syscall).</li>
+              <li>Stage 2: Execute <code>execve("/bin/sh")</code> syscall with that pointer.</li>
             </ul>
           </li>
         </ul>
