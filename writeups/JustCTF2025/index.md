@@ -39,7 +39,7 @@ JustCTF 2025</code></h1>
             </p>
         </div>
         <div class="section-content">
-            <h2>Format String Shenanigans</h2>
+            <h1>Format String Shenanigans</h1>
             <img src="{{ '/writeups/JustCTF2025/assets/shellcodeprinter.png' | relative_url }}" alt="snippet" class="code-screenshot" />
             <p>
                 You’d expect this to be your average <code>printf</code>-style info leak, right?<br>
