@@ -178,10 +178,9 @@ if __name__ == "__main__":
           Sounds like tcache poisoning material.
         </p>
       </div>
-
       <div class="section-content">
         <h5><code>Checksec</code></h5>
-        <pre><code>RELRO:    Full RELRO  
+        <pre><code class="language-bash">RELRO:    Full RELRO  
 Canary:   Yes  
 NX:       Yes  
 PIE:      Yes  
@@ -418,7 +417,7 @@ if __name__ == "__main__":
           This challenge looked quite ugly at first, due to the symbols and function names being stripped.<br><br>
           <h5><code>Checksec</code></h5>
         </p>
-        <pre><code>Arch:     amd64
+        <pre><code class="language-bash">Arch:     amd64
 RELRO:    Full RELRO
 Canary:   No canary found
 NX:       NX enabled
