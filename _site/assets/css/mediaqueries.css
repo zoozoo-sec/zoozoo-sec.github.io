@@ -1,0 +1,561 @@
+/* ================================
+   Large Screens (1400px and below)
+================================ */
+@media screen and (max-width: 1400px) {
+  #profile {
+    height: 100vh;
+    margin-top: 1%;
+    margin-bottom: 2%;
+    min-height: 80vh;    
+    padding: 50px 20px;      
+  }
+
+  #about {
+    margin-bottom: 1%;
+  }
+
+  #done {
+    margin-top: 0.5%;
+    margin-bottom: 0.5%;
+
+  }
+
+  .about-container {
+    max-width: 1100px;
+    width: 100%;
+    text-align: center;
+    padding: 20px;
+    background: #161b22;
+    color: #f0f6fc;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  }
+
+  .done-container {
+    max-width: 1100px;
+    width: 100%;
+    text-align: center;
+    padding: 20px;
+    background: #161b22;
+    color: #f0f6fc;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  }
+
+  #contact,
+  #projects {
+    height: fit-content;
+  }
+}
+@media screen and (max-width: 480px) {
+
+  .nav-name {
+    margin-left: 5%;
+    font-size: 19px;           /* Even smaller name */
+  }
+
+  .hamburger-icon {
+    height: 12px;              /* Smaller hamburger icon */
+    width: 18px;
+  }
+
+  .menu-links a {
+    font-size: 16px;
+  }
+}
+/* ================================
+   Medium Screens (1200px and below)
+================================ */
+@media screen and (max-width: 1200px) {
+  #desktop-nav {
+    display: none;            /* Hide desktop nav */
+  }
+
+  #hamburger-nav {
+    display: flex;
+    position: flex;
+    justify-content: space-between;
+    top: 0;
+    left: 4;
+    width: 100%;
+    height: 100%;
+    z-index: 9999;                /* Ensure it covers the profile section */
+    background: rgba(0, 0, 0, 0.95);
+    backdrop-filter: blur(10px);  /* Add blur effect to the background */
+  }
+
+  .hamburger-menu {
+    list-style: none;
+    margin-right: 3%;   /* Move hamburger slightly to the right */
+  }
+
+  #experience,
+  .experience-details-container {
+    margin-top: 2rem;
+  }
+
+  #profile,
+  .section-container {
+    display: block;
+    min-height: 40vh;         /* Further reduce height */
+    padding: 0px 0px;  
+  }
+
+  .arrow {
+    display: none;            /* Hide arrows */
+  }
+
+  section,
+  .section-container {
+    height: fit-content;
+    margin: 0 5%;
+  }
+
+  .section__pic-container {
+    width: 275px;
+    height: 275px;
+    margin: 0 auto 2rem;
+  }
+
+  .about-containers {
+    margin-top: 0;
+  }
+}
+
+/* ================================
+   Tablet Screens (768px and below)
+================================ */
+@media screen and (max-width: 768px) {
+  #profile {
+    min-height: 60vh;         /* Even smaller height for tiny screens */
+    padding: 30px 10px;
+  }
+
+  .footer-nav {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .footer-links {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    max-width: 300px;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .footer p {
+    font-size: 14px;
+  }
+
+  .contact-container {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .contact-card {
+    width: 90%;
+    padding: 20px;
+  }
+
+  .btn-container {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .btn {
+    width: 100%;
+  }
+
+  .skills-box,
+  .tools-box {
+    display: flex;
+    flex-direction: column;  /* Stack vertically */
+    gap: 15px;
+  }
+
+  .experience-details-container {
+    padding: 20px;
+  }
+
+  .section__pic-container {
+    width: 200px;
+    height: 200px;
+  }
+
+  .contact-icon {
+    width: 50px;
+    height: 50px;
+  }
+}
+
+/* ================================
+   Small Screens (600px and below)
+================================ */
+@media screen and (max-width: 600px) {
+  #contact,
+  footer {
+    height: auto;
+    padding: 40px 20px;
+  }
+
+  #profile {
+    margin-bottom: 0;
+    z-index: 1; 
+    flex-direction: column;
+    min-height: 75vh !important;   /* Smaller height */
+    max-height: 89vh !important;   /* Constrain max height */
+    padding: 35px 10px !important;
+  }
+
+  article {
+    font-size: 1rem;
+  }
+
+  footer nav {
+    height: fit-content;
+    margin-bottom: 2rem;
+  }
+
+  .about-containers,
+  .done-container,
+  .contact-info-upper-container,
+  .btn-container {
+    flex-wrap: wrap;
+    margin-bottom: 1%;
+  }
+
+  .contact-info-container {
+    margin: 0;
+    text-align: center;
+  }
+
+  .contact-info-container p,
+  .nav-links li a {
+    font-size: 1rem;
+  }
+
+  .experience-sub-title {
+    font-size: 1.25rem;
+  }
+
+  .logo {
+    font-size: 1.5rem;
+  }
+
+  .nav-links {
+    flex-direction: column;
+    gap: 0.5rem;
+    text-align: center;
+  }
+
+  .section__pic-container {
+    width: auto;
+    height: 46vw;
+    justify-content: center;
+  }
+
+  .section__text__p2 {
+    font-size: 1.25rem;
+  }
+
+  .title {
+    font-size: 2rem;
+  }
+
+  .text-container {
+    text-align: justify;
+  }
+}
+
+/* ================================
+   Very Small Screens (480px and below)
+================================ */
+@media screen and (max-width: 480px) {
+  .logo {
+    font-size: 1.2rem;
+  }
+
+  .nav-links li a {
+    font-size: 0.9rem;
+  }
+
+  .section__text__p2 {
+    font-size: 1.1rem;
+  }
+
+  .title {
+    font-size: 1.75rem;
+  }
+
+  .footer-links {
+    gap: 10px;
+  }
+
+  .footer p {
+    font-size: 12px;
+  }
+
+  .contact-container {
+    gap: 10px;
+  }
+
+  .contact-card {
+    width: 100%;
+    padding: 15px;
+  }
+
+  .contact-card a {
+    font-size: 14px;
+  }
+
+  .btn {
+    padding: 12px;
+    font-size: 14px;
+  }
+
+  .section__pic-container {
+    width: 150px;
+    height: 150px;
+  }
+}
+
+
+/* Tablet Screens (768px and below) */
+@media screen and (max-width: 768px) {
+  
+  #about {
+    padding: 40px 15px;        /* Reduce padding */
+  }
+
+  .about-container {
+    padding: 30px 20px;
+  }
+  .done-container {
+    padding: 30px 20px;
+  }
+
+  h1 {
+    font-size: 1.8rem;
+  }
+
+  h2 {
+    font-size: 1.5rem;
+  }
+
+  p {
+    font-size: 0.95rem;
+  }
+
+  .skills-box, .tools-box {
+    gap: 10px;
+  }
+
+  .skill {
+    min-width: 140px;          /* Slightly smaller boxes */
+    font-size: 13px;           /* Smaller text */
+    padding: 10px 15px;
+  }
+}
+
+
+@media screen and (max-width: 600px) {
+  #about {
+    margin-top: 1%;
+    padding: 30px 10px;        /* Reduce padding */
+  }
+
+  .about-container {
+    padding: 20px;
+  }
+
+  h1 {
+    font-size: 1.6rem;         /* Smaller header */
+  }
+
+  h2 {
+    font-size: 1.4rem;
+  }
+
+  p {
+    font-size: 0.9rem;         /* Compact paragraph size */
+    line-height: 1.5;
+  }
+
+  .skills-box, .tools-box {
+    flex-direction: column;    /* Stack vertically */
+    align-items: center;
+    gap: 12px;
+  }
+
+  .skill {
+    min-width: 100%;
+    font-size: 12.5px;
+    padding: 8px 12px;
+  }
+}
+
+/* Very Small Screens (480px and below) */
+@media screen and (max-width: 480px) {
+  .about-container {
+    padding: 15px;
+  }
+
+  .done-container {
+    padding: 15px;
+  }
+  h1 {
+    font-size: 1.4rem;
+  }
+
+  h2 {
+    font-size: 1.2rem;
+  }
+
+  p {
+    font-size: 0.85rem;
+    line-height: 1.4;
+  }
+
+  .skills-box, .tools-box {
+    gap: 8px;
+  }
+
+  .skill {
+    min-width: 100%;
+    font-size: 12px;
+    padding: 7px 10px;
+  }
+}
+
+
+
+/* Apply only for screens smaller than 768px (mobile) */
+@media screen and (max-width: 768px) {
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden; /* Prevent horizontal scrolling */
+    width: 100%;
+  }
+
+
+  /* Disable horizontal movement */
+  .container {
+    overflow: hidden; 
+    max-width: 100%;
+  }
+
+  /* Prevent background from causing horizontal scrolling */
+  .wrapper {
+    overflow: hidden;
+    width: 95%;
+    max-width: 100%;
+  }
+}
+
+
+/* Mobile-specific styling */
+@media screen and (max-width: 768px) {
+
+  #done {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 40px 5%;
+    box-sizing: border-box;
+    height: auto; /* Adjusts to content size */
+  }
+
+  .section__text__p1 {
+    font-size: 22px;        /* Adjust title size */
+    margin-bottom: 20px;    
+    text-align: center;
+    color: #fff;             /* Ensure consistent text color */
+  }
+
+  .experience-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    max-width: 90%;
+    margin: 0 auto;
+  }
+
+  .thm-stats {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    gap: 20px;               /* Add spacing between logo and badge */
+  }
+
+  .thm-logo {
+    width: 80px;             /* Resize logo */
+    height: 80px;            /* Keep it square */
+    margin-bottom: 10px;     
+  }
+
+  .badge-frame {
+    width: 117.5%;
+    max-width: 300;              /* Responsive width */
+    height: 92px;                 /* Reduced height to remove excess space */
+    border: 2px solid #fff;        /* Clean border */
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.6); 
+    border-radius: 10px;           /* Rounded corners */
+    overflow: hidden;              /* Ensures no extra space is shown */
+    padding: 0;                     /* Remove any internal padding */
+    margin: 0;                      /* Remove extra margin */
+  }
+}
+
+
+/* Mobile-specific styling */
+@media (max-width: 768px) {
+  .contact-container {
+    flex-direction: column;  /* Stack vertically */
+    align-items: center;
+    gap: 20px;  /* Reduced gap between cards */
+  }
+
+  .contact-card {
+    width: 90%; /* Make the cards full-width with padding */
+    max-width: 350px;  /* Prevent them from getting too large */
+    height: 140px; 
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+    transition: all 0.3s ease;
+  }
+
+  .contact-card:hover {
+    transform: translateY(-5px);
+  }
+
+  .contact-icon {
+    width: 48px;  /* Smaller icon size */
+    height: 48px;
+    margin-bottom: 10px;  
+  }
+
+  .contact-card p a {
+    font-size: 16px;  /* Slightly smaller text for better readability */
+  }
+
+  .section__text__p2 {
+    font-size: 22px;  /* Reduce header size */
+  }
+}
+@media (max-width: 768px) {
+  .image-container {
+    justify-content: center;  /* Center-align images */
+    gap: 15px;                /* Smaller gap on mobile */
+  }
+
+  .side-image {
+    width: 90px;             /* Slightly smaller images on mobile */
+  }
+}

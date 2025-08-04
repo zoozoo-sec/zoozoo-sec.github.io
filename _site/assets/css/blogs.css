@@ -1,0 +1,17 @@
+#blogs {
+    display: flex;
+    justify-content: center;
+    gap: 5rem;
+    height: 80vh;
+    margin-bottom: 10px;  
+    background: #161b22;
+    border-radius: 10px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  }
+
+  .text {
+    margin: 0 10px;
+    font-weight: bold;
+    color: #00ffcc;
+}
+

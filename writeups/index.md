@@ -12,6 +12,11 @@ og_description: "Explore my CTF writeups."
 
 <section id="writeups">
   <div class="writeup-grid">
+    <a href="{{ '/writeups/JustCTF2025' | relative_url }}" class="writeup-card">
+      <h2>JustCTF 2025</h2>
+      <p>🔹Pwn Challenges</p>
+      <span class="date">August 2025</span>
+    </a>
     <a href="{{ '/writeups/Pentathon2025' | relative_url }}" class="writeup-card">
       <h2>Pentathon</h2>
       <p>NCIIPC-AICTE Pentathon 2025<br>Qualifier Round<br>🔹Pwn Challenges</p>
