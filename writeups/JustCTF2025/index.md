@@ -33,7 +33,7 @@ JustCTF 2025</code></h1>
             <b>Name:</b> <span class="text"> Shellcode Printing</span><br>
             <b>Category:</b> Binary Exploitation<br>
             <p><br>
-                Alright, here we are again — classic shellcode injection challenge... or is it?<br>
+                Here we are again — classic shellcode injection challenge... or is it?<br>
                 This one isn’t the "copy-paste shellcode into a buffer and pray" kind of gig.<br>
                 Instead of handing us a nice, friendly buffer and saying, <code>“Please inject shellcode here”</code>, this binary decided to play tricks with a format string vulnerability.
             </p>
@@ -53,7 +53,7 @@ JustCTF 2025</code></h1>
             </p>
         </div>
         <div class="section-content">
-            <h2>Enter mmap()</h2>
+            <h4>Enter mmap()</h4>
             <p>
                 So, where are we even writing this shellcode to?<br>
                 This binary uses <code>mmap()</code> to allocate a memory region — with RWX permissions — and stores the pointer on the stack.<br>
@@ -61,7 +61,7 @@ JustCTF 2025</code></h1>
             </p>
         </div>
         <div class="section-content">
-            <h3>But There’s a Twist…</h3>
+            <h4>But There’s a Twist…</h4>
             <p>
                 You don't get to write the whole shellcode in one go. Why?<br>
                 Because this binary is a little extra.<br>
@@ -75,7 +75,7 @@ JustCTF 2025</code></h1>
             </p>
         </div>
         <div class="section-content">
-            <h3>And Then… It Breaks.</h3>
+            <h4>And Then… It Breaks.</h4>
             <p>
                 Just as you're about to finish writing your shellcode, the pointer ends up pointing to the end of the mmap'd region.<br>
                 When the execution jumps to that pointer — it’s basically trying to run off the end of your shellcode.<br>
@@ -83,7 +83,7 @@ JustCTF 2025</code></h1>
             </p>
         </div>
         <div class="section-content">
-            <h3>Enter: The Jump Trick™</h3>
+            <h4>The Jump Trick</h4>
             <p>
                 Here’s the trick:<br>
                 Write a <code>jmp</code> instruction at the end — one that jumps back to the start of your shellcode.<br>
@@ -93,10 +93,8 @@ JustCTF 2025</code></h1>
             </p>
         </div>
         <div class="section-content">
-            <h3>Exploit Script</h3>
-            <p>Here’s the Python script used to exploit the binary and spawn a shell:</p>
             <div class="h4-wrapper">
-                <h4>Exploit Code:</h4>
+                <h4>Exploit Script</h4>
                 <button class="copy-btn">Copy</button>
             </div>
 <pre><code class="language-python">from pwn import *
