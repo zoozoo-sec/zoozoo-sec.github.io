@@ -208,7 +208,7 @@ IBT:      Enabled</code></pre>
           </ul>
           Why does that work?<br>
           Because <code>ptmalloc</code> uses a doubly-linked list for unsorted bins, and the chunk's <code>fd</code> and <code>bk</code> pointers end up pointing directly inside <code>main_arena</code>.<br>
-          <span class="text">Beautiful.</span>
+          <code>Beautiful.</code>
         </p>
       </div>
       <div class="section-content">
@@ -216,8 +216,8 @@ IBT:      Enabled</code></pre>
         <p>
           Using the UAF, we read a freed chunk and get two things:
           <ul>
-            <li><span class="text">Tcache key</span> — used for pointer mangling (introduced in glibc 2.32+).</li>
-            <li><span class="text">Mangled pointer</span> — XORing this with the key gives us a heap leak.</li>
+            <li><code>Tcache key</code> — used for pointer mangling (introduced in glibc 2.32+).</li>
+            <li><code>Mangled pointer</span> — XORing this with the key gives us a heap leak.</li>
           </ul>
         </p>
         <h4>Step 2: Tcache Poisoning for Controlled Allocation</h4>
