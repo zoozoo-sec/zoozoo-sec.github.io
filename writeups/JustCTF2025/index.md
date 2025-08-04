@@ -474,7 +474,7 @@ IBT:      Enabled</code></pre>
       <div class="section-content">
         <h2>The Real Leak</h2>
         <p>
-          Looking inside <code>sub_1000()</code>, 
+          Looking inside <code>scorecalculate()</code>, 
           <img src="{{ '/writeups/JustCTF2025/assets/pro5.png' | relative_url }}" alt="snippet" class="code-screenshot" />
           I found that it prints a transformed value derived from a memory address.<br>
           This value — the player's score — was actually a disguised pointer.<br><br>
