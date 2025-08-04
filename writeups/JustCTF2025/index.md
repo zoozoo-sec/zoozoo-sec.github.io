@@ -190,8 +190,7 @@ IBT:      Enabled</code></pre>
           Yep. All the modern security goodies are turned on.<br>
           So... no GOT overwrite. No return-to-plt. No partial overwrite shenanigans.<br>
           <br>
-          And the binary allocates pretty small chunks — so we’re not even getting out of the tcache fastbin area.<br>
-          <span class="text"> <strong>Leak required.</strong></span> No exceptions.
+          And the binary allocates pretty small chunks — so we’re not even getting out of the tcache fastbin area.<br><code>Leak required.</code> No exceptions.
         </p>
       </div>
       <div class="section-content">
