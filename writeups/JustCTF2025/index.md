@@ -179,7 +179,7 @@ if __name__ == "__main__":
       </div>
 
       <div class="section-content">
-        <h1>Checksec output</h1>
+        <h5>Checksec output</h5>
         <pre><code>RELRO:    Full RELRO  
 Canary:   Yes  
 NX:       Yes  
@@ -228,13 +228,13 @@ IBT:      Enabled</code></pre>
             <li>Create a fake chunk header with <code>size &gt; 0x410</code> → ensures it goes to the unsorted bin.</li>
           </ul>
           <br>
-          💡 <strong>Important glibc 2.39 checks:</strong>
+          <strong>Important glibc 2.39 checks:</strong>
           <ul>
             <li><code>prev_inuse</code> bit of the next chunk must be <code>1</code>, or you'll hit consolidation checks.</li>
             <li>Next chunk’s <code>prev_size</code> and <code>size</code> fields must line up correctly.</li>
             <li>If you corrupt a chunk’s size, make sure you don't accidentally mark it as <code>IS_MMAPPED</code> or you'll crash.</li>
           </ul>
-          <p style="margin-top: 15px;">For a deeper dive into how these checks work internally, you can browse the <a href="https://codebrowser.dev/glibc/glibc/malloc/malloc.c.html" target="_blank" rel="noopener noreferrer"><code>malloc.c</code> source in glibc</a>.</p>
+          <p style="margin-top: 15px;">For a deeper dive into how these checks work internally, you can browse the <a href="https://codebrowser.dev/glibc/glibc/malloc/malloc.c.html" target="_blank" rel="noopener noreferrer"><code>malloc.c</code></a>source in glibc.</p>
           <img src="{{ '/writeups/JustCTF2025/assets/babyheap1.png' | relative_url }}" alt="snippet" class="code-screenshot" />
         </p>
         <h4>Step 3: Trigger Unsorted Bin Insertion</h4>
@@ -402,6 +402,8 @@ def main():
 
 if __name__ == "__main__":
     main()
+</code></pre>
+</div>
 </div>
   </section>
 </section>
