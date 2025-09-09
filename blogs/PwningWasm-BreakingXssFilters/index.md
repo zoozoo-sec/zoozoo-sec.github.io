@@ -53,7 +53,7 @@ permalink: /blogs/PwningWasm-BreakingXssFilters/
     </div>
     <div id="what-is-wasm" class="section-content">
         <h1 class="text"><code>What’s WebAssembly Anyway?</code></h1>
-        <p>
+        <p><br>
             WebAssembly is a low-level bytecode format that runs inside a browser’s sandboxed virtual machine. 
             Instead of hand-writing everything in JavaScript, developers can write performance-critical code in 
             <code>C</code>, <code>C++</code>, or <code>Rust</code>, compile to <code>.wasm</code>, and let the browser execute it at near-native speed.
@@ -73,6 +73,93 @@ permalink: /blogs/PwningWasm-BreakingXssFilters/
             So yeah, WASM isn’t some toy tech — it’s quietly powering apps millions of people touch daily. 
             And that makes it interesting for hackers: more power, more complexity, and a much bigger attack surface.
         </p>
+    </div>
+        <div id="wasm-under-hood" class="section-content">
+        <h1 class="text"><code>How WebAssembly Works Under the Hood</code></h1>
+        <p>
+            If you think WASM is just “run code in the browser,” you’re missing the fun part. 
+            Under the hood, it’s a whole mini-computer running inside your browser. When you write code 
+            in <code>C</code>, <code>C++</code>, or <code>Rust</code> and compile it to WASM, 
+            you’re essentially turning it into a tiny binary program designed to run safely and fast 
+            on any platform. Think of it as a virtual CPU that lives inside your browser tab.
+        </p>
+        <p>
+            Here’s what actually happens: your high-level code hits a compiler like 
+            <code>Emscripten</code> or Rust’s <code>wasm32-unknown-unknown</code> target, 
+            and out comes WASM bytecode — a compact, low-level binary format. 
+            This bytecode isn’t tied to your machine’s CPU; it’s designed to run inside a 
+            sandboxed virtual machine. That’s why WASM is portable — the same 
+            <code>.wasm</code> file can run on Chrome, Firefox, or even Node.js 
+            with almost identical performance.
+        </p>
+        <p>
+            The <code>V8</code> engine (used in Chrome and Edge) starts by parsing this binary. 
+            Think of it as unpacking a box full of labeled components: functions, variables, 
+            memory blocks, and function tables. <code>V8</code> doesn’t execute anything yet; 
+            it’s just organizing the pieces in a way that makes them runnable.
+        </p>
+        <p>
+            <strong>Functions:</strong> Every function you wrote in C, Rust, or C++ becomes a WASM function. 
+            V8 builds an internal function table mapping each WASM function to a location in memory. 
+            This is like creating an index so the engine knows where to jump when a function is called.
+        </p>
+        <p>
+            <strong>Globals:</strong> Variables that exist across functions — like counters, configuration constants, 
+            or flags — are collected into a global section. This allows any function in the module 
+            to access them efficiently.
+        </p>
+        <p>
+            <strong>Memory segments:</strong> Any static data, such as arrays, strings, or initialized variables, 
+            is laid out in memory. This forms part of the linear memory, which the entire module can use.
+        </p>
+        <p>
+            <strong>Tables:</strong> These are basically pointers to functions or spots for indirect calls. 
+            Think of them as jump tables that allow WASM to handle things like virtual functions 
+            or function pointers in C/C++.
+        </p>
+        <p>
+            At this stage, everything is defined but not yet executing.
+        </p>
+    </div>
+    <div id="tiered-compilation">
+        <h2 class="section-title text-3xl font-bold mb-4 text-red-600">
+            Tiered Compilation: Liftoff and Turbofan
+        </h2>  
+        <p class="intro mb-6 text-lg leading-relaxed">
+            Now the real magic begins. V8 doesn’t just interpret WASM bytecode like an old-school emulator. 
+            Interpreting one instruction at a time would be too slow. Instead, V8 compiles WASM into 
+            <span class="highlight text-red-500 font-semibold">native machine code</span>, instructions that your CPU can run directly. 
+            But here’s the tricky part: compilation takes time. The browser wants your module to start executing as soon as possible, 
+            but also run fast once it’s executing. To solve this, V8 uses 
+            <span class="highlight text-red-500 font-semibold">tiered compilation</span>, which balances speed and performance.
+        </p>
+        <div class="compiler-stage liftoff mb-8">
+            <h3 class="stage-title text-2xl font-semibold text-blue-600 mb-2">Liftoff (Baseline Compiler)</h3>
+            <p class="stage-description leading-relaxed mb-4">
+            This is the first stage. Liftoff’s job is simple: take the WASM bytecode and 
+            translate it into machine code <span class="highlight text-red-500 font-semibold">fast enough to start running immediately</span>. 
+            It doesn’t do fancy optimizations; it just ensures the code works. 
+            Think of it as a “good enough to run now” compiler. 
+            This allows your page or app to begin execution almost instantly, so users don’t notice any delay.
+            </p>
+        </div>
+        <div class="compiler-stage turbofan">
+            <h3 class="stage-title text-2xl font-semibold text-green-600 mb-2">Turbofan (Optimizing Compiler)</h3>
+            <p class="stage-description leading-relaxed mb-4">
+            While Liftoff is already running your code, Turbofan is quietly profiling what your program is actually doing. 
+            Which functions are called most often? Which loops repeat thousands of times? 
+            Turbofan takes this information and recompiles the “hot” functions with optimizations:
+            </p>
+            <ul class="optimizations list-disc pl-8 space-y-2">
+            <li>Reordering instructions for efficiency</li>
+            <li>Inlining small functions to avoid jumps</li>
+            <li>Using CPU registers smartly to reduce memory access</li>
+            </ul>
+            <p class="conclusion leading-relaxed mt-4">
+            This means that after a few iterations, the same function that ran in Liftoff 
+            suddenly runs much faster, often approaching <span class="highlight text-red-500 font-semibold">native CPU speed</span>.
+            </p>
+        </div>
     </div>
 </section>
 
