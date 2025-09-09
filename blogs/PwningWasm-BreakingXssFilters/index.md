@@ -53,7 +53,7 @@ permalink: /blogs/PwningWasm-BreakingXssFilters/
     </div>
     <div id="what-is-wasm" class="section-content">
         <h4 class='text'>What’s WebAssembly Anyway?</h4>
-        <p>
+        <p><br>
             WebAssembly is a low-level bytecode format that runs inside a browser’s sandboxed virtual machine. 
             Instead of hand-writing everything in JavaScript, developers can write performance-critical code in 
             <code>C</code>, <code>C++</code>, or <code>Rust</code>, compile to <code>.wasm</code>, and let the browser execute it at near-native speed.
@@ -75,8 +75,8 @@ permalink: /blogs/PwningWasm-BreakingXssFilters/
         </p>
     </div>
     <div id="under-the-hood" class="section-content">
-        <h4 class='text'><code>How WebAssembly Works Under the Hood</code></h4>
-        <p>
+        <h4 class='text'>How WebAssembly Works Under the Hood</h4>
+        <p><br>
             If you think WASM is just <code>"run code in the browser"</code>, you’re missing the fun part. 
             Under the hood, it’s a whole mini-computer running inside your browser. 
             When you write code in <code>C</code>, <code>C++</code>, or <code>Rust</code> and compile it to WASM, 
@@ -122,7 +122,8 @@ permalink: /blogs/PwningWasm-BreakingXssFilters/
         </p>
     </div>
     <div id="tiered-compilation" class="section-content">
-        <h4 class='text'><code>Tiered Compilation: Liftoff and Turbofan (also Maglev in modern v8 Engine)</code></h4>
+        <h4 class='text'>Tiered Compilation: Liftoff and Turbofan (also Maglev in modern v8 Engine)</h4>
+        <p><br>
             Now the real magic begins. V8 doesn’t just interpret WASM bytecode like an old-school emulator. 
             Interpreting one instruction at a time would be too slow. Instead, V8 compiles WASM into 
             <code>native machine code</code>, instructions that your CPU can run directly. 
