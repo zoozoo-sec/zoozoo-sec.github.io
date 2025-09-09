@@ -34,8 +34,8 @@
 /* Uniform card sizing */
 .writeup-card {
   flex: 0 0 auto;
-  width: 420px;                    /* Increased tile width */
-  height: 250px;                   /* Increased tile height */
+  width: 360px;                    /* Increased tile width */
+  height: 280px;                   /* Increased tile height */
   display: flex;
   flex-direction: column;
   background: rgba(0, 0, 0, 0.6);
@@ -124,12 +124,12 @@
   }
 
   .writeup-card {
-    width: 420px;
+    width: 100%;
     margin: 0 0 10px 0;     /* Adds only bottom spacing */
     padding: 12px;
-    height: 250px;
+    height: auto;
     box-sizing: border-box;
-    font-size: 10px;
+    font-size: 9px;
   }
 
   .writeup-card h2,
