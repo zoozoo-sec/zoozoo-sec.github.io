@@ -156,29 +156,46 @@ permalink: /blogs/PwningWasm-BreakingXssFilters/
             making WASM code feel almost indistinguishable from native applications.
         </p>
     </div>
-    <div id='memory-model' class="section-content">
-        <h4 class='text'>Memory Model: The Heart of the Sandbox</h4>
-        <p>One of the most important concepts to understand in WebAssembly (WASM) security is its memory model. Unlike higher-level languages that abstract away memory management or native applications that work directly with system memory, WASM takes a very particular approach: it gives each module a single, flat, contiguous block of memory called <strong>linear memory</strong>.</p>
-        <p>This design choice is what makes WASM both efficient and relatively safe — but it also defines the limits and behaviors that an attacker must consider. Let’s walk through exactly how this “sandboxed memory apartment” is structured.</p>
-        <h4 class='text'>Linear Memory: The WASM Sandbox</h4>
-        <p>At its core, linear memory is just a giant array of bytes. Imagine you started your program with:</p>
-        <pre><code class="language-c">
-            char memory[65536]; // 64 KB
-        </code></pre>
-        <p>That’s essentially what WASM gives you at the start — one continuous region of memory that your module can read from and write to. When you compile C, C++, or Rust code to WASM, all variables, arrays, and data structures are mapped into this space.</p>
-        <p>Unlike JavaScript, which dynamically allocates and garbage-collects memory behind the scenes, WASM does not automatically manage multiple heaps for you.</p>
-        <p>Unlike native code, which can spread data across multiple segments (heap, stack, code, globals) in process memory, WASM consolidates all user data into this single linear memory.</p>
-        <p>Every function in the module shares it. Functions don’t each get private stacks or local heaps carved out separately from the linear space. They all point into the same memory pool. This makes data sharing between functions much faster, but it also means mistakes have broader consequences.</p>
-        <h4>Apartment Analogy</h4>
-        <p>Think of linear memory as a private apartment for your WASM module inside the browser.</p>
-        <ul>
+    <div id="memory-model" class="section-content">
+    <h4 class='text'>Memory Model: The Heart of the Sandbox</h4>
+    <p>
+        One of the most important concepts to understand in WebAssembly (<code>WASM</code>) security is its memory model. 
+        Unlike higher-level languages that abstract away memory management, or native applications that work directly with system memory, 
+        <code>WASM</code> takes a very particular approach: it gives each module a single, flat, contiguous block of memory called <code>linear memory</code>.
+    </p>
+    <p>
+        This design choice makes <code>WASM</code> both efficient and relatively safe — but it also defines the limits and behaviors that an attacker must consider. 
+        Let’s walk through how this “sandboxed memory apartment” is structured.
+    </p>
+    <h4 class='text'>Linear Memory: The WASM Sandbox</h4>
+    <p>
+        At its core, linear memory is just a giant array of bytes. Imagine you started your program with:
+    </p>
+    <pre><code class="language-c">
+char memory[65536]; // 64 KB
+    </code></pre>
+    <p>
+        That’s essentially what <code>WASM</code> gives you at the start — one continuous region of memory that your module can read from and write to. 
+        When you compile <code>C</code>, <code>C++</code>, or <code>Rust</code> code to <code>WASM</code>, all variables, arrays, and data structures are mapped into this space.
+    </p>
+    <ul>
+        <li>Unlike <code>JavaScript</code>, which dynamically allocates and garbage-collects memory behind the scenes, <code>WASM</code> does not automatically manage multiple heaps for you.</li>
+        <li>Unlike native code, which can spread data across multiple segments (<code>heap</code>, <code>stack</code>, <code>code</code>, <code>globals</code>) in process memory, <code>WASM</code> consolidates all user data into this single linear memory.</li>
+        <li>Every function in the module shares it. Functions don’t each get private stacks or local heaps carved out separately from the linear space. They all point into the same memory pool. This makes data sharing between functions much faster, but it also means mistakes have broader consequences.</li>
+    </ul>
+    <h4 class='text'>Apartment Analogy</h4>
+    <p>Think of linear memory as a private apartment for your <code>WASM</code> module inside the browser:</p>
+    <ul>
         <li>When your program loads, the browser sets aside an apartment (say, 64 KB of initial memory).</li>
         <li>Inside, you can arrange your “furniture”: arrays, strings, structs, and counters.</li>
         <li>Every function is like a roommate — they can all move things around inside the apartment, but they can’t knock down walls and mess with others outside (like the browser or system memory).</li>
-        </ul>
-        <p>This is the sandbox guarantee: your module is isolated from the world outside. No matter what bugs exist in your code, they can’t overwrite Chrome’s process memory or the OS kernel’s data.</p>
-        <p><em>At least, that’s what they promote. They say WASM is safe, but sandbox escapes to renderer process keep proving otherwise.</em></p>
-    </div>
+    </ul>
+    <p>
+        This is the sandbox guarantee: your module is isolated from the world outside. No matter what bugs exist in your code, they can’t overwrite Browser's process memory or the Or the renderer's memory.
+    </p>
+    <p><code>At least, that’s what they promote. They say WASM is safe, but sandbox escapes to renderer process keep proving otherwise.</code></p>
+</div>
+
 </section>
 
 </section>
