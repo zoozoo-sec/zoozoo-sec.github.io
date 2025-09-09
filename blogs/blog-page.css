@@ -170,16 +170,16 @@ pre > code[class*="language-"] {
 
 
 #toc a:hover {
-    color: #5eead4;
+    color: #86efac;
     text-decoration: underline; /* Optional: underline only on hover */
 }
 #toc ul li a {
-    color: #86efac !important; /* Force red-pink color */
+    color: #5eead4  !important; /* Force red-pink color */
     text-decoration: none !important;
 }
 
 #toc ul li a:hover {
-    color: #5eead4 !important; /* Hover color */
+    color: #86efac !important; /* Hover color */
     text-decoration: underline !important;
 }
 
