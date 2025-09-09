@@ -206,17 +206,17 @@ arr[11] = 42; // out-of-bounds write
         On <code>WASM</code>, <code>arr</code> can’t reach outside the sandbox. But it can corrupt another piece of data within the module’s own linear memory.
         Maybe it overrides a cryptographic key, an index into a function table, or user input buffers. That’s still dangerous — just not system-level catastrophic.
     </p>
-    <h3><code>Memory Growth and Limits</code></h3>
+    <h4><code>Memory Growth and Limits</code></h4>
     <p>
         Linear memory isn’t infinite; it’s divided into fixed-size pages of 64 KB each. When a <code>WASM</code> module starts, it requests an initial number of pages (say, 1 page = 64 KB).
         As the program runs, it can explicitly request more pages if needed — for example, a game suddenly loading a massive map, or an editor opening a large file.
         But the browser enforces an upper ceiling, so runaway programs can’t consume infinite memory. This paged growth mechanism keeps memory predictable and adds another safety layer.
     </p>
-    <h3><code>Memory Pages in WASM: Code, Data, and More</code></h3>
+    <h4><code>Memory Pages in WASM: Code, Data, and More</code></h4>
     <p>
         It’s important to understand that <code>WASM</code> memory isn’t one big undifferentiated blob. Internally, the virtual machine separates things into different types of pages:
     </p>
-    <h3><code>Code Pages</code></h3>
+    <h4><code>Code Pages</code></h4>
     <p>
         Code — your actual executable instructions — does not live inside linear memory. Instead, compiled functions are placed in separate, read-only code pages.
         This design prevents accidental or malicious attempts to overwrite instructions in memory.
