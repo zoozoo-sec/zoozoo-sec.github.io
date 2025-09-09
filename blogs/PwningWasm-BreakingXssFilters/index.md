@@ -38,9 +38,9 @@ permalink: /blogs/PwningWasm-BreakingXssFilters/
 
     <div id="toc" class="challenge-section">
         <div class="section-content">
-            <h1>Table of Contents</h1>
+            <h2>Table of Contents</h2>
             <ul>
-                <li><a href="#what-is-wasm">What’s WebAssembly Anyway?</a></li>
+                <li><a href="#what-is-wasm">What’s WebAssembly?</a></li>
                 <li><a href="#under-the-hood">How WebAssembly Works Under the Hood</a></li>
                 <li><a href="#tiered-compilation">Tiered Compilation: Liftoff and Turbofan</a></li>
                 <li><a href="#memory-model">Memory Model: The Heart of the Sandbox</a></li>
@@ -48,9 +48,36 @@ permalink: /blogs/PwningWasm-BreakingXssFilters/
                 <li><a href="#why-not-classic">Why Traditional C/C++ Exploits Don’t Work in WASM</a></li>
                 <li><a href="#direct-vs-indirect">Direct vs Indirect Calls in WASM</a></li>
                 <li><a href="#attack-surface">The Real Attack Surface in WASM</a></li>
-                <li><a href="#rust-wasm">Rust and WASM: Memory Safety, But Not a Free Pass</a></li>
+                <li><a href="#rust-wasm">Rust and WASM: Memory Safety. </a></li>
             </ul>
         </div>
     </div>
 </section>
+
+<section id="what-is-wasm" class="challenge-section">
+    <div class="section-content">
+        <h1 class="text"><code>What’s WebAssembly Anyway?</code></h1>
+        <p>
+            WebAssembly is a low-level bytecode format that runs inside a browser’s sandboxed virtual machine. 
+            Instead of hand-writing everything in JavaScript, developers can write performance-critical code in 
+            <code>C</code>, <code>C++</code>, or <code>Rust</code>, compile to <code>.wasm</code>, and let the browser execute it at near-native speed.
+        </p>
+        <p>
+            And it’s not niche — WASM powers massive real-world apps:
+        </p>
+        <ul>
+            <li><code>Canva</code> crunching image filters in the browser.</li>
+            <li><code>Figma</code> running a full design suite without a desktop client.</li>
+            <li><code>AutoCAD</code> rendering CAD models online.</li>
+            <li><code>Unity/Unreal</code> exporting games to the web.</li>
+            <li><code>TensorFlow.js</code> accelerating machine learning inference.</li>
+            <li><code>Google Earth</code> for smooth, native-like performance.</li>
+        </ul>
+        <p>
+            So yeah, WASM isn’t some toy tech — it’s quietly powering apps millions of people touch daily. 
+            And that makes it interesting for hackers: more power, more complexity, and a much bigger attack surface.
+        </p>
+    </div>
+</section>
+
 </section>
