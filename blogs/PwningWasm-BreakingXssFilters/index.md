@@ -206,7 +206,7 @@ arr[11] = 42; // out-of-bounds write
         On <code>WASM</code>, <code>arr</code> can’t reach outside the sandbox. But it can corrupt another piece of data within the module’s own linear memory.
         Maybe it overrides a cryptographic key, an index into a function table, or user input buffers. That’s still dangerous — just not system-level catastrophic.
     </p>
-    <h5 class='text'>Memory Growth and Limits</h5>
+    <h5><code>Memory Growth and Limits</code></h5>
     <p>
         Linear memory isn’t infinite; it’s divided into fixed-size pages of 64 KB each. When a <code>WASM</code> module starts, it requests an initial number of pages (say, 1 page = 64 KB).
         As the program runs, it can explicitly request more pages if needed — for example, a game suddenly loading a massive map, or an editor opening a large file.
