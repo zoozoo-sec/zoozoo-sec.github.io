@@ -129,25 +129,29 @@ permalink: /blogs/PwningWasm-BreakingXssFilters/
             To solve this, V8 uses <code>tiered compilation</code>, which balances speed and performance.
         </p>
         <p>
-            <code>Liftoff (Baseline Compiler):</code> This is the first stage. Liftoff’s job is simple: 
-            take the WASM bytecode and translate it into machine code 
-            <code>fast enough to start running immediately</code>. 
-            It doesn’t do fancy optimizations; it just ensures the code works. 
-            Think of it as a “good enough to run now” compiler. 
-            This allows your page or app to begin execution almost instantly, 
-            so users don’t notice any delay.
+            <li>
+                <code>Liftoff (Baseline Compiler):</code> This is the first stage. Liftoff’s job is simple: 
+                take the WASM bytecode and translate it into machine code 
+                <code>fast enough to start running immediately</code>. 
+                It doesn’t do fancy optimizations; it just ensures the code works. 
+                Think of it as a “good enough to run now” compiler. 
+                This allows your page or app to begin execution almost instantly, 
+                so users don’t notice any delay.
+            </li>
         </p>
         <p>
-            <code>Turbofan (Optimizing Compiler):</code> While Liftoff is already running your code, 
-            Turbofan is quietly profiling what your program is actually doing. 
-            Which functions are called most often? Which loops repeat thousands of times? 
-            Turbofan takes this information and recompiles the “hot” functions with optimizations:
-        </p>
-        <ul>
-            <li>Reordering instructions for efficiency.</li>
-            <li>Inlining small functions to avoid jumps.</li>
-            <li>Using CPU registers smartly to reduce memory access.</li>
-        </ul>
+            <li>
+                <code>Turbofan (Optimizing Compiler):</code> While Liftoff is already running your code, 
+                Turbofan is quietly profiling what your program is actually doing. 
+                Which functions are called most often? Which loops repeat thousands of times? 
+                Turbofan takes this information and recompiles the “hot” functions with optimizations:
+            </p>
+                <ul>
+                    <li>Reordering instructions for efficiency.</li>
+                    <li>Inlining small functions to avoid jumps.</li>
+                    <li>Using CPU registers smartly to reduce memory access.</li>
+                </ul>
+            </li>
         <p>
             After a few iterations, the same function that first ran through Liftoff 
             is now executing at <code>near-native CPU speed</code>, 
