@@ -52,7 +52,7 @@ permalink: /blogs/PwningWasm-BreakingXssFilters/
         </div>
     </div>
     <div id="what-is-wasm" class="section-content">
-        <h4 class='text'><code>What’s WebAssembly Anyway?</code></h4>
+        <h4 class='text'>What’s WebAssembly Anyway?</h4>
         <p>
             WebAssembly is a low-level bytecode format that runs inside a browser’s sandboxed virtual machine. 
             Instead of hand-writing everything in JavaScript, developers can write performance-critical code in 
@@ -122,7 +122,7 @@ permalink: /blogs/PwningWasm-BreakingXssFilters/
         </p>
     </div>
     <div id="tiered-compilation" class="section-content">
-        <h4>Tiered Compilation: Liftoff and Turbofan (also Maglev in modern v8 Engine)</h4>
+        <h4 class='text'><code>Tiered Compilation: Liftoff and Turbofan (also Maglev in modern v8 Engine)</code></h4>
             Now the real magic begins. V8 doesn’t just interpret WASM bytecode like an old-school emulator. 
             Interpreting one instruction at a time would be too slow. Instead, V8 compiles WASM into 
             <code>native machine code</code>, instructions that your CPU can run directly. 
