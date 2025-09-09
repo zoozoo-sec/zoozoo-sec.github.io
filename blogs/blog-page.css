@@ -210,6 +210,35 @@ h3 {
     #challenge-links a {
         font-size: 1.2rem; /* Adjust link font size for mobile */
     }
+    #toc {
+    display: flex;            /* Make the container a flexbox */
+    justify-content: center;  /* Center it horizontally */
+    }
+
+    #toc .section-content {
+        text-align: center;       /* Center text inside */
+    }
+
+    #toc ul {
+        list-style-type: disc; /* Add bullet points */
+        padding-left: 1.5rem;  /* Push bullets a bit from the left */
+        display: inline-block; /* Keep bullets centered with text */
+        text-align: left;      /* Align the bullets with the text */
+    }
+
+    #toc li {
+        margin: 8px 0;     /* Space between items */
+    }
+
+    #toc a {
+        text-decoration: none;  /* Remove underline */
+        color:  #f87171;     /* Optional: customize link color */
+    }
+
+    #toc a:hover {
+        color: #5eead4;
+        text-decoration: underline; /* Optional: underline only on hover */
+    }
 }
 
 @media (max-width: 480px) {
@@ -234,6 +263,36 @@ h3 {
 
     #challenge-links li {
         margin: 5px 0; /* Adjust margin for smaller devices */
+    }
+
+    #toc {
+    display: flex;            /* Make the container a flexbox */
+    justify-content: center;  /* Center it horizontally */
+    }
+
+    #toc .section-content {
+        text-align: center;       /* Center text inside */
+    }
+
+    #toc ul {
+        list-style-type: disc; /* Add bullet points */
+        padding-left: 1.5rem;  /* Push bullets a bit from the left */
+        display: inline-block; /* Keep bullets centered with text */
+        text-align: left;      /* Align the bullets with the text */
+    }
+
+    #toc li {
+        margin: 8px 0;     /* Space between items */
+    }
+
+    #toc a {
+        text-decoration: none;  /* Remove underline */
+        color:  #f87171;     /* Optional: customize link color */
+    }
+
+    #toc a:hover {
+        color: #5eead4;
+        text-decoration: underline; /* Optional: underline only on hover */
     }
 }
 
