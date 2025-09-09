@@ -212,7 +212,7 @@ arr[11] = 42; // out-of-bounds write
         As the program runs, it can explicitly request more pages if needed — for example, a game suddenly loading a massive map, or an editor opening a large file.
         But the browser enforces an upper ceiling, so runaway programs can’t consume infinite memory. This paged growth mechanism keeps memory predictable and adds another safety layer.
     </p>
-    <h5 class='text'>Memory Pages in WASM: Code, Data, and More</h5>
+    <h3><code>Memory Pages in WASM: Code, Data, and More</code></h3>
     <p>
         It’s important to understand that <code>WASM</code> memory isn’t one big undifferentiated blob. Internally, the virtual machine separates things into different types of pages:
     </p>
