@@ -119,7 +119,7 @@ permalink: /blogs/PwningWasm-BreakingXssFilters/
     </div>
     <div id="tiered-compilation" class="section-content">
         <h4 class='text'>Tiered Compilation: Liftoff and Turbofan (also Maglev in modern v8 Engine)</h4>
-        <p><br>
+        <p>
             Now the real magic begins. V8 doesn’t just interpret WASM bytecode like an old-school emulator. 
             Interpreting one instruction at a time would be too slow. Instead, V8 compiles WASM into 
             <code>native machine code</code>, instructions that your CPU can run directly. 
@@ -128,7 +128,6 @@ permalink: /blogs/PwningWasm-BreakingXssFilters/
             but also run fast once it’s executing. 
             To solve this, V8 uses <code>tiered compilation</code>, which balances speed and performance.
         </p>
-        <p>
         <ul>
             <li>
                 <code>Liftoff (Baseline Compiler):</code> This is the first stage. Liftoff’s job is simple: 
@@ -139,8 +138,6 @@ permalink: /blogs/PwningWasm-BreakingXssFilters/
                 This allows your page or app to begin execution almost instantly, 
                 so users don’t notice any delay.
             </li>
-        </p>
-        <p>
             <li>
                 <code>Turbofan (Optimizing Compiler):</code> While Liftoff is already running your code, 
                 Turbofan is quietly profiling what your program is actually doing. 
@@ -153,7 +150,6 @@ permalink: /blogs/PwningWasm-BreakingXssFilters/
                 </ul>
             </li>
         </ul>
-        </p>
         <p>
             After a few iterations, the same function that first ran through Liftoff 
             is now executing at <code>near-native CPU speed</code>, 
