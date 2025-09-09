@@ -174,7 +174,7 @@ pre > code[class*="language-"] {
     text-decoration: underline; /* Optional: underline only on hover */
 }
 #toc ul li a {
-    color: #f87171 !important; /* Force red-pink color */
+    color: #c4b5fd !important; /* Force red-pink color */
     text-decoration: none !important;
 }
 
