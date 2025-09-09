@@ -52,7 +52,7 @@ permalink: /blogs/PwningWasm-BreakingXssFilters/
         </div>
     </div>
     <div id="what-is-wasm" class="section-content">
-        <h1 class="text"><code>What’s WebAssembly Anyway?</code></h1>
+        <h4 class="text">What’s WebAssembly Anyway?</h4>
         <p><br>
             WebAssembly is a low-level bytecode format that runs inside a browser’s sandboxed virtual machine. 
             Instead of hand-writing everything in JavaScript, developers can write performance-critical code in 
@@ -122,42 +122,42 @@ permalink: /blogs/PwningWasm-BreakingXssFilters/
         </p>
     </div>
     <div id="tiered-compilation" class="section-content">
-    <h1 class="text"><code>Tiered Compilation: Liftoff and Turbofan</code></h1>
-    <p><br>
-        Now the real magic begins. V8 doesn’t just interpret WASM bytecode like an old-school emulator. 
-        Interpreting one instruction at a time would be too slow. Instead, V8 compiles WASM into 
-        <code>native machine code</code>, instructions that your CPU can run directly. 
-        But here’s the tricky part: compilation takes time. 
-        The browser wants your module to start executing as soon as possible, 
-        but also run fast once it’s executing. 
-        To solve this, V8 uses <code>tiered compilation</code>, which balances speed and performance.
-    </p>
-    <p>
-        <code>Liftoff (Baseline Compiler):</code> This is the first stage. Liftoff’s job is simple: 
-        take the WASM bytecode and translate it into machine code 
-        <code>fast enough to start running immediately</code>. 
-        It doesn’t do fancy optimizations; it just ensures the code works. 
-        Think of it as a “good enough to run now” compiler. 
-        This allows your page or app to begin execution almost instantly, 
-        so users don’t notice any delay.
-    </p>
-    <p>
-        <code>Turbofan (Optimizing Compiler):</code> While Liftoff is already running your code, 
-        Turbofan is quietly profiling what your program is actually doing. 
-        Which functions are called most often? Which loops repeat thousands of times? 
-        Turbofan takes this information and recompiles the “hot” functions with optimizations:
-    </p>
-    <ul>
-        <li>Reordering instructions for efficiency.</li>
-        <li>Inlining small functions to avoid jumps.</li>
-        <li>Using CPU registers smartly to reduce memory access.</li>
-    </ul>
-    <p>
-        After a few iterations, the same function that first ran through Liftoff 
-        is now executing at <code>near-native CPU speed</code>, 
-        making WASM code feel almost indistinguishable from native applications.
-    </p>
-</div>
+        <h1 class="text"><code>Tiered Compilation: Liftoff and Turbofan (also Maglev in modern v8 Engine)</code></h1>
+        <p><br>
+            Now the real magic begins. V8 doesn’t just interpret WASM bytecode like an old-school emulator. 
+            Interpreting one instruction at a time would be too slow. Instead, V8 compiles WASM into 
+            <code>native machine code</code>, instructions that your CPU can run directly. 
+            But here’s the tricky part: compilation takes time. 
+            The browser wants your module to start executing as soon as possible, 
+            but also run fast once it’s executing. 
+            To solve this, V8 uses <code>tiered compilation</code>, which balances speed and performance.
+        </p>
+        <p>
+            <code>Liftoff (Baseline Compiler):</code> This is the first stage. Liftoff’s job is simple: 
+            take the WASM bytecode and translate it into machine code 
+            <code>fast enough to start running immediately</code>. 
+            It doesn’t do fancy optimizations; it just ensures the code works. 
+            Think of it as a “good enough to run now” compiler. 
+            This allows your page or app to begin execution almost instantly, 
+            so users don’t notice any delay.
+        </p>
+        <p>
+            <code>Turbofan (Optimizing Compiler):</code> While Liftoff is already running your code, 
+            Turbofan is quietly profiling what your program is actually doing. 
+            Which functions are called most often? Which loops repeat thousands of times? 
+            Turbofan takes this information and recompiles the “hot” functions with optimizations:
+        </p>
+        <ul>
+            <li>Reordering instructions for efficiency.</li>
+            <li>Inlining small functions to avoid jumps.</li>
+            <li>Using CPU registers smartly to reduce memory access.</li>
+        </ul>
+        <p>
+            After a few iterations, the same function that first ran through Liftoff 
+            is now executing at <code>near-native CPU speed</code>, 
+            making WASM code feel almost indistinguishable from native applications.
+        </p>
+    </div>
 
 </section>
 
