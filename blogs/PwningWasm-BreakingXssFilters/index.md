@@ -129,6 +129,7 @@ permalink: /blogs/PwningWasm-BreakingXssFilters/
             To solve this, V8 uses <code>tiered compilation</code>, which balances speed and performance.
         </p>
         <p>
+        <ul>
             <li>
                 <code>Liftoff (Baseline Compiler):</code> This is the first stage. Liftoff’s job is simple: 
                 take the WASM bytecode and translate it into machine code 
@@ -145,13 +146,14 @@ permalink: /blogs/PwningWasm-BreakingXssFilters/
                 Turbofan is quietly profiling what your program is actually doing. 
                 Which functions are called most often? Which loops repeat thousands of times? 
                 Turbofan takes this information and recompiles the “hot” functions with optimizations:
-            </p>
                 <ul>
                     <li>Reordering instructions for efficiency.</li>
                     <li>Inlining small functions to avoid jumps.</li>
                     <li>Using CPU registers smartly to reduce memory access.</li>
                 </ul>
             </li>
+        </ul>
+        </p>
         <p>
             After a few iterations, the same function that first ran through Liftoff 
             is now executing at <code>near-native CPU speed</code>, 
