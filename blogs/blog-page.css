@@ -167,11 +167,11 @@ h3 {
 
 #toc a {
     text-decoration: none;  /* Remove underline */
-    color: #5eead4        /* Optional: customize link color */
+    color:  #f87171;     /* Optional: customize link color */
 }
 
 #toc a:hover {
-    color: #f87171;
+    color: #5eead4;
     text-decoration: underline; /* Optional: underline only on hover */
 }
 
