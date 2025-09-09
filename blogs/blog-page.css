@@ -145,11 +145,13 @@ h3 {
     transform: scale(1.02);
   }
   
+#toc {
+    display: flex;            /* Make the container a flexbox */
+    justify-content: center;  /* Center it horizontally */
+}
 
 #toc .section-content {
-    text-align: center; /* Centers text inside */
-    margin: 0 auto;     /* Centers the entire block horizontally */
-    max-width: 600px;   /* Optional: keeps it from stretching too wide */
+    text-align: center;       /* Center text inside */
 }
 
 #toc ul {

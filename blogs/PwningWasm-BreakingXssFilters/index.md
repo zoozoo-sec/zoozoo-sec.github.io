@@ -52,7 +52,7 @@ permalink: /blogs/PwningWasm-BreakingXssFilters/
         </div>
     </div>
     <div id="what-is-wasm" class="section-content">
-        <h4>What’s WebAssembly Anyway?</h4>
+        <h4 class='text'><code>What’s WebAssembly Anyway?</code></h4>
         <p>
             WebAssembly is a low-level bytecode format that runs inside a browser’s sandboxed virtual machine. 
             Instead of hand-writing everything in JavaScript, developers can write performance-critical code in 
@@ -75,7 +75,7 @@ permalink: /blogs/PwningWasm-BreakingXssFilters/
         </p>
     </div>
     <div id="under-the-hood" class="section-content">
-        <h4>How WebAssembly Works Under the Hood</h4>
+        <h4 class='text'><code>How WebAssembly Works Under the Hood</code></h4>
         <p>
             If you think WASM is just <code>"run code in the browser"</code>, you’re missing the fun part. 
             Under the hood, it’s a whole mini-computer running inside your browser. 
