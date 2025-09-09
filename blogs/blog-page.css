@@ -146,6 +146,22 @@ h3 {
   }
   
 
+#toc .section-content {
+    text-align: center; /* Centers text inside */
+    margin: 0 auto;     /* Centers the entire block horizontally */
+    max-width: 600px;   /* Optional: keeps it from stretching too wide */
+}
+
+#toc ul {
+    list-style: none;  /* Remove bullet points */
+    padding: 0;
+}
+
+#toc li {
+    margin: 8px 0;     /* Space between items */
+}
+
+
 
 @media (max-width: 768px) {
     .code-screenshot {
