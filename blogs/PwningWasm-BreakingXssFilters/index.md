@@ -1,8 +1,8 @@
 ---
 layout: default
 title: "Pwning WebAssembly: Bypassing XSS Filters in the WASM Sandbox"
-description: "A deep dive into WebAssembly security, exploring how to analyze and exploit client-side XSS filters using WASM linear memory vulnerabilities."
-og_description: "Explore WebAssembly security and learn how to bypass XSS filters using WASM sandbox insights and memory manipulation techniques."
+description: "A deep dive into WebAssembly security, exploring how to analyze and exploit client-side XSS filters using vulnerabilities in WASM module."
+og_description: "Explore WebAssembly internals and security implications in WASM Linear Memory Sandbox."
 og_type: "article"
 keywords: "WebAssembly, WASM, XSS, sandbox security, client-side security, binary exploitation, linear memory, web pwning, zoozoo-sec"
 permalink: /blogs/PwningWasm-BreakingXssFilters/
