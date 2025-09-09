@@ -35,7 +35,6 @@ permalink: /blogs/PwningWasm-BreakingXssFilters/
             </p>
         </div>
     </div>
-
     <div id="toc" class="challenge-section">
         <div class="section-content">
             <h2>Table of Contents</h2>
@@ -52,10 +51,7 @@ permalink: /blogs/PwningWasm-BreakingXssFilters/
             </ul>
         </div>
     </div>
-</section>
-
-<section id="what-is-wasm" class="challenge-section">
-    <div class="section-content">
+    <div id="what-is-wasm" class="section-content">
         <h1 class="text"><code>What’s WebAssembly Anyway?</code></h1>
         <p>
             WebAssembly is a low-level bytecode format that runs inside a browser’s sandboxed virtual machine. 
