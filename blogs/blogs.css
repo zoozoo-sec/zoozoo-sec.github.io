@@ -1,0 +1,153 @@
+#writeups {
+    display: flex;
+    justify-content: flex-start;
+    flex-wrap: wrap;  
+    align-items: center;               /* Horizontal centering */
+    gap: 5rem;
+    max-height: auto;
+    min-height: 80vh;   
+    margin-bottom: 10px;  
+    background: #161b22;
+    border-radius: 10px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+    overflow: hidden; 
+  }
+
+  .intext {
+    margin: 0 10px;
+    font-weight: bold;
+    color: #798381;
+}
+
+
+/* Grid container */
+.writeup-grid {
+  display: flex;
+  flex-direction: row;
+  gap: 40px;                        /* Increased gap between tiles */
+  overflow-x: auto;
+  padding: 40px;
+  scroll-behavior: smooth;
+}
+
+
+/* Uniform card sizing */
+.writeup-card {
+  flex: 0 0 auto;
+  width: 360px;                    /* Increased tile width */
+  height: 280px;                   /* Increased tile height */
+  display: flex;
+  flex-direction: column;
+  background: rgba(0, 0, 0, 0.6);
+  color: #00ffcc;
+  padding: 25px;
+  border-radius: 12px;
+  transition: transform 0.3s, box-shadow 0.3s;
+  text-decoration: none;
+  box-shadow: 0 4px 12px rgba(0, 255, 204, 0.6);
+}
+
+/* Hover effect */
+.writeup-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 10px 20px rgba(0, 255, 65, 0.5);
+}
+
+/* Title styling */
+.writeup-card h2 {
+  margin: 0;
+  font-size: 22px;
+}
+
+/* Description and date */
+.writeup-card p {
+  font-size: 16px;
+  color: #ccc;
+}
+
+.writeup-card .date {
+  font-size: 14px;
+  color: #888;
+  margin-top: auto;
+}
+/* ✅ Media Queries for Responsiveness */
+
+/* Large screens (1600px and below) */
+@media screen and (max-width: 1600px) {
+  .writeup-grid {
+      grid-template-columns: repeat(5, 1fr);
+  }
+}
+
+/* Medium screens (1200px and below) */
+@media screen and (max-width: 1200px) {
+  .writeup-grid {
+      grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* Tablet screens (992px and below) */
+@media screen and (max-width: 992px) {
+  .writeup-grid {
+      grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+
+  .writeup-grid {
+    grid-template-columns: 1fr;   
+    gap: 1rem; /* reduce spacing between cards */
+    min-height: 130vh;              /* Prevent footer overlap on mobile */
+  }
+
+/* Mobile screens (480px and below) */
+@media screen and (max-width: 480px) {
+  .writeup-grid {
+      grid-template-columns: 1fr;
+      gap: 1rem; /* reduce spacing between cards */
+  }
+}
+
+@media screen and (max-width: 768px) {
+  #writeups {
+    margin-bottom: 0;
+    padding-bottom: 30px;
+  }
+
+  .writeup-grid {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;      /* Makes cards full width */
+    justify-content: flex-start; /* ✅ Starts from the top */
+    padding: 0 10px;
+    gap: 1;
+  }
+
+  .writeup-card {
+    width: 100%;
+    margin: 0 0 10px 0;     /* Adds only bottom spacing */
+    padding: 12px;
+    height: auto;
+    box-sizing: border-box;
+  }
+
+  .writeup-card h2,
+  .writeup-card p,
+  .writeup-card .date {
+    margin: 0;
+    padding: 0.25rem 0;
+  }
+}
+
+
+
+/* Add padding from green border on large screens */
+@media screen and (min-width: 1200px) {
+  #writeups {
+    padding: 30px;  /* Add padding around the whole section */
+  }
+  .writeup-grid {
+    padding: 20px;  /* Add inner padding for the grid */
+  }
+}
+
