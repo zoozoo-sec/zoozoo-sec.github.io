@@ -127,8 +127,9 @@
     width: 420px;
     margin: 0 0 10px 0;     /* Adds only bottom spacing */
     padding: 12px;
-    height: auto;
+    height: 250px;
     box-sizing: border-box;
+    font-size: 10px;
   }
 
   .writeup-card h2,
