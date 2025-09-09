@@ -216,7 +216,7 @@ arr[11] = 42; // out-of-bounds write
     <p>
         It’s important to understand that <code>WASM</code> memory isn’t one big undifferentiated blob. Internally, the virtual machine separates things into different types of pages:
     </p>
-    <h6 class='text'>Code Pages</h6>
+    <h3><code>Code Pages</code></h3>
     <p>
         Code — your actual executable instructions — does not live inside linear memory. Instead, compiled functions are placed in separate, read-only code pages.
         This design prevents accidental or malicious attempts to overwrite instructions in memory.
