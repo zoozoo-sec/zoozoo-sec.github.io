@@ -217,6 +217,11 @@ pre > code[class*="language-"] {
     #challenge-links a {
         font-size: 1.2rem; /* Adjust link font size for mobile */
     }
+
+    h3 {
+    font-size: 1.3rem; /* Smaller size for tablets & phones */
+  }
+
     
 }
 
@@ -243,5 +248,9 @@ pre > code[class*="language-"] {
     #challenge-links li {
         margin: 5px 0; /* Adjust margin for smaller devices */
     }
+
+    h3 {
+    font-size: 1.1rem; /* Even smaller on small phones */
+  }
 }
 
