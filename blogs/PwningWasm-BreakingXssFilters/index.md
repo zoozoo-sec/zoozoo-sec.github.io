@@ -132,11 +132,11 @@ permalink: /blogs/PwningWasm-BreakingXssFilters/
             <li>
                 <code>Liftoff (Baseline Compiler):</code> This is the first stage. Liftoff’s job is simple: 
                 take the WASM bytecode and translate it into machine code 
-                <code>fast enough to start running immediately</code>. 
+                fast enough to start running immediately.
                 It doesn’t do fancy optimizations; it just ensures the code works. 
                 Think of it as a “good enough to run now” compiler. 
                 This allows your page or app to begin execution almost instantly, 
-                so users don’t notice any delay.
+                so users don’t notice any delay.<br>
             </li>
             <li>
                 <code>Turbofan (Optimizing Compiler):</code> While Liftoff is already running your code, 
