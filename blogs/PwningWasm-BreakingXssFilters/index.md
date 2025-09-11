@@ -101,7 +101,7 @@ permalink: /blogs/PwningWasm-BreakingXssFilters/
         </p>
     </div>
     <div id="tiered-compilation" class="section-content">
-        <h4 class='text'>Tiered Compilation: Liftoff and Turbofan (also Maglev in modern v8 Engine)</h4>
+        <h4 class='text'>Tiered Compilation: Liftoff and Turbofan (Let's ignore Maglev for now)</h4>
         <p>
             Now the real magic begins. V8 doesn’t just interpret WASM bytecode like an old-school emulator. 
             Interpreting one instruction at a time would be too slow. Instead, V8 compiles WASM into 
@@ -132,12 +132,26 @@ permalink: /blogs/PwningWasm-BreakingXssFilters/
                     <li>Using CPU registers smartly to reduce memory access.</li>
                 </ul>
             </li>
+            <p>
+                After a few iterations, the same function that first ran through Liftoff 
+                is now executing at <code>near-native CPU speed</code>, 
+                making WASM code feel almost indistinguishable from native applications.
+            </p>
+            <figure style="text-align: center; margin: 0;">
+                <img src="{{ '/blogs/PwningWasm-BreakingXssFilters/assets/compilation.png' | relative_url }}" alt="snippet" class="code-screenshot" style="display: block; margin: 0 auto;" />
+                <figcaption style="font-size: 0.9em; margin-top: 4px;">
+                    Image from <a href="https://v8.dev/blog/liftoff" target="_blank">v8.dev's</a> blog post.
+                </figcaption>
+            </figure
+            If you want to dive deeper into the WebAssembly compilation pipeline, I highly recommend reading the following V8 blog posts.
+                <ul>
+                    <li>
+                        <a href="https://v8.dev/docs/wasm-compilation-pipeline" target="_blank">Wasm Compilation Pipeline</a>
+                        <a href="https://v8.dev/blog/liftoff" target="_blank">Liftoff - Baseline Compiler</a>
+                        <a href="https://github.com/thlorenz/v8-perf/blob/master/compiler.md" target="_blank">Thlorenz's post</a>
+                    </li>
+                </ul>
         </ul>
-        <p>
-            After a few iterations, the same function that first ran through Liftoff 
-            is now executing at <code>near-native CPU speed</code>, 
-            making WASM code feel almost indistinguishable from native applications.
-        </p>
     </div>
     <div id="memory-model" class="section-content">
         <h4 class='text'>Memory Model: The Heart of the Sandbox</h4>
