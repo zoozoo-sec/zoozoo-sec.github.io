@@ -247,7 +247,7 @@ int add_numbers(int a, int b) {
     <p>
         One buffer overflow in a function applying a Gaussian blur could corrupt unrelated data like the undo stack — creating bugs or exploitable behavior, though still contained to the module.
     </p>
-    <h6 class='text'>Stack and Globals</h6>
+    <h5 class='sidetext'>Stack and Globals</h5>
     <p>
         The stack for local function variables and the global section (counters, constants shared across functions) also reside inside linear memory.
         Functions don’t get a private CPU-backed call stack like they would with native execution. Instead, local variables are mapped into memory offsets within linear memory.
