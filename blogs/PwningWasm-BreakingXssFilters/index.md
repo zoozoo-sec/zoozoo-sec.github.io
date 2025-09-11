@@ -438,7 +438,7 @@ permalink: /blogs/PwningWasm-BreakingXssFilters/
             WASM modules interact with JavaScript for DOM, network, or storage. Rust cannot prevent 
             malicious JS inputs from causing unintended logic.
         </p>
-        <pre><code class="language-js">
+        <pre><code class="language-javascript">
         // Example: Passing malformed JSON from JS to Rust WASM
         const wasm = await WebAssembly.instantiateStreaming(fetch("game.wasm"));
         wasm.instance.exports.loadLevel(JSON.parse(userInput)); 
