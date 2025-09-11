@@ -274,7 +274,7 @@ int add_numbers(int a, int b) {
     That’s where JavaScript glue code comes in.
   </p>
 
-  <h5>What Glue Code Does</h5>
+  <h5 class='sidetext'>What Glue Code Does</h5>
   <p>
     Think of glue code as the <em>“phone line”</em> between the WASM module and the outside browser environment:
   </p>
@@ -304,7 +304,7 @@ int add_numbers(int a, int b) {
     </li>
   </ul>
 
-  <h5>Example of JS Glue in Action</h5>
+  <h5 class='sidetext' >Example of JS Glue in Action</h5>
   <p>Suppose we compile this C function to WASM:</p>
   <pre><code class="language-c">
 int add(int a, int b) {
