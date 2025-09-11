@@ -43,6 +43,7 @@ permalink: /blogs/PwningWasm-BreakingXssFilters/
                 <li><a href="#why-not-classic">Why Traditional C/C++ Exploits Don’t Work in WASM</a></li>
                 <li><a href="#attack-surface">The Real Attack Surface in WASM</a></li>
                 <li><a href="#rust-wasm">Rust and WASM: Memory Safety. </a></li>
+                <li><a href="#rust-wasm">CTF Web Application - Breaking XSS! </a></li>
             </ul>
         </div>
     </div>
@@ -386,7 +387,7 @@ permalink: /blogs/PwningWasm-BreakingXssFilters/
             WASM relies on JavaScript for DOM, networking, and system calls, which creates another attack surface. 
             Unsafe exports/imports, type mismatches, or memory leaks can expose sensitive data or corrupt memory.
         </p>
-        <pre><code class="language-js">const wasm = await WebAssembly.instantiateStreaming(fetch("module.wasm"), {
+        <pre><code class="language-javascript">const wasm = await WebAssembly.instantiateStreaming(fetch("module.wasm"), {
         env: { log: console.log }
         });
         // JS passes user input to WASM
