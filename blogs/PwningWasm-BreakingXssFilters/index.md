@@ -321,7 +321,7 @@ permalink: /blogs/PwningWasm-BreakingXssFilters/
         </p>
     </div>
     <div id="why-not-classic" class="section-content">
-        <h4 class="text"><code>Why Traditional C/C++ Exploits Don’t Work in WASM</code></h4>
+        <h4 class="text">Why Traditional C/C++ Exploits Don’t Work in WASM<</h4>
         <p><br>
             If you come from a classic binary-exploitation background, you probably think in terms of buffer overflows, 
             return-oriented programming (ROP), and arbitrary pointer manipulation. WebAssembly changes the rules. 
@@ -329,14 +329,14 @@ permalink: /blogs/PwningWasm-BreakingXssFilters/
             and a lot of the old tricks simply stop working — or become much harder to pull off.
         </p>
         <p>
-            First, WASM does not expose raw system pointers. In a native C/C++ program you can often tamper with pointers 
+            <strong>First,</strong> WASM does not expose raw system pointers. In a native C/C++ program you can often tamper with pointers 
             to overwrite return addresses on the stack, chain gadgets for a ROP payload, or otherwise hijack control flow. 
             In WASM, all of the program’s memory lives inside a single <code>linear memory</code> region — a sandboxed byte array. 
             That sandbox prevents code from referencing or writing into arbitrary process memory, so you can’t simply point outside 
             the module and corrupt the process or the OS.
         </p>
         <p>
-            Second, function calls are handled through indices and tables rather than raw addresses. Each function in a WASM module 
+            <strong>Second,</strong> function calls are handled through indices and tables rather than raw addresses. Each function in a WASM module 
             gets an index in an internal function table. Calls are either <code>direct</code> (the index is fixed at compile time) 
             or <code>indirect</code> (the index is looked up in a table at runtime). Because control transfers are mediated by the 
             engine and checked for type/ bounds, there are no writable return addresses lying around that you can clobber to build a ROP chain.
@@ -348,6 +348,60 @@ permalink: /blogs/PwningWasm-BreakingXssFilters/
             to escalate or leak behavior. It’s still exploitable in interesting ways, but the mindset and techniques are different.
         </p>
     </div>
+    <div id="attack-surface" class="section-content">
+        <h4 class="text">The Real Attack Surface in WASM</h3>
+        <!-- Linear Memory Corruption -->
+        <h4>Linear Memory Corruption</h4>
+        <p>
+            Even though WASM is sandboxed, linear memory is still vulnerable to bugs from unsafe languages like C or C++.
+            Classic memory issues include buffer overflows, use-after-free, and integer overflows. These flaws don’t let
+            you execute code outside the sandbox but can corrupt data inside the module, altering its behavior.
+        </p>
+        <pre><code class="language-c">
+        char buf[10];
+        void unsafe(char *input) {
+            for(int i=0; i&lt;strlen(input); i++) {
+                buf[i] = input[i]; // buffer overflow if input > 10
+            }
+        }
+        </code></pre>
+        <p>
+            In WASM, this overflow won’t overwrite CPU stack or code pages, but it can overwrite other variables 
+            in linear memory, leading to unexpected behavior.
+        </p>
+        <!-- Function Table Abuse -->
+        <h4>Function Table Abuse (Indirect Calls)</h4>
+        <p>
+            WASM uses function tables for indirect calls. If indices are not validated, attackers might call unintended 
+            functions or manipulate logic through invalid calls. WASM enforces type safety, but logic bugs are still possible.
+        </p>
+        <pre><code class="language-c">
+        Action actions[2] = {add, sub};
+        int do_action(int index, int a, int b) {
+            return actions[index](a, b); // unsafe if index unchecked
+        }
+        </code></pre>
+        <!-- JS Glue Interaction -->
+        <h4>JS Glue and Host Environment Interaction</h4>
+        <p>
+            WASM relies on JavaScript for DOM, networking, and system calls, which creates another attack surface. 
+            Unsafe exports/imports, type mismatches, or memory leaks can expose sensitive data or corrupt memory.
+        </p>
+        <pre><code class="language-js">
+        const wasm = await WebAssembly.instantiateStreaming(fetch("module.wasm"), {
+        env: { log: console.log }
+        });
+        // JS passes user input to WASM
+        wasm.instance.exports.process(userInput);
+        </code></pre>
+        <!-- Dynamic Module Loading -->
+        <h4>Dynamic Module Loading</h4>
+        <p>
+            WASM supports dynamic loading, where one module can call another. Without validating function indices, 
+            table sizes, and memory bounds, attackers may exploit imported modules or corrupt memory across boundaries.
+        </p>
+    </div>
+
 
 </section>
 </section>
