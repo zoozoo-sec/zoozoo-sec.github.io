@@ -474,7 +474,8 @@ wasm.instance.exports.process(userInput);</code></pre>
             </ul>
         <h5 class='sidetext'>Chat Logic: State Management</h5>
         <p>The messages aren’t just stored in memory; they’re serialized into the URL through the <code>s query parameter</code></p>
-        <pre><code class="language-javascript">ReportUrl.href = `${window.location.origin}?s=${btoa(JSON.stringify(saved))}`;</code></pre>
+        <pre><code class="language-javascript">ReportUrl.href = `${window.location.origin}?s=${btoa(JSON.stringify(saved))}`;
+//Found this snippet in main.js</code></pre>
         <p>Every message or action (add, edit, delete) gets pushed into a <code>saved</code> array, Base64-encoded, and stuck into the URL. When you reload the page, main() reads that query string, decodes it, and rebuilds the entire chat state.</p>
         <img src="{{ '/blogs/PwningWasm-BreakingXssFilters/assets/code2.png' | relative_url }}" alt="snippet" class="code-screenshot" />
         <p>So, the entire chat history is user-controlled. You can literally forge a URL with fake chat messages, reload the page, and it’ll render as if they were real.</p>
@@ -545,7 +546,7 @@ wasm.instance.exports.process(userInput);</code></pre>
             <li>Uses a JavaScript callback to inject these messages into the DOM.</li>
             <li>This is the final layer of XSS protection before rendering content to the user.</li>
         </ul>
-        <h5 class='sidetext'>Breaking Down <code>main.js</code></h5>
+        <h5 class='sidetext'>Breaking Down Main.js</h5>
         <p>
             The rest of <code>main.js</code> focuses on state handling and DOM updates. Here's what it does:
         </p>
