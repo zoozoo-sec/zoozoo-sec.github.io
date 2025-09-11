@@ -316,7 +316,7 @@ console.log(wasmModule.instance.exports.add(5, 3)); // prints 8</code></pre>
         </p>
     </div>
     <div id="why-not-classic" class="section-content">
-        <h4 class="text">Why Traditional C/C++ Exploits Don’t Work in WASM<</h4>
+        <h4 class="text">Why Traditional C/C++ Exploits Don’t Work in WASM</h4>
         <p><br>
             If you come from a classic binary-exploitation background, you probably think in terms of buffer overflows, 
             return-oriented programming (ROP), and arbitrary pointer manipulation. WebAssembly changes the rules. 
@@ -337,10 +337,7 @@ console.log(wasmModule.instance.exports.add(5, 3)); // prints 8</code></pre>
             engine and checked for type/ bounds, there are no writable return addresses lying around that you can clobber to build a ROP chain.
         </p>
         <p>
-            Put another way: the classic exploit story — overflow something, overwrite a return address, jump into shellcode or gadgets — 
-            doesn’t fit the WASM model. The attack surface shifts. Instead of raw pointer manipulation and code injection, 
-            attackers must look at logic bugs inside linear memory, misuse of function tables (unchecked indices), or unsafe JS ↔ WASM glue code 
-            to escalate or leak behavior. It’s still exploitable in interesting ways, but the mindset and techniques are different.
+            <code>TL;DR:</code> Classic memory exploits like overflowing a return address don’t work in WASM. Attackers focus on logic bugs in linear memory, unsafe function table use, or insecure JS↔WASM interactions to cause leaks or escalate behavior—exploitable, but with a different mindset and techniques.
         </p>
     </div>
     <div id="attack-surface" class="section-content">
