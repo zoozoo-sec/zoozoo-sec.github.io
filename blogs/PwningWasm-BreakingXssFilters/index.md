@@ -287,12 +287,12 @@ arr[11] = 42; // out-of-bounds write</code></pre>
             implemented in WASM.
             </li>
             <li>
-            <code>Imports (Host → WASM):</code> WASM modules can import functions from JS.  
+            <code>Imports:</code> WASM modules can import functions from JS.  
             <em>Example:</em> A WASM program might import <code>console.log</code> or 
             <code>Math.random</code> provided by JS.
             </li>
             <li>
-            <code>Exports (WASM → Host):</code> WASM can export functions that JavaScript calls, with arguments often pointing to 
+            <code>Exports:</code> WASM can export functions that JavaScript calls, with arguments often pointing to 
             offsets inside linear memory.  
             <em>Example:</em> JS calls 
             <code>wasm.instance.exports.process(userInputPtr)</code> where <code>process</code> 
@@ -417,9 +417,6 @@ wasm.instance.exports.process(userInput);</code></pre>
             <li>
             <code>JS Glue / Host Environment Exploits:</code> Malicious JavaScript inputs or glue code 
             errors can still trigger bugs inside WASM.
-            <pre><code class="language-javascript">// Example: Passing malformed JSON from JS to Rust WASM
-const wasm = await WebAssembly.instantiateStreaming(fetch("game.wasm"));
-wasm.instance.exports.loadLevel(JSON.parse(userInput)); </code></pre>
             </li>
             <li>
             <code>Side-channel Attacks:</code> Rust ensures memory safety, but timing attacks, cache 
