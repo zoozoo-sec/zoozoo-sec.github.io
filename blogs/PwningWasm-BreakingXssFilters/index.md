@@ -448,28 +448,36 @@ wasm.instance.exports.process(userInput);</code></pre>
             <li><strong>Frontend Files</strong> (<code>static/</code>) – Contains <code>index.html</code>, <code>main.js</code>, <code>script.js</code>, <code>module.js</code> (Emscripten glue), and the compiled <code>.wasm</code>.</li>
         </ul>
         <p>So yeah, this is a Node app serving a WASM-powered chat interface.</p>
-        <h4 class="text">First Look: Running the App</h4>
+        <h5 class='sidetext'>First Look: Running the App</h5>
         <p>
-            Spinning it up locally, you get a clean chat UI. There’s a text box, a “send” button, and a stream of 
-            bot replies. It feels simple, but the frontend JavaScript is clearly doing most of the heavy lifting.
+            Spinning it up locally, you get a pretty clean chat app UI. There’s a text box, a “send” button, and a stream of random bot replies that make it feel like a lightweight messaging app. It’s simple, but something feels off — those bot replies are either being generated client-side or the backend is feeding them. Either way, the frontend JavaScript is clearly doing a lot of heavy lifting.
             <img src="{{ '/blogs/PwningWasm-BreakingXssFilters/assets/code.png' | relative_url }}" alt="snippet" class="code-screenshot" />
         </p>
-        <h4 class="text">Frontend Overview</h4>
+        <h5 class='sidetext'>Frontend Overview</h5>
         <p>
-            <code>index.html</code> is minimal; <code>script.js</code> handles DOM manipulation; and 
-            <code>module.js</code> is auto-generated Emscripten glue code that initializes the WASM module.
-            The real logic is in <code>main.js</code>.
+            Looking at <code>index.html</code> is minimal, A simple nav bar, and a container for chat messages. The heavy lifting isn’t in HTML; it’s all JavaScript-driven!
         </p>
-        <h4 class="text">main.js: WASM ↔ JavaScript</h4>
-        <p>The app dynamically loads WASM functions using <code>Module.cwrap</code>:</p>
+        <ul>
+            <li><code>script.js</code> is just DOM control glue — nothing serious there.</li>
+            <li><code>module.js</code> is classic Emscripten-generated glue code. This is where the WASM module gets initialized and exposed to JavaScript. This is the so-called <em>“JavaScript Glue Code”</em> we discussed earlier.</li>
+            <li><code>main.js</code> is where all the real logic lives, and this is where things get interesting.</li>
+        </ul>
+        <h5 class='sidetext'>Main.js: WASM ↔ JavaScript</h5>
+        <p>Here’s where the app really starts showing its architecture. The WASM module is dynamically loaded and its functions are exposed into JavaScript through <code>Module.cwrap</code>:</p>
         <img src="{{ '/blogs/PwningWasm-BreakingXssFilters/assets/code1.png' | relative_url }}" alt="snippet" class="code-screenshot" />
-        <p>This shows that WASM owns the data model, and JavaScript acts as a rendering layer. 
-            The <code>Module.cwrap</code> function bridges C/WASM functions to JS.
-        </p>
-        <h4 class="text">Chat State Management</h4>
-        <p>The entire chat state is stored in the URL via the <code>s</code> query parameter:</p>
+        <p>So this tells us:</p>
+            <ul>
+                <li>There’s a WASM function for everything: adding, deleting, editing messages, and rendering the chat UI (<code>populateMsgHTML</code>).</li>
+                <li>Two JavaScript callbacks are registered (<code>populateMsgs</code> and <code>deletemsg</code>) so the WASM module can call back into JavaScript.</li>
+                <li><code>Module.cwrap</code> is key: it bridges C/WASM functions into JavaScript, handling argument and return type conversions for you.</li>
+                <li>This pattern is  Emscripten glue: the WASM module owns the chat data model, while JavaScript is primarily a rendering and control layer.</li>
+            </ul>
+        <h5 class='sidetext'>Chat Logic: State Management</h5>
+        <p>The messages aren’t just stored in memory; they’re serialized into the URL through the <code>s query parameter</code></p>
+        <pre><code class="language-Javascript">ReportUrl.href = `${window.location.origin}?s=${btoa(JSON.stringify(saved))}`;</code></pre>
+        <p>Every message or action (add, edit, delete) gets pushed into a <code>saved</code> array, Base64-encoded, and stuck into the URL. When you reload the page, main() reads that query string, decodes it, and rebuilds the entire chat state.</p>
         <img src="{{ '/blogs/PwningWasm-BreakingXssFilters/assets/code2.png' | relative_url }}" alt="snippet" class="code-screenshot" />
-        <p>This design makes it possible to forge chat states by simply crafting URLs — a key observation for exploitation!</p>
+        <p>So, the entire chat history is user-controlled. You can literally forge a URL with fake chat messages, reload the page, and it’ll render as if they were real.</p>
     </div>
 </section>
 </section>
