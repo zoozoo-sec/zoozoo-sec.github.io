@@ -478,7 +478,75 @@ wasm.instance.exports.process(userInput);</code></pre>
         <p>Every message or action (add, edit, delete) gets pushed into a <code>saved</code> array, Base64-encoded, and stuck into the URL. When you reload the page, main() reads that query string, decodes it, and rebuilds the entire chat state.</p>
         <img src="{{ '/blogs/PwningWasm-BreakingXssFilters/assets/code2.png' | relative_url }}" alt="snippet" class="code-screenshot" />
         <p>So, the entire chat history is user-controlled. You can literally forge a URL with fake chat messages, reload the page, and it’ll render as if they were real.</p>
+    <h4 class="text">Understanding the WASM Module: <code>module.wasm</code></h4>
+        <p>
+            The <code>module.c</code> file is the heart of this app. It compiles to WebAssembly and holds all the chat state and message logic. 
+            To understand the functions, we need to start with the data structures it defines:
+        </p>
+        <h5 class='sidetext'>Core Data Structures</h5>
+        <img src="{{ '/blogs/PwningWasm-BreakingXssFilters/assets/code3.png' | relative_url }}" alt="snippet" class="code-screenshot" />
+        <ul>
+            <li><strong>msg</strong> — Represents a single chat message:
+            <ul>
+                <li><em>msg_data</em>: Pointer to dynamically allocated memory holding the actual text.</li>
+                <li><em>msg_data_len</em>: The length of the message (after sanitization).</li>
+                <li><em>msg_time</em>: A timestamp (Unix epoch) indicating when it was created.</li>
+                <li><em>msg_status</em>: Status flags (e.g., edited or not).</li>
+            </ul>
+            </li>
+            <li><strong>stuff</strong> — This is the chat application state, essentially a dynamic array of <code>msg</code> structs:
+            <ul>
+                <li><em>mess</em>: Pointer to a heap-allocated array of messages.</li>
+                <li><em>size</em>: Number of messages currently stored.</li>
+                <li><em>capacity</em>: Maximum number of messages allocated (grows dynamically).</li>
+            </ul>
+            </li>
+            <li>All chat data is centralized in a single global variable <code>s</code>.</li>
+        </ul>
+        <h5 class='sidetext'>Memory Initialization: initialize()</h5>
+        <img src="{{ '/blogs/PwningWasm-BreakingXssFilters/assets/code4.png' | relative_url }}" alt="snippet" class="code-screenshot" />
+        <p>
+            This function allocates space for 10 messages initially and sets up memory in WASM’s linear heap.
+            It ensures all message storage is dynamically allocated inside WASM.
+        </p>
+        <h5 class='sidetext'>Sanitization: sanitize()</h5>
+        <img src="{{ '/blogs/PwningWasm-BreakingXssFilters/assets/code5.png' | relative_url }}" alt="snippet" class="code-screenshot" />
+        <p>
+            Before storing messages, <code>sanitize()</code> replaces HTML characters with safe entities.
+            This makes bypassing XSS tricky, as sanitization happens at the WASM layer before rendering.
+        </p>
+        <h5 class='sidetext'>Adding Messages: addMsg()</h5>
+        <img src="{{ '/blogs/PwningWasm-BreakingXssFilters/assets/code6.png' | relative_url }}" alt="snippet" class="code-screenshot" />
+        <ul>
+            <li>Rejects messages longer than 100 bytes.</li>
+            <li>Sanitizes input content and clears the original buffer for safety.</li>
+            <li>Stores sanitized text, timestamp, and status in a <code>msg</code> struct.</li>
+            <li>Dynamically expands the array if needed (capacity doubles like <code>std::vector</code>).</li>
+        </ul>
+        <h5 class='sidetext'>Editing Messages: editMsg()</h5>
+        <img src="{{ '/blogs/PwningWasm-BreakingXssFilters/assets/code9.png' | relative_url }}" alt="snippet" class="code-screenshot" />
+        <ul>
+            <li>Bounds-checks the index and sanitizes new content.</li>
+            <li>Copies sanitized data in place, updates timestamp, and marks the message as edited.</li>
+            <li>Does not reallocate if new content is longer, which can create a memory corruption vector.</li>
+        </ul>
+        <h5 class='sidetext'>Deleting Messages: deleteMsg()</h5>
+        <img src="{{ '/blogs/PwningWasm-BreakingXssFilters/assets/code7.png' | relative_url }}" alt="snippet" class="code-screenshot" />
+        <ul>
+            <li>Frees the message’s buffer and shifts later messages down.</li>
+            <li>Keeps the array compact, which means message IDs change after deletion.</li>
+            <li>Calls back into JavaScript to update the UI dynamically.</li>
+        </ul>
+        <h5 class='sidetext'>Rendering Messages: populateMsgHTML()</h5>
+        <ul>
+            <li>Wraps each sanitized message in HTML (<code>&lt;article&gt;&lt;p&gt;</code> tags).
+            <img src="{{ '/blogs/PwningWasm-BreakingXssFilters/assets/code8.png' | relative_url }}" alt="snippet" class="code-screenshot" />
+            </li>
+            <li>Uses a JavaScript callback to inject these messages into the DOM.</li>
+            <li>This is the final layer of XSS protection before rendering content to the user.</li>
+        </ul>
     </div>
+    
 </section>
 </section>
 
