@@ -257,5 +257,82 @@ int add_numbers(int a, int b) {
     </p>
 </div>
 
+<div id="js-glue" class="section-content">
+  <h4 class="text">The JS Glue: WASM’s Gateway to the Outside World</h4>
+  <p>
+    Up until now, we described WASM’s apartment-like memory model: it has its own private 
+    linear memory, code pages, stack, and globals. But here’s the catch — WASM can’t talk to 
+    the outside world directly.
+  </p>
+  <ul>
+    <li>No direct access to the DOM.</li>
+    <li>No system calls to open files.</li>
+    <li>No direct networking sockets, timers, or graphics APIs.</li>
+  </ul>
+  <p>
+    Without external bridges, a WASM module is essentially a sealed, high-performance calculator. 
+    That’s where JavaScript glue code comes in.
+  </p>
+
+  <h5>What Glue Code Does</h5>
+  <p>
+    Think of glue code as the <em>“phone line”</em> between the WASM module and the outside browser environment:
+  </p>
+  <ul>
+    <li>
+      <strong>Memory Buffers:</strong> JavaScript allocates <code>ArrayBuffer</code> or 
+      <code>TypedArray</code> views into WASM’s linear memory. That’s how JS can read/write raw memory 
+      from the WASM sandbox. For example, letting JavaScript inspect the result of an image filter 
+      implemented in WASM.
+    </li>
+    <li>
+      <strong>Imports (Host → WASM):</strong> WASM modules can import functions from JS.  
+      <em>Example:</em> A WASM program might import <code>console.log</code> or 
+      <code>Math.random</code> provided by JS.
+    </li>
+    <li>
+      <strong>Exports (WASM → Host):</strong> WASM can export functions that JavaScript calls, with arguments often pointing to 
+      offsets inside linear memory.  
+      <em>Example:</em> JS calls 
+      <code>wasm.instance.exports.process(userInputPtr)</code> where <code>process</code> 
+      expects to read a string starting at memory offset <code>userInputPtr</code>.
+    </li>
+    <li>
+      <strong>Orchestration Layer:</strong> Large frameworks (Emscripten, Unity WebGL, etc.) ship auto-generated 
+      glue JS. This glue initializes WASM memory, sets up tables, wires DOM events, and 
+      handles conversions between JS types and WASM binaries.
+    </li>
+  </ul>
+
+  <h5>Example of JS Glue in Action</h5>
+  <p>Suppose we compile this C function to WASM:</p>
+  <pre><code class="language-c">
+int add(int a, int b) {
+    return a + b;
+}
+  </code></pre>
+
+  <p>
+    The WASM binary just has the machine-level instructions for <code>add</code>. 
+    It doesn’t know how to run in the browser. So JavaScript glue wraps it:
+  </p>
+
+  <pre><code class="language-javascript">
+const wasmModule = await WebAssembly.instantiateStreaming(fetch("add.wasm"));
+console.log(wasmModule.instance.exports.add(5, 3)); // prints 8
+  </code></pre>
+
+  <p>
+    <strong>Here:</strong>
+  </p>
+  <ul>
+    <li>JS imports the WASM file, instantiates it, and sets up its memory.</li>
+    <li>Exports from WASM are now callable like JS functions.</li>
+    <li>There’s still a memory boundary: integers are passed by value, but strings 
+        would require reading them from WASM linear memory at a given offset.</li>
+  </ul>
+</div>
+
+
 </section>
 </section>
