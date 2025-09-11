@@ -411,50 +411,41 @@ permalink: /blogs/PwningWasm-BreakingXssFilters/
         </p>
         <p>
             Rust, on the other hand, changes the rules fundamentally. Rust’s compiler enforces strict 
-            memory safety at compile time.
-        </p>
-        <h5 class='sidetext'>But Rust Doesn’t Solve Everything</h4>
-        <p>
+            memory safety at compile time.  
+            <br><br>
             Even though Rust prevents memory corruption, WASM security issues still exist, because not all 
             vulnerabilities are about memory:
         </p>
-        <h5 class='sidetext'>Logic Bugs Inside Linear Memory</h4>
-        <p>
-            Rust prevents memory overflows, but if your program miscalculates an index or performs unsafe 
-            arithmetic (e.g., integer wraparound, ignored panics), attackers can still manipulate behavior.
-        </p>
-        <p>
-            Example: A Rust module exposes a function to select a game level based on user input. Without 
-            validation, an attacker could pass unexpected indices to call unintended functions via an 
-            indirect call table.
-        </p>
-        <h5 class='sidetext'>Function Table / Indirect Call Abuse</h4>
-        <p>
-            Rust doesn’t prevent misuse of function tables. If indices aren’t validated, attackers could 
-            call unintended functions already in the table, even without memory corruption.
-        </p>
-        <h5 class='sidetext'>JS Glue / Host Environment Exploits</h4>
-        <p>
-            WASM modules interact with JavaScript for DOM, network, or storage. Rust cannot prevent 
-            malicious JS inputs from causing unintended logic.
-        </p>
-        <pre><code class="language-javascript">
+        <ul>
+            <li>
+            <strong>Logic Bugs Inside Linear Memory:</strong> Rust prevents overflows, but if your program 
+            miscalculates an index or ignores panics, attackers can still manipulate behavior.
+            </li>
+            <li>
+            <strong>Function Table / Indirect Call Abuse:</strong> Rust won’t stop attackers from 
+            misusing exposed indirect calls if indices aren’t validated.
+            </li>
+            <li>
+            <strong>JS Glue / Host Environment Exploits:</strong> Malicious JavaScript inputs or glue code 
+            errors can still trigger bugs inside WASM.
+            <pre><code class="language-js">
         // Example: Passing malformed JSON from JS to Rust WASM
         const wasm = await WebAssembly.instantiateStreaming(fetch("game.wasm"));
         wasm.instance.exports.loadLevel(JSON.parse(userInput)); 
-        </code></pre>
-        <h5 class='sidetext'>Side-channel Attacks</h4>
-        <p>
-            Rust ensures memory safety, but timing attacks, cache attacks, or other side-channels 
-            remain possible. Secret-dependent branching in cryptographic modules, for example, can leak 
-            sensitive data.
-        </p>
+            </code></pre>
+            </li>
+            <li>
+            <strong>Side-channel Attacks:</strong> Rust ensures memory safety, but timing attacks, cache 
+            attacks, and other side-channels are still possible, especially in cryptographic modules.
+            </li>
+        </ul>
         <p>
             In other words, Rust eliminates low-level memory exploits, but high-level logic and 
             interaction bugs remain. Security in WASM shifts from “corrupt memory and hijack execution” 
             to “manipulate module behavior through inputs and exposed interfaces.”
         </p>
     </div>
+
 
 
 
