@@ -167,7 +167,7 @@ permalink: /blogs/PwningWasm-BreakingXssFilters/
         This design choice makes <code>WASM</code> both efficient and relatively safe — but it also defines the limits and behaviors that an attacker must consider. 
         Let’s walk through how this “sandboxed memory apartment” is structured.
     </p>
-    <h4 class='text'>Linear Memory: The WASM Sandbox</h4>
+    <h6 class="sidetext">Linear Memory: The WASM Sandbox</h6>
     <p>
         At its core, linear memory is just a giant array of bytes. Imagine you started your program with:
     </p>
@@ -181,7 +181,7 @@ permalink: /blogs/PwningWasm-BreakingXssFilters/
         <li>Unlike native code, which can spread data across multiple segments (<code>heap</code>, <code>stack</code>, <code>code</code>, <code>globals</code>) in process memory, WASM consolidates all user data into this single linear memory.</li>
         <li>Every function in the module shares it. Functions don’t each get private stacks or local heaps carved out separately from the linear space. They all point into the same memory pool. This makes data sharing between functions much faster, but it also means mistakes have broader consequences.</li>
     </ul>
-    <h4 class='text'>Apartment Analogy</h4>
+    <h6 class="sidetext">Apartment Analogy</h6>
     <p>Think of linear memory as a private apartment for your <code>WASM</code> module inside the browser:</p>
     <ul>
         <li>When your program loads, the browser sets aside an apartment (say, 64 KB of initial memory).</li>
@@ -192,8 +192,7 @@ permalink: /blogs/PwningWasm-BreakingXssFilters/
         This is the sandbox guarantee: your module is isolated from the world outside. No matter what bugs exist in your code, they can’t overwrite Browser's process memory or the Or the renderer's memory.
     </p>
     <p><code>At least, that’s what they claim. They say WASM is safe, but sandbox escapes to renderer process keep proving otherwise.</code></p>
-
-     <h4 class='text'>Bugs Still Matter (Inside the Sandbox)</h4>
+     <h6 class="sidetext">Bugs Still Matter (Inside the Sandbox)</h6>
     <p>
         However, mistakes inside the apartment can still cause chaos. Consider this example in <code>C</code>:
     </p>
@@ -206,7 +205,7 @@ arr[11] = 42; // out-of-bounds write
         On <code>WASM</code>, <code>arr</code> can’t reach outside the sandbox. But it can corrupt another piece of data within the module’s own linear memory.
         Maybe it overrides a cryptographic key, an index into a function table, or user input buffers. That’s still dangerous — just not system-level catastrophic.
     </p>
-    <h4><code>Memory Growth and Limits</code></h4>
+    <h6 class="sidetext">Memory Growth and Limits</h6>
     <p>
         Linear memory isn’t infinite; it’s divided into fixed-size pages of 64 KB each. When a <code>WASM</code> module starts, it requests an initial number of pages (say, 1 page = 64 KB).
         As the program runs, it can explicitly request more pages if needed — for example, a game suddenly loading a massive map, or an editor opening a large file.
@@ -216,7 +215,7 @@ arr[11] = 42; // out-of-bounds write
     <p>
         It’s important to understand that <code>WASM</code> memory isn’t one big undifferentiated blob. Internally, the virtual machine separates things into different types of pages:
     </p>
-    <h4><code>Code Pages</code></h4>
+    <h6 class="sidetext">Code Pages</h6>
     <p>
         Code — your actual executable instructions — does not live inside linear memory. Instead, compiled functions are placed in separate, read-only code pages.
         This design prevents accidental or malicious attempts to overwrite instructions in memory.
@@ -233,7 +232,7 @@ int add_numbers(int a, int b) {
         While the CPU executes the function, it fetches instructions from the code page and operates on values inside linear memory.
         The key is that those two memory regions cannot overlap. You can’t store instructions in linear memory and then trick the engine into executing them.
     </p>
-    <h6 class='text'>Linear Memory Pages (Data)</h6>
+    <h6 class='sidetext'>Linear Memory Pages (Data)</h6>
     <p>
         The actual working storage of your program — arrays, structs, buffers, strings, global variables — all live in linear memory data pages.
         Every function shares this memory pool, which is both a performance advantage (fast data exchange) and a risk factor (bugs in one function spill into others).

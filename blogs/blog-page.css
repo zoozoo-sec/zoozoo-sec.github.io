@@ -247,6 +247,10 @@ pre > code[class*="language-"] {
         font-size: 1.1rem;  /* Smaller font size for mobile */
     }
 
+    .sidetext {
+        font-size: 0.9rem;
+    }
+
     ul.list-unstyled a {
         font-size: 19px !important; /* Added !important to ensure the rule is applied */
     }
