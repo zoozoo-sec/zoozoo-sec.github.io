@@ -281,29 +281,27 @@ arr[11] = 42; // out-of-bounds write</code></pre>
         </p>
         <ul>
             <li>
-            <strong>Memory Buffers:</strong> JavaScript allocates <code>ArrayBuffer</code> or 
+            <code>Memory Buffers:</code> JavaScript allocates <code>ArrayBuffer</code> or 
             <code>TypedArray</code> views into WASM’s linear memory. That’s how JS can read/write raw memory 
             from the WASM sandbox. For example, letting JavaScript inspect the result of an image filter 
             implemented in WASM.
             </li>
             <li>
-            <strong>Imports (Host → WASM):</strong> WASM modules can import functions from JS.  
+            <code>Imports (Host → WASM):</code> WASM modules can import functions from JS.  
             <em>Example:</em> A WASM program might import <code>console.log</code> or 
             <code>Math.random</code> provided by JS.
             </li>
             <li>
-            <strong>Exports (WASM → Host):</strong> WASM can export functions that JavaScript calls, with arguments often pointing to 
+            <code>Exports (WASM → Host):</code> WASM can export functions that JavaScript calls, with arguments often pointing to 
             offsets inside linear memory.  
             <em>Example:</em> JS calls 
             <code>wasm.instance.exports.process(userInputPtr)</code> where <code>process</code> 
             expects to read a string starting at memory offset <code>userInputPtr</code>.
             </li>
-            <li>
-            <strong>Orchestration Layer:</strong> Large frameworks (Emscripten, Unity WebGL, etc.) ship auto-generated 
-            glue JS. This glue initializes WASM memory, sets up tables, wires DOM events, and 
-            handles conversions between JS types and WASM binaries.
-            </li>
         </ul>
+        <p>
+        Large frameworks like <code>Emscripten</code> or <code>Unity WebGL</code> often ship auto-generated glue JavaScript. This code handles initializing WASM memory, setting up function tables, wiring DOM events, and converting between JS types and WASM binaries, effectively acting as the orchestration layer that makes complex applications work seamlessly in the browser.
+        </p>
         <h5 class='sidetext' >Example of JS Glue in Action</h5>
         <p>Suppose we compile this C function to WASM:</p>
         <pre><code class="language-c">int add(int a, int b) {
