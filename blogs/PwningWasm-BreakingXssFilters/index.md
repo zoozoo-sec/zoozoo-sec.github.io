@@ -321,16 +321,10 @@ int add(int a, int b) {
 const wasmModule = await WebAssembly.instantiateStreaming(fetch("add.wasm"));
 console.log(wasmModule.instance.exports.add(5, 3)); // prints 8
   </code></pre>
-
   <p>
-    <strong>Here:</strong>
+    Here, JavaScript fetches and instantiates the .wasm file, taking care of setting up the memory and execution environment. Once initialized, the functions exported by the WASM module can be called just like any other JavaScript function. Of course, the memory boundary still exists — while simple integers are passed directly, more complex data like strings require JavaScript to read from WASM’s linear memory at the correct offsets.
   </p>
-  <ul>
-    <li>JS imports the WASM file, instantiates it, and sets up its memory.</li>
-    <li>Exports from WASM are now callable like JS functions.</li>
-    <li>There’s still a memory boundary: integers are passed by value, but strings 
-        would require reading them from WASM linear memory at a given offset.</li>
-  </ul>
+
 </div>
 
 
