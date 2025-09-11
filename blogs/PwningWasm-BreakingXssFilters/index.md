@@ -75,7 +75,7 @@ permalink: /blogs/PwningWasm-BreakingXssFilters/
         <p><br>
             If you think WASM is just <code>"run code in the browser"</code>, you’re missing the fun part. 
             Under the hood, it’s a whole mini-computer running inside your browser. 
-            When you write code in <code>C</code>, <code>C++</code>, or <code>Rust</code> and compile it to WASM, 
+            When you write code in C, C++, or Rust and compile it to WASM, 
             you’re essentially turning it into a tiny binary program designed to run safely and fast on any platform. 
             Think of it as a <code>virtual CPU</code> that lives inside your browser tab.
         </p>
@@ -85,7 +85,7 @@ permalink: /blogs/PwningWasm-BreakingXssFilters/
             and out comes WASM bytecode — a compact, low-level binary format. 
             This bytecode isn’t tied to your machine’s CPU; it’s designed to run inside a 
             <code>sandboxed virtual machine</code>. 
-            That’s why WASM is portable — the same <code>.wasm</code> file can run on Chrome, Firefox, 
+            That’s why WASM is portable — the same .wasm file can run on Chrome, Firefox, 
             or Node.js with almost identical performance.
         </p>
         <p>
@@ -94,26 +94,9 @@ permalink: /blogs/PwningWasm-BreakingXssFilters/
             and function tables. V8 doesn’t execute anything yet; it’s just organizing the pieces 
             in a way that makes them runnable:
         </p>
-        <ul>
-            <li>
-                <code>Functions:</code> Every function you wrote in C, Rust, or C++ becomes a WASM function. 
-                V8 builds an internal function table mapping each WASM function to a memory location.
-            </li>
-            <li>
-                <code>Globals:</code> Variables shared across functions — counters, flags, constants — 
-                are stored in a global section for quick access.
-            </li>
-            <li>
-                <code>Memory segments:</code> Arrays, strings, and static data are placed in linear memory, 
-                forming the module’s memory space.
-            </li>
-            <li>
-                <code>Tables:</code> Jump tables for indirect calls or virtual functions in C/C++ 
-                allow dynamic function dispatch.
-            </li>
-        </ul>
+        <img src="{{ '/blogs/PwningWasm-BreakingXssFilters/assets/wasm-metas.png' | relative_url }}" alt="snippet" class="code-screenshot" />
         <p>
-            At this stage, everything is defined but <code>not yet executing</code>. 
+            For more in-depth concepts, read this <a href="https://developer.mozilla.org/en-US/docs/WebAssembly/Guides/Concepts" target="_blank">Documentation</a>. So at this stage, everything is defined but <code>not yet executing</code>. 
             The pieces are ready, waiting for execution to begin.
         </p>
     </div>
