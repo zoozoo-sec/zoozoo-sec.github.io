@@ -21,7 +21,7 @@ permalink: /blogs/PwningWasm-BreakingXssFilters/
 <section id="blueback" class="container">
     <div id="intro" class="challenge-section">
         <div class="section-content">
-        <h3><code>Pwning WebAssembly: Bypassing XSS Filters in WASM Heap Sandbox</code></h3>
+        <h3><code>Pwning WebAssembly:Bypassing XSS Filters in WASM Heap Sandbox</code></h3>
             <p>
                 Lately, I’ve been trying to level up my pwn game, so I decided to dive into WebAssembly security. 
                 Everyone hypes WASM as this safe, sandboxed thing that makes running C/C++ in the browser “secure,” 
