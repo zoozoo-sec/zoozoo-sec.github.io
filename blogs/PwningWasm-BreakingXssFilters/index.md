@@ -46,7 +46,7 @@ permalink: /blogs/PwningWasm-BreakingXssFilters/
                 <li><a href="#why-not-classic">Why Traditional C/C++ Exploits Don’t Work in WASM</a></li>
                 <li><a href="#attack-surface">The Real Attack Surface in WASM</a></li>
                 <li><a href="#rust-wasm">Rust and WASM: Memory Safety. </a></li>
-                <li><a href="#rust-wasm">CTF Web Application - Breaking XSS! </a></li>
+                <li><a href="#CTFWebApplication">CTF Web Application - Breaking XSS! </a></li>
             </ul>
         </div>
     </div>
@@ -95,7 +95,7 @@ permalink: /blogs/PwningWasm-BreakingXssFilters/
             The <code>V8 engine</code> (used in Chrome and Edge) starts by parsing this binary. 
             Think of it as unpacking a box full of labeled components: functions, variables, memory blocks, 
             and function tables. V8 doesn’t execute anything yet; it’s just organizing the pieces 
-            in a way that makes them runnable:
+            in a way that makes them runnable. Below is the different parts of WebAssembly. 
         </p>
         <img src="{{ '/blogs/PwningWasm-BreakingXssFilters/assets/wasm-metas.png' | relative_url }}" alt="snippet" class="code-screenshot" />
         <p>
@@ -432,11 +432,15 @@ wasm.instance.exports.process(userInput);</code></pre>
             to “manipulate module behavior through inputs and exposed interfaces.”
         </p>
     </div>
-
-
-
-
-
+    <div id="CTFWebApplication" class="section-content">
+        <h4 class='text'>CTF Web Application - Breaking XSS!</h4>
+        <p>
+        To wrap up this deep dive into WebAssembly security, let’s look at a real-world inspired vulnerable web application. This challenge demonstrates how a seemingly safe WASM app can still be exploited due to logic flaws, insecure data handling, and weak client-side filtering.
+        </p>
+        <p>
+        The CTF challenge is built like a typical single-page web app running a WASM module compiled from C. The application takes user input, processes it using WebAssembly logic, and renders output dynamically in the DOM. You can download the vulnerable application files <a href="{{ '/blogs/PwningWasm-BreakingXssFilters/assets/' | relative_url }}">here</a> and try it out yourself.
+        </p>
+    </div>
 </section>
 </section>
 
