@@ -386,13 +386,11 @@ permalink: /blogs/PwningWasm-BreakingXssFilters/
             WASM relies on JavaScript for DOM, networking, and system calls, which creates another attack surface. 
             Unsafe exports/imports, type mismatches, or memory leaks can expose sensitive data or corrupt memory.
         </p>
-        <pre><code class="language-js">
-        const wasm = await WebAssembly.instantiateStreaming(fetch("module.wasm"), {
+        <pre><code class="language-javascript">const wasm = await WebAssembly.instantiateStreaming(fetch("module.wasm"), {
         env: { log: console.log }
         });
         // JS passes user input to WASM
-        wasm.instance.exports.process(userInput);
-        </code></pre>
+        wasm.instance.exports.process(userInput);</code></pre>
         <!-- Dynamic Module Loading -->
         <h5 class='sidetext'>Dynamic Module Loading</h5>
         <p>
@@ -428,11 +426,9 @@ permalink: /blogs/PwningWasm-BreakingXssFilters/
             <li>
             <strong>JS Glue / Host Environment Exploits:</strong> Malicious JavaScript inputs or glue code 
             errors can still trigger bugs inside WASM.
-            <pre><code class="language-js">
-        // Example: Passing malformed JSON from JS to Rust WASM
+            <pre><code class="language-javascript">// Example: Passing malformed JSON from JS to Rust WASM
         const wasm = await WebAssembly.instantiateStreaming(fetch("game.wasm"));
-        wasm.instance.exports.loadLevel(JSON.parse(userInput)); 
-            </code></pre>
+        wasm.instance.exports.loadLevel(JSON.parse(userInput)); </code></pre>
             </li>
             <li>
             <strong>Side-channel Attacks:</strong> Rust ensures memory safety, but timing attacks, cache 
