@@ -213,11 +213,11 @@ arr[11] = 42; // out-of-bounds write</code></pre>
         </p>
         <p>
             It is also important to understand that WASM memory isn’t one big undifferentiated blob. Internally, the virtual machine separates things into different types of pages. Two primary regions are:
-                <ul>
-                    <li>Code Region</li>
-                    <li>Data Region>/li>
-                </ul>
         </p>
+        <ul>
+            <li>Code Region</li>
+            <li>Data Region</li>
+        </ul>
         <h6 class="sidetext">Code Region</h6>
         <p>
             Code — your actual executable instructions — does not live inside linear memory. Instead, compiled functions are placed in separate, read-only code pages.
@@ -238,13 +238,13 @@ arr[11] = 42; // out-of-bounds write</code></pre>
             The actual working storage of your program — arrays, structs, buffers, strings, global variables — all live in linear memory data pages.
             Every function shares this memory pool, which is both a performance advantage (fast data exchange) and a risk factor (bugs in one function spill into others).
         </p>
-        <p>Example:</p>
         <ul>
+            <p>Example:</p>
             <li>In an image editor compiled to WASM, the raw pixel data from a photo lives in linear memory pages.</li>
             <li>Filter functions write their results back to buffers in the same space.</li>
             <li>Temporary states, like undo history or intermediate filter layers, also occupy linear memory.</li>
         </ul>
-        <p>
+        <p><br>
             One buffer overflow in a function applying a Gaussian blur could corrupt unrelated data like the undo stack — creating bugs or exploitable behavior.
         </p>
         <h5 class='sidetext'>Stack and Globals (Data Regions)</h5>
@@ -255,7 +255,7 @@ arr[11] = 42; // out-of-bounds write</code></pre>
         </p>
         <p>
             This unified layout creates a predictable memory model. Predictability matters: it makes execution efficient, but also makes it interesting for attackers, 
-            since knowing where everything lives opens possibilities for memory corruption attacks — albeit bounded by the sandbox.
+            since knowing where everything lives opens possibilities for memory corruption attacks — <code>albeit bounded by the sandbox.</code>
         </p>
     </div>
     <div id="js-glue" class="section-content">
