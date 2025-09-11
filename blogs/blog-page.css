@@ -46,6 +46,16 @@ ul.list-unstyled a {
     text-shadow: 0 2px 8px rgba(0,0,0,0.15); /* Soft shadow for depth */
 }
 
+.sidetext {
+    font-size: 1.0rem;           /* Large font size */
+    font-weight: bold;         /* Strong weight */
+    color: #6cb4f9;            /* Muted blue accent */
+    letter-spacing: 1px;       /* Slight spacing */
+    margin-top: 1.5em;         /* Negative space above */
+    margin-bottom: 0.75em;     /* Negative space below */
+    text-shadow: 0 2px 8px rgba(0,0,0,0.15); /* Soft shadow for depth */
+}
+
 .text-accent {
     color: #6cb4f9; /* muted friendly blue */
 }
