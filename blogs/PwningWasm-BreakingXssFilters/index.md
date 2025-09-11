@@ -445,7 +445,7 @@ wasm.instance.exports.process(userInput);</code></pre>
             <li><code>app.js</code> – Entry point for the Node app, exposing two endpoints (<code>/</code> and <code>/bot</code>) on port 3000.</li>
             <li><code>bot.js</code> – Likely where the “magic” happens (CTF flag logic lives here).</li>
             <li><code>module.c</code> – The C source for the WebAssembly module, compiled into a <code>.wasm</code> binary in <code>static/</code>.</li>
-            <li><strong>Frontend Files</strong> (<code>static/</code>) – Contains <code>index.html</code>, <code>main.js</code>, <code>script.js</code>, <code>module.js</code> (Emscripten glue), and the compiled <code>.wasm</code>.</li>
+            <li><code>Frontend Files</code> (<code>static/</code>) – Contains <code>index.html</code>, <code>main.js</code>, <code>script.js</code>, <code>module.js</code> (Emscripten glue), and the compiled <code>.wasm</code>.</li>
         </ul>
         <p>So yeah, this is a Node app serving a WASM-powered chat interface.</p>
         <h5 class='sidetext'>First Look: Running the App</h5>
@@ -474,13 +474,15 @@ wasm.instance.exports.process(userInput);</code></pre>
             </ul>
         <h5 class='sidetext'>Chat Logic: State Management</h5>
         <p>The messages aren’t just stored in memory; they’re serialized into the URL through the <code>s query parameter</code></p>
-        <pre><code class="language-Javascript">ReportUrl.href = `${window.location.origin}?s=${btoa(JSON.stringify(saved))}`;</code></pre>
+        <pre><code class="language-javascript">ReportUrl.href = `${window.location.origin}?s=${btoa(JSON.stringify(saved))}`;</code></pre>
         <p>Every message or action (add, edit, delete) gets pushed into a <code>saved</code> array, Base64-encoded, and stuck into the URL. When you reload the page, main() reads that query string, decodes it, and rebuilds the entire chat state.</p>
         <img src="{{ '/blogs/PwningWasm-BreakingXssFilters/assets/code2.png' | relative_url }}" alt="snippet" class="code-screenshot" />
         <p>So, the entire chat history is user-controlled. You can literally forge a URL with fake chat messages, reload the page, and it’ll render as if they were real.</p>
     </div>
 </section>
 </section>
+
+
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/9000.0.1/prism.min.js" integrity="sha512-UOoJElONeUNzQbbKQbjldDf9MwOHqxNz49NNJJ1d90yp+X9edsHyJoAs6O4K19CZGaIdjI5ohK+O2y5lBTW6uQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/9000.0.1/components/prism-python.min.js" integrity="sha512-3qtI9+9JXi658yli19POddU1RouYtkTEhTHo6X5ilOvMiDfNvo6GIS6k2Ukrsx8MyaKSXeVrnIWeyH8G5EOyIQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
