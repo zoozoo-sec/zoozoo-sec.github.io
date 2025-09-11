@@ -222,10 +222,9 @@ permalink: /blogs/PwningWasm-BreakingXssFilters/
             <code>WASM</code> blocks this by enforcing separation.
         </p>
         <p>Example:</p>
-        <pre><code class="language-c">
-    int add_numbers(int a, int b) {
-        return a + b;
-    }</code></pre>
+        <pre><code class="language-c">int add_numbers(int a, int b) {
+    return a + b;
+}</code></pre>
         <p>
             The machine instructions for <code>add_numbers</code> live in a code page. The integers <code>a</code> and <code>b</code> live in linear memory (data pages).
             While the CPU executes the function, it fetches instructions from the code page and operates on values inside linear memory.
@@ -303,19 +302,15 @@ permalink: /blogs/PwningWasm-BreakingXssFilters/
         </ul>
         <h5 class='sidetext' >Example of JS Glue in Action</h5>
         <p>Suppose we compile this C function to WASM:</p>
-        <pre><code class="language-c">
-        int add(int a, int b) {
-            return a + b;
-        }
-        </code></pre>
+        <pre><code class="language-c">int add(int a, int b) {
+    return a + b;
+}</code></pre>
         <p>
             The WASM binary just has the machine-level instructions for <code>add</code>. 
             It doesn’t know how to run in the browser. So JavaScript glue wraps it:
         </p>
-        <pre><code class="language-javascript">
-        const wasmModule = await WebAssembly.instantiateStreaming(fetch("add.wasm"));
-        console.log(wasmModule.instance.exports.add(5, 3)); // prints 8
-        </code></pre>
+        <pre><code class="language-javascript">const wasmModule = await WebAssembly.instantiateStreaming(fetch("add.wasm"));
+console.log(wasmModule.instance.exports.add(5, 3)); // prints 8</code></pre>
         <p>
             Here, JavaScript fetches and instantiates the .wasm file, taking care of setting up the memory and execution environment. Once initialized, the functions exported by the WASM module can be called just like any other JavaScript function. Of course, the memory boundary still exists — while simple integers are passed directly, more complex data like strings require JavaScript to read from WASM’s linear memory at the correct offsets.
         </p>
@@ -357,14 +352,12 @@ permalink: /blogs/PwningWasm-BreakingXssFilters/
             Classic memory issues include buffer overflows, use-after-free, and integer overflows. These flaws don’t let
             you execute code outside the sandbox but can corrupt data inside the module, altering its behavior.
         </p>
-        <pre><code class="language-c">
-        char buf[10];
-        void unsafe(char *input) {
-            for(int i=0; i&lt;strlen(input); i++) {
-                buf[i] = input[i]; // buffer overflow if input > 10
-            }
-        }
-        </code></pre>
+        <pre><code class="language-c">char buf[10];
+void unsafe(char *input) {
+    for(int i=0; i&lt;strlen(input); i++) {
+        buf[i] = input[i]; // buffer overflow if input > 10
+    }
+}</code></pre>
         <p>
             In WASM, this overflow won’t overwrite CPU stack or code pages, but it can overwrite other variables 
             in linear memory, leading to unexpected behavior.
@@ -375,12 +368,10 @@ permalink: /blogs/PwningWasm-BreakingXssFilters/
             WASM uses function tables for indirect calls. If indices are not validated, attackers might call unintended 
             functions or manipulate logic through invalid calls. WASM enforces type safety, but logic bugs are still possible.
         </p>
-        <pre><code class="language-c">
-        Action actions[2] = {add, sub};
-        int do_action(int index, int a, int b) {
-            return actions[index](a, b); // unsafe if index unchecked
-        }
-        </code></pre>
+        <pre><code class="language-c">Action actions[2] = {add, sub};
+int do_action(int index, int a, int b) {
+    return actions[index](a, b); // unsafe if index unchecked
+}</code></pre>
         <!-- JS Glue Interaction -->
         <h5 class='sidetext'>JS Glue and Host Environment Interaction</h5>
         <p>
@@ -388,10 +379,10 @@ permalink: /blogs/PwningWasm-BreakingXssFilters/
             Unsafe exports/imports, type mismatches, or memory leaks can expose sensitive data or corrupt memory.
         </p>
         <pre><code class="language-javascript">const wasm = await WebAssembly.instantiateStreaming(fetch("module.wasm"), {
-        env: { log: console.log }
-        });
-        // JS passes user input to WASM
-        wasm.instance.exports.process(userInput);</code></pre>
+    env: { log: console.log }
+});
+// JS passes user input to WASM
+wasm.instance.exports.process(userInput);</code></pre>
         <!-- Dynamic Module Loading -->
         <h5 class='sidetext'>Dynamic Module Loading</h5>
         <p>
@@ -428,8 +419,8 @@ permalink: /blogs/PwningWasm-BreakingXssFilters/
             <code>JS Glue / Host Environment Exploits:</code> Malicious JavaScript inputs or glue code 
             errors can still trigger bugs inside WASM.
             <pre><code class="language-javascript">// Example: Passing malformed JSON from JS to Rust WASM
-        const wasm = await WebAssembly.instantiateStreaming(fetch("game.wasm"));
-        wasm.instance.exports.loadLevel(JSON.parse(userInput)); </code></pre>
+const wasm = await WebAssembly.instantiateStreaming(fetch("game.wasm"));
+wasm.instance.exports.loadLevel(JSON.parse(userInput)); </code></pre>
             </li>
             <li>
             <code>Side-channel Attacks:</code> Rust ensures memory safety, but timing attacks, cache 
