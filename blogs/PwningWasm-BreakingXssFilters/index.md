@@ -478,7 +478,7 @@ wasm.instance.exports.process(userInput);</code></pre>
         <p>Every message or action (add, edit, delete) gets pushed into a <code>saved</code> array, Base64-encoded, and stuck into the URL. When you reload the page, main() reads that query string, decodes it, and rebuilds the entire chat state.</p>
         <img src="{{ '/blogs/PwningWasm-BreakingXssFilters/assets/code2.png' | relative_url }}" alt="snippet" class="code-screenshot" />
         <p>So, the entire chat history is user-controlled. You can literally forge a URL with fake chat messages, reload the page, and it’ll render as if they were real.</p>
-    <h4 class="text">Understanding the WASM Module: <code>module.wasm</code></h4>
+        <code>Understanding the WASM Module: module.wasm</code>
         <p>
             The <code>module.c</code> file is the heart of this app. It compiles to WebAssembly and holds all the chat state and message logic. 
             To understand the functions, we need to start with the data structures it defines:
