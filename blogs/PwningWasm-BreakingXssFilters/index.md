@@ -157,176 +157,197 @@ permalink: /blogs/PwningWasm-BreakingXssFilters/
         </p>
     </div>
     <div id="memory-model" class="section-content">
-    <h4 class='text'>Memory Model: The Heart of the Sandbox</h4>
-    <p>
-        One of the most important concepts to understand in WebAssembly (<code>WASM</code>) security is its memory model. 
-        Unlike higher-level languages that abstract away memory management, or native applications that work directly with system memory, 
-        <code>WASM</code> takes a very particular approach: it gives each module a single, flat, contiguous block of memory called <code>linear memory</code>.
-    </p>
-    <p>
-        This design choice makes <code>WASM</code> both efficient and relatively safe — but it also defines the limits and behaviors that an attacker must consider. 
-        Let’s walk through how this “sandboxed memory apartment” is structured.
-    </p>
-    <h6 class="sidetext">Linear Memory: The WASM Sandbox</h6>
-    <p>
-        At its core, linear memory is just a giant array of bytes. Imagine you started your program with:
-    </p>
-    <pre><code class="language-python">char memory[65536]; // 64 KB</code></pre>
-    <p>
-        That’s essentially what WASM gives you at the start — one continuous region of memory that your module can read from and write to. 
-        When you compile <code>C</code>, <code>C++</code>, or <code>Rust</code> code to <code>WASM</code>, all variables, arrays, and data structures are mapped into this space.
-    </p>
-    <ul>
-        <li>Unlike <code>JavaScript</code>, which dynamically allocates and garbage-collects memory behind the scenes, WASM does not automatically manage multiple heaps for you.</li>
-        <li>Unlike native code, which can spread data across multiple segments (<code>heap</code>, <code>stack</code>, <code>code</code>, <code>globals</code>) in process memory, WASM consolidates all user data into this single linear memory.</li>
-        <li>Every function in the module shares it. Functions don’t each get private stacks or local heaps carved out separately from the linear space. They all point into the same memory pool. This makes data sharing between functions much faster, but it also means mistakes have broader consequences.</li>
-    </ul>
-    <h6 class="sidetext">Apartment Analogy</h6>
-    <p>Think of linear memory as a private apartment for your <code>WASM</code> module inside the browser:</p>
-    <ul>
-        <li>When your program loads, the browser sets aside an apartment (say, 64 KB of initial memory).</li>
-        <li>Inside, you can arrange your “furniture”: arrays, strings, structs, and counters.</li>
-        <li>Every function is like a roommate — they can all move things around inside the apartment, but they can’t knock down walls and mess with others outside (like the browser or system memory).</li>
-    </ul>
-    <p>
-        This is the sandbox guarantee: your module is isolated from the world outside. No matter what bugs exist in your code, they can’t overwrite Browser's process memory or the Or the renderer's memory.
-    </p>
-    <p><code>At least, that’s what they claim. They say WASM is safe, but sandbox escapes to renderer process keep proving otherwise.</code></p>
-     <h6 class="sidetext">Bugs Still Matter (Inside the Sandbox)</h6>
-    <p>
-        However, mistakes inside the apartment can still cause chaos. Consider this example in <code>C</code>:
-    </p>
-    <pre><code class="language-c">
-int arr[10];
-arr[11] = 42; // out-of-bounds write
-    </code></pre>
-    <p>
-        On a native system, this could overwrite a saved return address, change control flow, corrupt unrelated process memory, or crash the entire application.
-        On <code>WASM</code>, <code>arr</code> can’t reach outside the sandbox. But it can corrupt another piece of data within the module’s own linear memory.
-        Maybe it overrides a cryptographic key, an index into a function table, or user input buffers. That’s still dangerous — just not system-level catastrophic.
-    </p>
-    <h6 class="sidetext">Memory Growth and Limits</h6>
-    <p>
-        Linear memory isn’t infinite; it’s divided into fixed-size pages of 64 KB each. When a <code>WASM</code> module starts, it requests an initial number of pages (say, 1 page = 64 KB).
-        As the program runs, it can explicitly request more pages if needed — for example, a game suddenly loading a massive map, or an editor opening a large file.
-        But the browser enforces an upper ceiling, so runaway programs can’t consume infinite memory. This paged growth mechanism keeps memory predictable and adds another safety layer.
-    </p>
-=    <p>
-        It is also important to understand that <code>WASM</code> memory isn’t one big undifferentiated blob. Internally, the virtual machine separates things into different types of pages:
-    </p>
-    <h6 class="sidetext">Code Pages</h6>
-    <p>
-        Code — your actual executable instructions — does not live inside linear memory. Instead, compiled functions are placed in separate, read-only code pages.
-        This design prevents accidental or malicious attempts to overwrite instructions in memory.
-        In traditional native programs, code and data sometimes lived in the same region (<code>writable/executable memory</code>), which is how classic code injection attacks worked. 
-        <code>WASM</code> blocks this by enforcing separation.
-    </p>
-    <p>Example:</p>
-    <pre><code class="language-c">
-int add_numbers(int a, int b) {
-    return a + b;
-}</code></pre>
-    <p>
-        The machine instructions for <code>add_numbers</code> live in a code page. The integers <code>a</code> and <code>b</code> live in linear memory (data pages).
-        While the CPU executes the function, it fetches instructions from the code page and operates on values inside linear memory.
-        The key is that those two memory regions cannot overlap. You can’t store instructions in linear memory and then trick the engine into executing them.
-    </p>
-    <h6 class='sidetext'>Linear Memory Pages (Data)</h6>
-    <p>
-        The actual working storage of your program — arrays, structs, buffers, strings, global variables — all live in linear memory data pages.
-        Every function shares this memory pool, which is both a performance advantage (fast data exchange) and a risk factor (bugs in one function spill into others).
-    </p>
-    <p>Example:</p>
-    <ul>
-        <li>In an image editor compiled to <code>WASM</code>, the raw pixel data from a photo lives in linear memory pages.</li>
-        <li>Filter functions write their results back to buffers in the same space.</li>
-        <li>Temporary states, like undo history or intermediate filter layers, also occupy linear memory.</li>
-    </ul>
-    <p>
-        One buffer overflow in a function applying a Gaussian blur could corrupt unrelated data like the undo stack — creating bugs or exploitable behavior, though still contained to the module.
-    </p>
-    <h5 class='sidetext'>Stack and Globals</h5>
-    <p>
-        The stack for local function variables and the global section (counters, constants shared across functions) also reside inside linear memory.
-        Functions don’t get a private CPU-backed call stack like they would with native execution. Instead, local variables are mapped into memory offsets within linear memory.
-        Globals are similarly layered into reserved regions for predictable access.
-    </p>
-    <p>
-        This unified layout creates a predictable memory model. Predictability matters: it makes execution efficient, but also makes it interesting for attackers, 
-        since knowing where everything lives opens possibilities for memory corruption attacks — albeit bounded by the sandbox.
-    </p>
-</div>
-
-<div id="js-glue" class="section-content">
-  <h4 class="text">The JS Glue: WASM’s Gateway to the Outside World</h4>
-  <p>
-    Up until now, we described WASM’s apartment-like memory model: it has its own private 
-    linear memory, code pages, stack, and globals. But here’s the catch — WASM can’t talk to 
-    the outside world directly.
-  </p>
-  <ul>
-    <li>No direct access to the DOM.</li>
-    <li>No system calls to open files.</li>
-    <li>No direct networking sockets, timers, or graphics APIs.</li>
-  </ul>
-  <p>
-    Without external bridges, a WASM module is essentially a sealed, high-performance calculator. 
-    That’s where JavaScript glue code comes in.
-  </p>
-
-  <h5 class='sidetext'>What Glue Code Does</h5>
-  <p>
-    Think of glue code as the <em>“phone line”</em> between the WASM module and the outside browser environment:
-  </p>
-  <ul>
-    <li>
-      <strong>Memory Buffers:</strong> JavaScript allocates <code>ArrayBuffer</code> or 
-      <code>TypedArray</code> views into WASM’s linear memory. That’s how JS can read/write raw memory 
-      from the WASM sandbox. For example, letting JavaScript inspect the result of an image filter 
-      implemented in WASM.
-    </li>
-    <li>
-      <strong>Imports (Host → WASM):</strong> WASM modules can import functions from JS.  
-      <em>Example:</em> A WASM program might import <code>console.log</code> or 
-      <code>Math.random</code> provided by JS.
-    </li>
-    <li>
-      <strong>Exports (WASM → Host):</strong> WASM can export functions that JavaScript calls, with arguments often pointing to 
-      offsets inside linear memory.  
-      <em>Example:</em> JS calls 
-      <code>wasm.instance.exports.process(userInputPtr)</code> where <code>process</code> 
-      expects to read a string starting at memory offset <code>userInputPtr</code>.
-    </li>
-    <li>
-      <strong>Orchestration Layer:</strong> Large frameworks (Emscripten, Unity WebGL, etc.) ship auto-generated 
-      glue JS. This glue initializes WASM memory, sets up tables, wires DOM events, and 
-      handles conversions between JS types and WASM binaries.
-    </li>
-  </ul>
-
-  <h5 class='sidetext' >Example of JS Glue in Action</h5>
-  <p>Suppose we compile this C function to WASM:</p>
-  <pre><code class="language-c">
-int add(int a, int b) {
-    return a + b;
-}
-  </code></pre>
-
-  <p>
-    The WASM binary just has the machine-level instructions for <code>add</code>. 
-    It doesn’t know how to run in the browser. So JavaScript glue wraps it:
-  </p>
-
-  <pre><code class="language-javascript">
-const wasmModule = await WebAssembly.instantiateStreaming(fetch("add.wasm"));
-console.log(wasmModule.instance.exports.add(5, 3)); // prints 8
-  </code></pre>
-  <p>
-    Here, JavaScript fetches and instantiates the .wasm file, taking care of setting up the memory and execution environment. Once initialized, the functions exported by the WASM module can be called just like any other JavaScript function. Of course, the memory boundary still exists — while simple integers are passed directly, more complex data like strings require JavaScript to read from WASM’s linear memory at the correct offsets.
-  </p>
-
-</div>
-
+        <h4 class='text'>Memory Model: The Heart of the Sandbox</h4>
+        <p>
+            One of the most important concepts to understand in WebAssembly (<code>WASM</code>) security is its memory model. 
+            Unlike higher-level languages that abstract away memory management, or native applications that work directly with system memory, 
+            <code>WASM</code> takes a very particular approach: it gives each module a single, flat, contiguous block of memory called <code>linear memory</code>.
+        </p>
+        <p>
+            This design choice makes <code>WASM</code> both efficient and relatively safe — but it also defines the limits and behaviors that an attacker must consider. 
+            Let’s walk through how this “sandboxed memory apartment” is structured.
+        </p>
+        <h6 class="sidetext">Linear Memory: The WASM Sandbox</h6>
+        <p>
+            At its core, linear memory is just a giant array of bytes. Imagine you started your program with:
+        </p>
+        <pre><code class="language-python">char memory[65536]; // 64 KB</code></pre>
+        <p>
+            That’s essentially what WASM gives you at the start — one continuous region of memory that your module can read from and write to. 
+            When you compile <code>C</code>, <code>C++</code>, or <code>Rust</code> code to <code>WASM</code>, all variables, arrays, and data structures are mapped into this space.
+        </p>
+        <ul>
+            <li>Unlike <code>JavaScript</code>, which dynamically allocates and garbage-collects memory behind the scenes, WASM does not automatically manage multiple heaps for you.</li>
+            <li>Unlike native code, which can spread data across multiple segments (<code>heap</code>, <code>stack</code>, <code>code</code>, <code>globals</code>) in process memory, WASM consolidates all user data into this single linear memory.</li>
+            <li>Every function in the module shares it. Functions don’t each get private stacks or local heaps carved out separately from the linear space. They all point into the same memory pool. This makes data sharing between functions much faster, but it also means mistakes have broader consequences.</li>
+        </ul>
+        <h6 class="sidetext">Apartment Analogy</h6>
+        <p>Think of linear memory as a private apartment for your <code>WASM</code> module inside the browser:</p>
+        <ul>
+            <li>When your program loads, the browser sets aside an apartment (say, 64 KB of initial memory).</li>
+            <li>Inside, you can arrange your “furniture”: arrays, strings, structs, and counters.</li>
+            <li>Every function is like a roommate — they can all move things around inside the apartment, but they can’t knock down walls and mess with others outside (like the browser or system memory).</li>
+        </ul>
+        <p>
+            This is the sandbox guarantee: your module is isolated from the world outside. No matter what bugs exist in your code, they can’t overwrite Browser's process memory or the Or the renderer's memory.
+        </p>
+        <p><code>At least, that’s what they claim. They say WASM is safe, but sandbox escapes to renderer process keep proving otherwise.</code></p>
+        <h6 class="sidetext">Bugs Still Matter (Inside the Sandbox)</h6>
+        <p>
+            However, mistakes inside the apartment can still cause chaos. Consider this example in <code>C</code>:
+        </p>
+        <pre><code class="language-c">
+    int arr[10];
+    arr[11] = 42; // out-of-bounds write
+        </code></pre>
+        <p>
+            On a native system, this could overwrite a saved return address, change control flow, corrupt unrelated process memory, or crash the entire application.
+            On <code>WASM</code>, <code>arr</code> can’t reach outside the sandbox. But it can corrupt another piece of data within the module’s own linear memory.
+            Maybe it overrides a cryptographic key, an index into a function table, or user input buffers. That’s still dangerous — just not system-level catastrophic.
+        </p>
+        <h6 class="sidetext">Memory Growth and Limits</h6>
+        <p>
+            Linear memory isn’t infinite; it’s divided into fixed-size pages of 64 KB each. When a <code>WASM</code> module starts, it requests an initial number of pages (say, 1 page = 64 KB).
+            As the program runs, it can explicitly request more pages if needed — for example, a game suddenly loading a massive map, or an editor opening a large file.
+            But the browser enforces an upper ceiling, so runaway programs can’t consume infinite memory. This paged growth mechanism keeps memory predictable and adds another safety layer.
+        </p>
+    =    <p>
+            It is also important to understand that <code>WASM</code> memory isn’t one big undifferentiated blob. Internally, the virtual machine separates things into different types of pages:
+        </p>
+        <h6 class="sidetext">Code Pages</h6>
+        <p>
+            Code — your actual executable instructions — does not live inside linear memory. Instead, compiled functions are placed in separate, read-only code pages.
+            This design prevents accidental or malicious attempts to overwrite instructions in memory.
+            In traditional native programs, code and data sometimes lived in the same region (<code>writable/executable memory</code>), which is how classic code injection attacks worked. 
+            <code>WASM</code> blocks this by enforcing separation.
+        </p>
+        <p>Example:</p>
+        <pre><code class="language-c">
+    int add_numbers(int a, int b) {
+        return a + b;
+    }</code></pre>
+        <p>
+            The machine instructions for <code>add_numbers</code> live in a code page. The integers <code>a</code> and <code>b</code> live in linear memory (data pages).
+            While the CPU executes the function, it fetches instructions from the code page and operates on values inside linear memory.
+            The key is that those two memory regions cannot overlap. You can’t store instructions in linear memory and then trick the engine into executing them.
+        </p>
+        <h6 class='sidetext'>Linear Memory Pages (Data)</h6>
+        <p>
+            The actual working storage of your program — arrays, structs, buffers, strings, global variables — all live in linear memory data pages.
+            Every function shares this memory pool, which is both a performance advantage (fast data exchange) and a risk factor (bugs in one function spill into others).
+        </p>
+        <p>Example:</p>
+        <ul>
+            <li>In an image editor compiled to <code>WASM</code>, the raw pixel data from a photo lives in linear memory pages.</li>
+            <li>Filter functions write their results back to buffers in the same space.</li>
+            <li>Temporary states, like undo history or intermediate filter layers, also occupy linear memory.</li>
+        </ul>
+        <p>
+            One buffer overflow in a function applying a Gaussian blur could corrupt unrelated data like the undo stack — creating bugs or exploitable behavior, though still contained to the module.
+        </p>
+        <h5 class='sidetext'>Stack and Globals</h5>
+        <p>
+            The stack for local function variables and the global section (counters, constants shared across functions) also reside inside linear memory.
+            Functions don’t get a private CPU-backed call stack like they would with native execution. Instead, local variables are mapped into memory offsets within linear memory.
+            Globals are similarly layered into reserved regions for predictable access.
+        </p>
+        <p>
+            This unified layout creates a predictable memory model. Predictability matters: it makes execution efficient, but also makes it interesting for attackers, 
+            since knowing where everything lives opens possibilities for memory corruption attacks — albeit bounded by the sandbox.
+        </p>
+    </div>
+    <div id="js-glue" class="section-content">
+        <h4 class="text">The JS Glue: WASM’s Gateway to the Outside World</h4>
+        <p>
+            Up until now, we described WASM’s apartment-like memory model: it has its own private 
+            linear memory, code pages, stack, and globals. But here’s the catch — WASM can’t talk to 
+            the outside world directly.
+        </p>
+        <ul>
+            <li>No direct access to the DOM.</li>
+            <li>No system calls to open files.</li>
+            <li>No direct networking sockets, timers, or graphics APIs.</li>
+        </ul>
+        <p>
+            Without external bridges, a WASM module is essentially a sealed, high-performance calculator. 
+            That’s where JavaScript glue code comes in.
+        </p>
+        <h5 class='sidetext'>What Glue Code Does</h5>
+        <p>
+            Think of glue code as the <em>“phone line”</em> between the WASM module and the outside browser environment:
+        </p>
+        <ul>
+            <li>
+            <strong>Memory Buffers:</strong> JavaScript allocates <code>ArrayBuffer</code> or 
+            <code>TypedArray</code> views into WASM’s linear memory. That’s how JS can read/write raw memory 
+            from the WASM sandbox. For example, letting JavaScript inspect the result of an image filter 
+            implemented in WASM.
+            </li>
+            <li>
+            <strong>Imports (Host → WASM):</strong> WASM modules can import functions from JS.  
+            <em>Example:</em> A WASM program might import <code>console.log</code> or 
+            <code>Math.random</code> provided by JS.
+            </li>
+            <li>
+            <strong>Exports (WASM → Host):</strong> WASM can export functions that JavaScript calls, with arguments often pointing to 
+            offsets inside linear memory.  
+            <em>Example:</em> JS calls 
+            <code>wasm.instance.exports.process(userInputPtr)</code> where <code>process</code> 
+            expects to read a string starting at memory offset <code>userInputPtr</code>.
+            </li>
+            <li>
+            <strong>Orchestration Layer:</strong> Large frameworks (Emscripten, Unity WebGL, etc.) ship auto-generated 
+            glue JS. This glue initializes WASM memory, sets up tables, wires DOM events, and 
+            handles conversions between JS types and WASM binaries.
+            </li>
+        </ul>
+        <h5 class='sidetext' >Example of JS Glue in Action</h5>
+        <p>Suppose we compile this C function to WASM:</p>
+        <pre><code class="language-c">
+        int add(int a, int b) {
+            return a + b;
+        }
+        </code></pre>
+        <p>
+            The WASM binary just has the machine-level instructions for <code>add</code>. 
+            It doesn’t know how to run in the browser. So JavaScript glue wraps it:
+        </p>
+        <pre><code class="language-javascript">
+        const wasmModule = await WebAssembly.instantiateStreaming(fetch("add.wasm"));
+        console.log(wasmModule.instance.exports.add(5, 3)); // prints 8
+        </code></pre>
+        <p>
+            Here, JavaScript fetches and instantiates the .wasm file, taking care of setting up the memory and execution environment. Once initialized, the functions exported by the WASM module can be called just like any other JavaScript function. Of course, the memory boundary still exists — while simple integers are passed directly, more complex data like strings require JavaScript to read from WASM’s linear memory at the correct offsets.
+        </p>
+    </div>
+    <div id="why-not-classic" class="section-content">
+        <h4 class="text"><code>Why Traditional C/C++ Exploits Don’t Work in WASM</code></h4>
+        <p><br>
+            If you come from a classic binary-exploitation background, you probably think in terms of buffer overflows, 
+            return-oriented programming (ROP), and arbitrary pointer manipulation. WebAssembly changes the rules. 
+            Even when the code started life as C or C++, the execution model inside the browser is radically different, 
+            and a lot of the old tricks simply stop working — or become much harder to pull off.
+        </p>
+        <p>
+            First, WASM does not expose raw system pointers. In a native C/C++ program you can often tamper with pointers 
+            to overwrite return addresses on the stack, chain gadgets for a ROP payload, or otherwise hijack control flow. 
+            In WASM, all of the program’s memory lives inside a single <code>linear memory</code> region — a sandboxed byte array. 
+            That sandbox prevents code from referencing or writing into arbitrary process memory, so you can’t simply point outside 
+            the module and corrupt the process or the OS.
+        </p>
+        <p>
+            Second, function calls are handled through indices and tables rather than raw addresses. Each function in a WASM module 
+            gets an index in an internal function table. Calls are either <code>direct</code> (the index is fixed at compile time) 
+            or <code>indirect</code> (the index is looked up in a table at runtime). Because control transfers are mediated by the 
+            engine and checked for type/ bounds, there are no writable return addresses lying around that you can clobber to build a ROP chain.
+        </p>
+        <p>
+            Put another way: the classic exploit story — overflow something, overwrite a return address, jump into shellcode or gadgets — 
+            doesn’t fit the WASM model. The attack surface shifts. Instead of raw pointer manipulation and code injection, 
+            attackers must look at logic bugs inside linear memory, misuse of function tables (unchecked indices), or unsafe JS ↔ WASM glue code 
+            to escalate or leak behavior. It’s still exploitable in interesting ways, but the mindset and techniques are different.
+        </p>
+    </div>
 
 </section>
 </section>
