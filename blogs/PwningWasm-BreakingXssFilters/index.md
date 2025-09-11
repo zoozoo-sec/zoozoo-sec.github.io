@@ -349,9 +349,9 @@ permalink: /blogs/PwningWasm-BreakingXssFilters/
         </p>
     </div>
     <div id="attack-surface" class="section-content">
-        <h4 class="text">The Real Attack Surface in WASM</h3>
+        <h4 class="text">The Real Attack Surface in WASM</h4>
         <!-- Linear Memory Corruption -->
-        <h4>Linear Memory Corruption</h4>
+        <h5 class='sidetext'>Linear Memory Corruption</h5>
         <p>
             Even though WASM is sandboxed, linear memory is still vulnerable to bugs from unsafe languages like C or C++.
             Classic memory issues include buffer overflows, use-after-free, and integer overflows. These flaws don’t let
@@ -370,7 +370,7 @@ permalink: /blogs/PwningWasm-BreakingXssFilters/
             in linear memory, leading to unexpected behavior.
         </p>
         <!-- Function Table Abuse -->
-        <h4>Function Table Abuse (Indirect Calls)</h4>
+        <h5 class='sidetext'>Function Table Abuse (Indirect Calls)</h5>
         <p>
             WASM uses function tables for indirect calls. If indices are not validated, attackers might call unintended 
             functions or manipulate logic through invalid calls. WASM enforces type safety, but logic bugs are still possible.
@@ -382,7 +382,7 @@ permalink: /blogs/PwningWasm-BreakingXssFilters/
         }
         </code></pre>
         <!-- JS Glue Interaction -->
-        <h4>JS Glue and Host Environment Interaction</h4>
+        <h5 class='sidetext'>JS Glue and Host Environment Interaction</h5>
         <p>
             WASM relies on JavaScript for DOM, networking, and system calls, which creates another attack surface. 
             Unsafe exports/imports, type mismatches, or memory leaks can expose sensitive data or corrupt memory.
@@ -395,7 +395,7 @@ permalink: /blogs/PwningWasm-BreakingXssFilters/
         wasm.instance.exports.process(userInput);
         </code></pre>
         <!-- Dynamic Module Loading -->
-        <h4>Dynamic Module Loading</h4>
+        <h5 class='sidetext'>Dynamic Module Loading</h5>
         <p>
             WASM supports dynamic loading, where one module can call another. Without validating function indices, 
             table sizes, and memory bounds, attackers may exploit imported modules or corrupt memory across boundaries.
