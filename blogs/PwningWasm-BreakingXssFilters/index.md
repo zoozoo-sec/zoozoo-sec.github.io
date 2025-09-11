@@ -143,11 +143,16 @@ permalink: /blogs/PwningWasm-BreakingXssFilters/
                     Image from <a href="https://v8.dev/blog/liftoff#the-new-compilation-pipeline-(liftoff)" target="_blank">v8.dev's</a> blog post.
                 </figcaption>
             </figure>
+            <br>
             If you want to dive deeper into the WebAssembly compilation pipeline, I highly recommend reading the following V8 blog posts.
                 <ul>
                     <li>
                         <a href="https://v8.dev/docs/wasm-compilation-pipeline" target="_blank">Wasm Compilation Pipeline</a>
+                    </li>
+                    <li>
                         <a href="https://v8.dev/blog/liftoff" target="_blank">Liftoff - Baseline Compiler</a>
+                    </li>
+                    <li>
                         <a href="https://github.com/thlorenz/v8-perf/blob/master/compiler.md" target="_blank">Thlorenz's post</a>
                     </li>
                 </ul>
