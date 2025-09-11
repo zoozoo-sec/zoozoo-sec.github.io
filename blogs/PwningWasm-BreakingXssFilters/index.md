@@ -142,7 +142,7 @@ permalink: /blogs/PwningWasm-BreakingXssFilters/
                 <figcaption style="font-size: 0.9em; margin-top: 4px;">
                     Image from <a href="https://v8.dev/blog/liftoff" target="_blank">v8.dev's</a> blog post.
                 </figcaption>
-            </figure
+            </figure>
             If you want to dive deeper into the WebAssembly compilation pipeline, I highly recommend reading the following V8 blog posts.
                 <ul>
                     <li>
