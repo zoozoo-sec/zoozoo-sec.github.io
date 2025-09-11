@@ -435,11 +435,41 @@ wasm.instance.exports.process(userInput);</code></pre>
     <div id="CTFWebApplication" class="section-content">
         <h4 class='text'>CTF Web Application - Breaking XSS!</h4>
         <p>
-        To wrap up this deep dive into WebAssembly security, let’s look at a vulnerable web application challenge from <code>Pentathon CTF 2025, called "chaat"</code>. This challenge demonstrates how a seemingly safe WASM app can still be exploited due to logic flaws and insecure data handling to drop a XSS payload.
+        To wrap up this deep dive into WebAssembly security, let’s look at a vulnerable web application challenge from <code>Pentathon CTF 2025, called "chaat"</code>. This challenge demonstrates how a seemingly safe WASM app can still be exploited due to logic flaws and insecure data handling to drop a XSS payload. You can download the vulnerable application files <a href="{{ '/blogs/PwningWasm-BreakingXssFilters/assets/' | relative_url }}">here</a> and try it out yourself.
         </p>
         <p>
-        The CTF challenge is built like a typical single-page web app running a WASM module compiled from C. The application takes user input, processes it using WebAssembly logic, and renders output dynamically in the DOM. You can download the vulnerable application files <a href="{{ '/blogs/PwningWasm-BreakingXssFilters/assets/' | relative_url }}">here</a> and try it out yourself.
+        The CTF challenge is built like a typical single-page web app running a WASM module compiled from C. The application takes user input, processes it using WebAssembly logic, and renders output dynamically in the DOM.
         </p>
+         <p>First, let’s see what we’re dealing with. The project is a simple Node.js app with a WASM backend powering its chat functionality:</p>
+        <ul>
+            <li><code>app.js</code> – Entry point for the Node app, exposing two endpoints (<code>/</code> and <code>/bot</code>) on port 3000.</li>
+            <li><code>bot.js</code> – Likely where the “magic” happens (CTF flag logic lives here).</li>
+            <li><code>module.c</code> – The C source for the WebAssembly module, compiled into a <code>.wasm</code> binary in <code>static/</code>.</li>
+            <li><strong>Frontend Files</strong> (<code>static/</code>) – Contains <code>index.html</code>, <code>main.js</code>, <code>script.js</code>, <code>module.js</code> (Emscripten glue), and the compiled <code>.wasm</code>.</li>
+        </ul>
+        <p>So yeah, this is a Node app serving a WASM-powered chat interface.</p>
+        <h4 class="text">First Look: Running the App</h4>
+        <p>
+            Spinning it up locally, you get a clean chat UI. There’s a text box, a “send” button, and a stream of 
+            bot replies. It feels simple, but the frontend JavaScript is clearly doing most of the heavy lifting.
+            <img src="{{ '/blogs/PwningWasm-BreakingXssFilters/assets/code.png' | relative_url }}" alt="snippet" class="code-screenshot" />
+        </p>
+        <h4 class="text">Frontend Overview</h4>
+        <p>
+            <code>index.html</code> is minimal; <code>script.js</code> handles DOM manipulation; and 
+            <code>module.js</code> is auto-generated Emscripten glue code that initializes the WASM module.
+            The real logic is in <code>main.js</code>.
+        </p>
+        <h4 class="text">main.js: WASM ↔ JavaScript</h4>
+        <p>The app dynamically loads WASM functions using <code>Module.cwrap</code>:</p>
+        <img src="{{ '/blogs/PwningWasm-BreakingXssFilters/assets/code1.png' | relative_url }}" alt="snippet" class="code-screenshot" />
+        <p>This shows that WASM owns the data model, and JavaScript acts as a rendering layer. 
+            The <code>Module.cwrap</code> function bridges C/WASM functions to JS.
+        </p>
+        <h4 class="text">Chat State Management</h4>
+        <p>The entire chat state is stored in the URL via the <code>s</code> query parameter:</p>
+        <img src="{{ '/blogs/PwningWasm-BreakingXssFilters/assets/code2.png' | relative_url }}" alt="snippet" class="code-screenshot" />
+        <p>This design makes it possible to forge chat states by simply crafting URLs — a key observation for exploitation!</p>
     </div>
 </section>
 </section>
