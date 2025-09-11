@@ -545,6 +545,35 @@ wasm.instance.exports.process(userInput);</code></pre>
             <li>Uses a JavaScript callback to inject these messages into the DOM.</li>
             <li>This is the final layer of XSS protection before rendering content to the user.</li>
         </ul>
+        <h5 class='sidetext'>Breaking Down <code>main.js</code></h5>
+        <p>
+            The rest of <code>main.js</code> focuses on state handling and DOM updates. Here's what it does:
+        </p>
+        <ul>
+            <li>
+            Defines helper functions like <code>messagesToHTML()</code> to turn message objects into HTML blocks for rendering.
+            </li>
+            <li>
+            Uses <code>rendermsgs()</code> to refresh the chat UI.
+            </li>
+            <li>
+            Sets up event bindings for editing or deleting messages with SweetAlert modals.
+            </li>
+            <li>
+            Initializes everything in the <code>main()</code> function, which:
+            <ul>
+                <li>Reads the <code>s</code> query parameter from the URL.</li>
+                <li>Decodes and applies actions (add, edit, delete) by calling corresponding WASM functions.</li>
+                <li>Re-renders the chat UI after updates.</li>
+            </ul>
+            </li>
+            <li>
+            Updates the URL dynamically (<code>report-url</code>) so users can copy a link containing their chat history.
+            </li>
+            <li>
+            Acts as a controller layer: serializing/deserializing state, connecting DOM events to WASM exports, and syncing chat data between memory and the UI.
+            </li>
+        </ul>
     </div>
     
 </section>
