@@ -489,17 +489,17 @@ wasm.instance.exports.process(userInput);</code></pre>
         <ul>
             <li><strong>msg</strong> — Represents a single chat message:
             <ul>
-                <li><em>msg_data</em>: Pointer to dynamically allocated memory holding the actual text.</li>
-                <li><em>msg_data_len</em>: The length of the message (after sanitization).</li>
-                <li><em>msg_time</em>: A timestamp (Unix epoch) indicating when it was created.</li>
-                <li><em>msg_status</em>: Status flags (e.g., edited or not).</li>
+                <li><code>msg_data</code>: Pointer to dynamically allocated memory holding the actual text.</li>
+                <li><code>msg_data_len</code>: The length of the message (after sanitization).</li>
+                <li><code>msg_time</code>: A timestamp (Unix epoch) indicating when it was created.</li>
+                <li><code>msg_status</code>: Status flags (e.g., edited or not).</li>
             </ul>
             </li>
-            <li><strong>stuff</strong> — This is the chat application state, essentially a dynamic array of <code>msg</code> structs:
+            <li><strong>stuff</strong> — This is the chat application state, essentially a dynamic array of msg structs:
             <ul>
-                <li><em>mess</em>: Pointer to a heap-allocated array of messages.</li>
-                <li><em>size</em>: Number of messages currently stored.</li>
-                <li><em>capacity</em>: Maximum number of messages allocated (grows dynamically).</li>
+                <li><code>mess</code>: Pointer to a heap-allocated array of messages.</li>
+                <li><code>size</code>: Number of messages currently stored.</li>
+                <li><code>capacity</code>: Maximum number of messages allocated (grows dynamically).</li>
             </ul>
             </li>
             <li>All chat data is centralized in a single global variable <code>s</code>.</li>
