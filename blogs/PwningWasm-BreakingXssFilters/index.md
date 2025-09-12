@@ -847,7 +847,7 @@ global.set 1 ;; set global #1 to top of stack
             <em><code>Quick Tip</code> If stepping through WASM instructions in DevTools feels
             overwhelming, check out this intro video:<br>
             🔗 <a href="https://www.youtube.com/watch?v=ctdUuVQwqdg" target="_blank">Debugging WebAssembly in Chrome DevTools</a> —
-            it’s a great walkthrough of setting breakpoints, inspecting the stack, and correlating instructions with your C/C++ source.<em>
+            it’s a great walkthrough of setting breakpoints, inspecting the stack, and correlating instructions with your C/C++ source.</em>
         </blockquote>
     </div>
     
