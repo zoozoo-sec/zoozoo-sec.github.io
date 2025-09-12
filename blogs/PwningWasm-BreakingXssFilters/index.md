@@ -631,7 +631,7 @@ wasm.instance.exports.process(userInput);</code></pre>
                 alt="Chrome DevTools Layout Screenshot" class="code-screenshot" />
             </li>
         </ul>
-        <h5 class='sidetext'>Breakpoint at the First Call to "addMsg"</h45>
+        <h5 class='sidetext'>Breakpoint at the First Call to "addMsg"</h5>
         <p>
             We’ll start by intercepting the first call to the WASM <code>addMsg</code> function when a new message is submitted:
         </p>
