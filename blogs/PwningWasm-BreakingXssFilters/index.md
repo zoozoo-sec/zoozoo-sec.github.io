@@ -839,8 +839,8 @@ global.set 1 ;; set global #1 to top of stack
         </ul>
         <p>
            You can totally mess around with the WASM module at this point. Just keep stepping through instructions, drop breakpoints on the next function calls inside the current one, and cross-reference what’s running with the actual C source to see exactly where you are.
-           <br>
-            Keep an eye on the stack — watch values getting pushed and popped — and check out the arguments and variables sitting in memory. It’s all right there if you take the time to dig.<br>
+           <br><br>
+            Keep an eye on the stack — watch values getting pushed and popped — and check out the arguments and variables sitting in memory. It’s all right there if you take the time to dig.<br><br>
             Alright, that’s enough WASM debugging for now. Let’s stop geeking out on stepping through instructions and actually get back to solving the challenge.
         </p>
         <blockquote>
@@ -849,6 +849,111 @@ global.set 1 ;; set global #1 to top of stack
             🔗 <a href="https://www.youtube.com/watch?v=ctdUuVQwqdg" target="_blank">Debugging WebAssembly in Chrome DevTools</a> —
             it’s a great walkthrough of setting breakpoints, inspecting the stack, and correlating instructions with your C/C++ source.</em>
         </blockquote>
+        <p>
+            Alright, back to business. Now that we’re comfortable stepping through WASM, let’s move deeper into <code>addMsg()</code> and grab the actual pointers that matter.
+        </p>
+        <p>
+            Inside <code>addMsg()</code> there’s a call to <code>add_msg_to_stuff()</code>. This is a crucial spot because the arguments passed here include:
+        </p>
+        <ul>
+            <li>The <code>s</code> struct pointer – holds the metadata for our message.</li>
+            <li>The <code>new_msg</code> pointer – the actual message data we just submitted.</li>
+        </ul>
+        <p>
+            Let’s set a breakpoint right before this function call:
+        </p>
+        <img src="{{ '/blogs/PwningWasm-BreakingXssFilters/assets/debug5.png' | relative_url }}" 
+            alt="Screenshot showing message characters in DevTools" class="code-screenshot" />
+        <p>
+            Once we’ve paused there, let’s inspect the <code>s</code> pointer. Using our <code>readBytes()</code> helper, we can see the memory content for <code>s</code>:
+        </p>
+        <img src="{{ '/blogs/PwningWasm-BreakingXssFilters/assets/debug6.png' | relative_url }}" 
+            alt="Screenshot showing message characters in DevTools" class="code-screenshot" />
+        <p>
+            Those highlighted bytes represent the pointer to <code>s->mess</code> — the start of the message struct where all metadata will be stored.
+            Let’s use <strong>Step Over</strong> in DevTools so <code>add_msg_to_stuff()</code> executes and populates everything for us.
+        </p>
+        <p>
+            After stepping over, we can inspect <code>s->mess</code>:
+        </p>
+        <img src="{{ '/blogs/PwningWasm-BreakingXssFilters/assets/debug7.png' | relative_url }}" 
+            alt="Screenshot showing message characters in DevTools" class="code-screenshot" />
+        <p>
+            Now it’s all coming together. Here’s the relevant C struct:
+        </p>
+        <pre><code class="language-c">
+        typedef struct msg {
+            char *msg_data;       // Pointer to the actual message text
+            size_t msg_data_len;  // Length of the message
+            int msg_time;         // Timestamp
+            int msg_status;       // Message status (maybe "sent" or "delivered")
+        } msg;
+        </code></pre>
+        <p>
+            The highlighted bytes here represent <code>msg->msg_data</code> — the pointer to the actual chat text we typed.
+            Let’s follow that pointer and dump its contents:
+        </p>
+        <img src="{{ '/blogs/PwningWasm-BreakingXssFilters/assets/debug8.png' | relative_url }}" 
+            alt="Screenshot showing message characters in DevTools" class="code-screenshot" />        <p>
+            Next, let’s send a second message. Pause again at <code>add_msg_to_stuff()</code>, step over, and inspect <code>s->mess</code> for this second message:
+        </p>
+        <img src="{{ '/blogs/PwningWasm-BreakingXssFilters/assets/debug9.png' | relative_url }}" 
+            alt="Screenshot showing message characters in DevTools" class="code-screenshot" />        <p>
+            Using our helper functions (<code>readBytes</code>, <code>readBytesAsChars</code>), we confirm this second pointer points to the new message’s content.
+            If we compare both addresses, the distance is clear:
+        </p>
+        <img src="{{ '/blogs/PwningWasm-BreakingXssFilters/assets/debug10.png' | relative_url }}" 
+            alt="Screenshot showing message characters in DevTools" class="code-screenshot" />
+        <p>
+            Now, let’s edit the first message with a longer string to overflow into the second message:
+        </p>
+        <p>
+            After the edit completes, pause again and inspect memory:
+        </p>
+        <img src="{{ '/blogs/PwningWasm-BreakingXssFilters/assets/debug11.png' | relative_url }}" 
+            alt="Screenshot showing message characters in DevTools" class="code-screenshot" />
+        <h5 class='sidetext'>Result of Overflow</h5>
+        <ul>
+            <li>The pointer to the first message’s data is unchanged.</li>
+            <li>The second message’s data is overwritten by the overflow.</li>
+        </ul>
+        <p>
+            This confirms the vulnerability — we can control adjacent message content by overflowing the first one.
+        </p>
+        <h5 class='sidetext'>Read/Write Primitive</h5>
+        <p>
+            At this point, all we’ve done is overflow into an adjacent message struct. Cool visualization, but that alone doesn’t give us control over anything powerful. If we’re going to weaponize this bug, we need a way to overwrite a meaningful pointer — something that lets us read or write anywhere in WASM’s linear memory. So, let’s look deeper into this snippet from the WASM module:
+        </p>
+        <pre><code class="language-c">
+        int add_msg_to_stuff(stuff *s, msg new_msg) {
+        if (s->size >= s->capacity) {
+            s->capacity *= 2;
+            s->mess = (msg *)realloc(s->mess, s->capacity * sizeof(msg));
+            if (s->mess == NULL) {
+                exit(1);
+            }
+        }
+        s->mess[s->size++] = new_msg;
+        return s->size-1;
+        }
+        </code></pre>
+        <p>
+            Key insights:
+        </p>
+        <ul>
+            <li>The <code>stuff</code> struct (our top-level container for all messages) holds a pointer <code>s->mess</code>, which points to an array of <code>msg</code> structs.</li>
+            <li>When we first start sending messages, the program allocates a chunk of memory for this array, sized based on the initial capacity.</li>
+            <li>Every time we send a new message, a <code>msg</code> struct is added to <code>s->mess</code>.</li>
+            <li>When the number of messages exceeds capacity (e.g., after ~10 messages), the program doubles the capacity and calls <code>realloc()</code> to resize <code>s->mess</code>.</li>
+            <li>This causes <code>s->mess</code> to move to a new memory location, and all the old <code>msg</code> structs are copied there.</li>
+        </ul>
+        <p>
+            Because <code>WASM</code> linear memory is sequential — allocations are placed one after another. After enough allocations, there’s a strong chance that this newly reallocated <code>s->mess</code> array lands right after the latest message’s data buffer.
+            </p>
+            <p>
+            This layout is gold: if the relocated <code>s->mess</code> array is sitting next to user-controlled data, we can overflow from a message buffer and overwrite pointers inside the <code>s->mess</code> array itself. Since <code>s->mess</code> contains the pointers to every message’s data, corrupting it effectively gives us arbitrary <code>read/write</code> in <code>WASM</code> memory.
+        </p>
+
     </div>
     
 </section>
