@@ -979,7 +979,127 @@ global.set 1 ;; set global #1 to top of stack
             <li>Followed directly in memory by <code>s->mess</code> (which holds all message pointers)</li>
         </ul>
         <p><code>Boom</code>, this is the primitive we need.</p>
-
+         <h5 class='sidetext'>Exploitation</h5>
+            <p>
+                Now that we have <strong>arbitrary read/write</strong> in WASM’s linear memory, the big question is: 
+                <em>What do we overwrite to bypass the XSS filters and drop our payload?</em>
+            </p>
+            <p>
+                The obvious first thought might be:
+                <q>Why not overwrite the filter logic itself?</q>
+            </p>
+            <p>
+                That would be nice, but it’s not possible here — the filtering happens 
+                <strong>before</strong> our message ever makes it into WASM memory. By the time it’s stored, the input 
+                has already been sanitized. So that path is blocked.
+            </p>
+            <p>
+                Instead, let’s focus on <strong>where the sanitized message is inserted into the DOM</strong>.
+            </p>
+            <h5 class='sidetext'>The HTML Stub</h5>
+            <p>
+                The application renders each message using a hardcoded HTML template in memory:
+            </p>
+            <pre><code>&lt;article&gt;&lt;p&gt;%.*s&lt;/p&gt;&lt;/article&gt;</code></pre>
+            <p>
+                This is the HTML stub string baked into the WASM module. The <code>%.*s</code> is a placeholder 
+                replaced with our sanitized message content.
+            </p>
+            <p>
+                What if we overwrite this stub to something malicious? Specifically, we’ll modify it so that instead 
+                of inserting our sanitized text inside a <code>&lt;p&gt;</code> tag, it injects our content inside an 
+                <code>&lt;img&gt;</code> tag’s <code>onerror</code> attribute — a classic XSS vector.
+            </p>
+            <pre><code>&lt;img src=1      onerror=%.*s&gt;</code></pre>
+            <p>Key details:</p>
+            <ul>
+                <li>We’re <strong>not adding new <code>&lt;</code> or <code>&gt;</code> brackets directly</strong> — those characters are filtered.</li>
+                <li>We’re reusing the existing <code>&lt;</code> and <code>&gt;</code> from the original stub.</li>
+                <li>The payload has extra spaces to ensure perfect alignment with the original tag boundaries in memory.</li>
+            </ul>
+            <p>
+                By doing this, any “message” we send will effectively become JavaScript code executed via the 
+                <code>onerror</code> attribute, completely bypassing the filters.
+            </p>
+            <h5 class='sidetext'>Finding the Stub’s Address</h5>
+            <p>
+                To overwrite this string, we first need its address in WASM linear memory. WASM modules don’t use 
+                PIE (Position Independent Executables) or ASLR (Address Space Layout Randomization). 
+                Memory is laid out <strong>deterministically</strong> at compile time.
+            </p>
+            <p>
+                Using our <code>searchWasmMemory()</code> helper, we search for the exact string:
+            </p>
+            <pre><code>searchWasmMemory("&lt;article&gt;&lt;p&gt;%.*s&lt;/p&gt;&lt;/article&gt;");</code></pre>
+            <pre><code class="language-javascript">searchWasmMemory('&lt;article&gt;&lt;p&gt;%.*s&lt;/p&gt;&lt;/article&gt;)
+VM1601:49 Found "<article><p>%.*s</p></article>" at memory address: 65581</code></pre>
+            <p>
+                Since this offset is constant across every execution, we can reliably overwrite it in the exploit.
+            </p>
+            <h5 class='sidetext'>Crafting the Exploit Payload</h5>
+            <p>Here’s the plan:</p>
+            <ul>
+                <li>
+                Overflow from the <code>11th</code> message (triggering <code>realloc</code>) to overwrite the first 
+                message’s pointer with the address of this HTML stub <code>+1</code> (to align perfectly with the start of the 
+                <code>&lt;</code> tag).
+                </li>
+                <li>Overwrite the stub itself with our malicious <code>&lt;img&gt;</code> payload.</li>
+                <li>
+                Send a new “message” containing JavaScript code like <code>alert(1337)</code> — which gets inserted 
+                directly into the <code>onerror</code> attribute and executes immediately.
+                </li>
+            </ul>
+            <p>
+                <strong>Why +1?</strong><br>
+                We use +1 because the pointer needs to point inside the string, skipping the very first 
+                <code>&lt;</code>. That way, when we overwrite the contents, we don’t disturb WASM memory alignment or 
+                the existing tag boundaries.
+            </p>
+            <h5 class='sidetext'>The Overflow Payload</h5>
+            <p>To overwrite the first message pointer, we edit the last (11th) message with this payload:</p>
+            <pre><code>"aaaaaaaaaaaaaaaa.\u0000\u0001\u0000\u0050"</code></pre>
+            <p>Why Unicode escapes?</p>
+            <ul>
+                <li>JavaScript strings only support Unicode text safely.</li>
+                <li>
+                Using <code>\u</code> escapes lets us write exact byte values directly into WASM memory without 
+                unexpected encoding issues.
+                </li>
+            </ul>
+            <p>
+                Once that’s done, we edit the first message and replace its content with:
+            </p>
+            <pre><code>"img src=1      onerror=%.*s "</code></pre>
+            <p>
+                At this point, the HTML stub in WASM memory has been surgically modified.
+            </p>
+            <h5 class='sidetext'>Testing</h5>
+            <p>
+                Now, sending a new message with <code>alert(1337)</code> should inject:
+            </p>
+            <pre><code>&lt;img src=1 onerror=alert(1337)&gt;</code></pre>
+            <p><strong>Boom.</strong></p>
+            <img src="{{ '/blogs/PwningWasm-BreakingXssFilters/assets/exp.png' | relative_url }}" 
+            alt="Screenshot showing message characters in DevTools" class="code-screenshot" />
+            <h5 class='sidetext'>Full Exploit Workflow</h5>
+            <ul>
+                <li>Send 11 messages to trigger <code>realloc()</code> and set up our overflow layout.</li>
+                <li>Edit the 11th message to overwrite the first message’s pointer with the HTML stub’s memory address.</li>
+                <li>Overwrite the stub itself with our <code>&lt;img&gt;</code> payload.</li>
+                <li>Send a new message containing JavaScript code, e.g., <code>alert(1337)</code>.</li>
+                <li>Watch your payload execute, bypassing all filters.</li>
+            </ul>
+            <p>The payload structure:</p>
+            <pre><code>[{"action":"add","content":"hi","time":1756840476392},{"action":"add","content":"hi","time":1756840476392},{"action":"add","content":"hi","time":1756840476392},{"action":"add","content":"hi","time":1756840476392},{"action":"add","content":"hi","time":1756840476392},{"action":"add","content":"hi","time":1756840476392},{"action":"add","content":"hi","time":1756840476392},{"action":"add","content":"hi","time":1756840476392},{"action":"add","content":"hi","time":1756840476392},{"action":"add","content":"hi","time":1756840476392},{"action":"add","content":"hi","time":1756840476392},{"action":"edit","msgId":10,"content":"aaaaaaaaaaaaaaaa.\u0000\u0001\u0000\u0050","time":1756885686080},{"action":"edit","msgId":0,"content":"img src=1      onerror=%.*s ","time":1756885686080},{"action":"add","content":"alert(1337)","time":1756840476392}]</code></pre>
+            <p>
+                Finally, encode the entire payload in Base64 and pass it to the application as the 
+                <code>s</code> GET parameter.
+            </p>
+            <p>
+                And just like that, we’ve bypassed all sanitization logic, turning the chatbox into a 
+                <strong>JavaScript payload dropper</strong> — straight out of WASM linear memory manipulation.
+            </p>
     </div>
     
 </section>
