@@ -1000,7 +1000,7 @@ global.set 1 ;; set global #1 to top of stack
             <p>
                 The application renders each message using a hardcoded HTML template in memory:
             </p>
-            <pre><code>&lt;article&gt;&lt;p&gt;%.*s&lt;/p&gt;&lt;/article&gt;</code></pre>
+            <pre><code class="language-javascript">&lt;article&gt;&lt;p&gt;%.*s&lt;/p&gt;&lt;/article&gt;</code></pre>
             <p>
                 This is the HTML stub string baked into the WASM module. The <code>%.*s</code> is a placeholder 
                 replaced with our sanitized message content.
@@ -1010,7 +1010,7 @@ global.set 1 ;; set global #1 to top of stack
                 of inserting our sanitized text inside a <code>&lt;p&gt;</code> tag, it injects our content inside an 
                 <code>&lt;img&gt;</code> tag’s <code>onerror</code> attribute — a classic XSS vector.
             </p>
-            <pre><code>&lt;img src=1      onerror=%.*s&gt;</code></pre>
+            <pre><code class="language-javascript">&lt;img src=1      onerror=%.*s&gt;</code></pre>
             <p>Key details:</p>
             <ul>
                 <li>We’re <strong>not adding new <code>&lt;</code> or <code>&gt;</code> brackets directly</strong> — those characters are filtered.</li>
@@ -1030,7 +1030,6 @@ global.set 1 ;; set global #1 to top of stack
             <p>
                 Using our <code>searchWasmMemory()</code> helper, we search for the exact string:
             </p>
-            <pre><code>searchWasmMemory("&lt;article&gt;&lt;p&gt;%.*s&lt;/p&gt;&lt;/article&gt;");</code></pre>
             <pre><code class="language-javascript">searchWasmMemory('&lt;article&gt;&lt;p&gt;%.*s&lt;/p&gt;&lt;/article&gt;)
 VM1601:49 Found "<article><p>%.*s</p></article>" at memory address: 65581</code></pre>
             <p>
