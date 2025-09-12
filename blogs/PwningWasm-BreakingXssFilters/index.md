@@ -581,19 +581,8 @@ wasm.instance.exports.process(userInput);</code></pre>
             but exploiting it is a bit tricky if you’re not used to debugging WASM internals (I struggled with that myself).
         </p>
         <p>
-            The bug is a <strong>heap overflow</strong> in the <code>editMsg</code> function:
+            The bug is a <strong>heap overflow</strong> in the <code>editMsg</code> function. While addMsg validates the length of input before allocating memory and storing it, editMsg skips any checks. It directly calls <code>memcpy</code> to copy user input into the existing message buffer, which means we can write past the allocated chunk.
         </p>
-        <ul>
-            <li>
-            <code>addMsg</code> validates the length of input before allocating memory and storing it.
-            </li>
-            <li>
-            <code>editMsg</code> skips checks entirely. It directly calls <code>memcpy</code> to copy user input into the existing message buffer.
-            </li>
-            <li>
-            This allows writing past the allocated chunk, leading to a heap overflow.
-            </li>
-        </ul>
         <p>
             Let’s see this in action:
         </p>
