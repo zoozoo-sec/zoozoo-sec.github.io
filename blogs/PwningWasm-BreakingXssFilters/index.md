@@ -1112,7 +1112,7 @@ VM1601:49 Found "<article><p>%.*s</p></article>" at memory address: 65581</code>
             </p>
             <p>
                 And just like that, we’ve bypassed all sanitization logic, turning the chatbox into a 
-                <strong>JavaScript payload dropper</strong> — straight out of WASM linear memory manipulation.
+                <code>JavaScript payload dropper</code> — straight out of WASM linear memory manipulation.
             </p>
     </div>
     
