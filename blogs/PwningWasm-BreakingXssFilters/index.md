@@ -21,7 +21,7 @@ permalink: /blogs/PwningWasm-BreakingXssFilters/
 <section id="blueback" class="container">
     <div id="intro" class="challenge-section">
         <div class="section-content">
-        <h3><code>Pwning WebAssembly: Bypassing XSS Filters in the WASM Heap Sandbox</code></h3>
+        <h3><code>Pwning WebAssembly: Bypassing XSS Filters in the WASM Sandbox</code></h3>
             <p>
                 Lately, I’ve been trying to level up my pwn game, so I decided to dive into WebAssembly security. 
                 Everyone hypes WASM as this safe, sandboxed thing that makes running C/C++ in the browser “secure,” 
@@ -881,14 +881,12 @@ global.set 1 ;; set global #1 to top of stack
         <p>
             Now it’s all coming together. Here’s the relevant C struct:
         </p>
-        <pre><code class="language-c">
-        typedef struct msg {
+        <pre><code class="language-c">typedef struct msg {
             char *msg_data;       // Pointer to the actual message text
             size_t msg_data_len;  // Length of the message
             int msg_time;         // Timestamp
             int msg_status;       // Message status (maybe "sent" or "delivered")
-        } msg;
-        </code></pre>
+        } msg;</code></pre>
         <p>
             The highlighted bytes here represent <code>msg->msg_data</code> — the pointer to the actual chat text we typed.
             Let’s follow that pointer and dump its contents:
@@ -924,8 +922,7 @@ global.set 1 ;; set global #1 to top of stack
         <p>
             At this point, all we’ve done is overflow into an adjacent message struct. Cool visualization, but that alone doesn’t give us control over anything powerful. If we’re going to weaponize this bug, we need a way to overwrite a meaningful pointer — something that lets us read or write anywhere in WASM’s linear memory. So, let’s look deeper into this snippet from the WASM module:
         </p>
-        <pre><code class="language-c">
-        int add_msg_to_stuff(stuff *s, msg new_msg) {
+        <pre><code class="language-c">int add_msg_to_stuff(stuff *s, msg new_msg) {
         if (s->size >= s->capacity) {
             s->capacity *= 2;
             s->mess = (msg *)realloc(s->mess, s->capacity * sizeof(msg));
@@ -935,8 +932,7 @@ global.set 1 ;; set global #1 to top of stack
         }
         s->mess[s->size++] = new_msg;
         return s->size-1;
-        }
-        </code></pre>
+        }</code></pre>
         <p>
             Key insights:
         </p>
@@ -953,6 +949,36 @@ global.set 1 ;; set global #1 to top of stack
             <p>
             This layout is gold: if the relocated <code>s->mess</code> array is sitting next to user-controlled data, we can overflow from a message buffer and overwrite pointers inside the <code>s->mess</code> array itself. Since <code>s->mess</code> contains the pointers to every message’s data, corrupting it effectively gives us arbitrary <code>read/write</code> in <code>WASM</code> memory.
         </p>
+        <h5 class='sidetext'>Testing the Hypothesis</h5>
+        <p>Let’s test this theory step by step.</p>  
+        <ul>
+            <li>First, send <code>11</code> messages (one more than the likely starting capacity of <code>10</code>). For the <code>11th</code> message, set a breakpoint inside the <code>addMsg()</code> WASM function, right before <code>add_msg_to_stuff()</code> executes.</li>
+            <li>Now, grab two things:
+            <ul>
+                <li>The current pointer value of <code>s->mess</code> (before reallocation).</li>
+                <li>The <code>msg_data</code> pointer for this 11th message (so we know where its buffer lives).</li>
+            </ul>
+            </li>
+        </ul>
+        <img src="{{ '/blogs/PwningWasm-BreakingXssFilters/assets/debug12.png' | relative_url }}" 
+            alt="Screenshot showing message characters in DevTools" class="code-screenshot" />
+        <p>Now, step over the <code>add_msg_to_stuff()</code> call and check again:</p>
+        <img src="{{ '/blogs/PwningWasm-BreakingXssFilters/assets/debug13.png' | relative_url }}" 
+            alt="Screenshot showing message characters in DevTools" class="code-screenshot" />
+        <p>The <code>s->mess</code> pointer has changed, confirming that <code>realloc()</code> moved the array to a new spot in WASM memory.</p>
+        <p>To verify, let’s dump the entire <code>s->mess</code> array after reallocation. Sure enough, it contains all 11 message structs with their respective pointers intact, just copied to the new location.</p>
+        <img src="{{ '/blogs/PwningWasm-BreakingXssFilters/assets/debug14.png' | relative_url }}" 
+            alt="Screenshot showing message characters in DevTools" class="code-screenshot" />
+        <p>Now, let’s focus on the relationship between the last message’s buffer and the relocated <code>s->mess</code>:</p>
+        <p>Using our helper function, dump around <code>100</code> bytes starting from the 11th message’s <code>msg_data</code> pointer:</p>
+        <img src="{{ '/blogs/PwningWasm-BreakingXssFilters/assets/debug15.png' | relative_url }}" 
+            alt="Screenshot showing message characters in DevTools" class="code-screenshot" />
+        <p>And there it is — right after a small gap, we see the relocated <code>s->mess</code> array sitting in memory. This proves our theory:</p>
+        <ul>
+            <li>A long message buffer (user-controlled)</li>
+            <li>Followed directly in memory by <code>s->mess</code> (which holds all message pointers)</li>
+        </ul>
+        <p><code>Boom</code>, this is the primitive we need.</p>
 
     </div>
     
