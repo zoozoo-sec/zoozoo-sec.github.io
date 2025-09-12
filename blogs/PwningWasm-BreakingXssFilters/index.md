@@ -575,6 +575,45 @@ wasm.instance.exports.process(userInput);</code></pre>
             Acts as a controller layer: serializing/deserializing state, connecting DOM events to WASM exports, and syncing chat data between memory and the UI.
             </li>
         </ul>
+        <h5 class='sidetext'>Diving Into the Vulnerability</h5>
+        <p>
+            Okay, that’s enough intro to the challenge—let’s jump straight into the vulnerability. Any pwner would notice this quickly, 
+            but exploiting it is a bit tricky if you’re not used to debugging WASM internals (I struggled with that myself).
+        </p>
+        <p>
+            The bug is a <strong>heap overflow</strong> in the <code>editMsg</code> function:
+        </p>
+        <ul>
+            <li>
+            <code>addMsg</code> validates the length of input before allocating memory and storing it.
+            </li>
+            <li>
+            <code>editMsg</code> skips checks entirely. It directly calls <code>memcpy</code> to copy user input into the existing message buffer.
+            </li>
+            <li>
+            This allows writing past the allocated chunk, leading to a heap overflow.
+            </li>
+        </ul>
+        <p>
+            Let’s see this in action:
+        </p>
+        <ol>
+            <li>
+            Create two messages:<br>
+            <img src="{{ '/blogs/PwningWasm-BreakingXssFilters/assets/vuln.png' | relative_url }}" alt="Two messages screenshot" class="code-screenshot" />
+            </li>
+            <li>
+            Edit the first message with a larger payload. The second message gets overwritten:<br>
+            <img src="{{ '/blogs/PwningWasm-BreakingXssFilters/assets/vuln1.png' | relative_url }}" alt="Overflowed message screenshot" class="code-screenshot" />
+            </li>
+        </ol>
+        <p>
+            The vulnerability is confirmed. But exploiting this isn’t like traditional heap exploits on ELF binaries—there’s no metadata 
+            corruption or <code>tcache</code> tricks. In WebAssembly, memory is just a flat, contiguous <code>linear memory</code> block. 
+            That changes how we approach the bug. We’ll need to understand exactly how data is laid out in WASM’s linear memory 
+            before planning an exploit.
+        </p>
+        <h5 class='sidetext'>Debugging</h5>
     </div>
     
 </section>
