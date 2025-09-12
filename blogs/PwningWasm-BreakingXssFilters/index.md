@@ -603,6 +603,252 @@ wasm.instance.exports.process(userInput);</code></pre>
             before planning an exploit.
         </p>
         <h5 class='sidetext'>Debugging</h5>
+        <p>
+            Now that we’ve spotted the vulnerability, it’s time to dig deeper into how the WASM module behaves at runtime. 
+            For this, we’ll rely entirely on <strong>Chrome DevTools</strong>. DevTools is powerful enough to step through JavaScript, 
+            pause inside WASM instructions, inspect the stack, and directly read/write WASM memory.
+        </p>
+        <p>
+            Let’s walk through it step by step.
+        </p>
+        <ul>
+            <li>
+            Open your vulnerable web application in <strong>Google Chrome</strong>.
+            </li>
+            <li>
+            Hit <code>F12</code> or right-click → <code>Inspect</code> to open Chrome DevTools.
+            </li>
+            <li>
+            Rearrange the panels for convenience:
+            <ul>
+                <li>Keep the <strong>Console</strong> docked at the bottom.</li>
+                <li>The <strong>Sources</strong> panel should be on top (this is where we’ll set breakpoints).</li>
+            </ul>
+            </li>
+            <li>
+            Your setup should look like this:<br>
+            <img src="{{ '/blogs/PwningWasm-BreakingXssFilters/assets/debug.png' | relative_url }}" 
+                alt="Chrome DevTools Layout Screenshot" class="code-screenshot" />
+            </li>
+        </ul>
+        <h5 class='sidetext'>Breakpoint at the First Call to "addMsg"</h45>
+        <p>
+            We’ll start by intercepting the first call to the WASM <code>addMsg</code> function when a new message is submitted:
+        </p>
+        <ul>
+            <li>Go to the <strong>Sources</strong> tab.</li>
+            <li>Open <code>main.js</code> (you’ll find it under the site’s domain in DevTools).</li>
+            <li>Scroll to line <code>106</code> — this is where <code>addMsg</code> is called.</li>
+            <li>Set a breakpoint here by clicking the line number.</li>
+            <li>Now type a message in the app’s chat box and click submit.</li>
+            <li>Execution will pause at your breakpoint:<br>
+            <img src="{{ '/blogs/PwningWasm-BreakingXssFilters/assets/debug1.png' | relative_url }}" 
+                alt="Breakpoint at main.js line 106" class="code-screenshot" />
+            </li>
+        </ul>
+        <h5 class='sidetext'>Stepping into the WASM Glue Code</h5>
+        <ul>
+            <li>Click <strong>Step Into</strong> (the down-arrow icon in DevTools, near the top right of the Sources panel).</li>
+            <li>You’ll see execution jump from <code>main.js</code> into <code>module.js</code> — this is the glue code connecting JavaScript to WASM.</li>
+            <li>The glue code sets up arguments, memory offsets, and finally calls the actual WASM function.</li>
+            <li>Scroll to line <code>609</code> in <code>module.js</code>. This is where <code>addMsg</code> is actually invoked. 
+                Set a breakpoint here so you can jump directly to this line in the future.</li>
+            <li>At this point, you’re inside the glue code, right before the call enters WASM land.</li>
+        </ul>
+        <h5 class='sidetext'>Inspecting Function Arguments</h5>
+        <p>
+            On the right-hand panel in DevTools (the <strong>Scope</strong> tab), you can now see:
+        </p>
+        <ul>
+            <li>The function being called (<code>addMsg</code>).</li>
+            <li>Its arguments and their values.</li>
+            <li>The first argument is a <strong>pointer into WASM’s linear memory</strong>, not the actual string. 
+                This is how WASM functions exchange data — they pass around pointers (numeric memory offsets) rather than objects or strings.</li>
+            <li>Other arguments are simple integers.</li>
+            <li><img src="{{ '/blogs/PwningWasm-BreakingXssFilters/assets/debug2.png' | relative_url }}" 
+                    alt="Inspecting WASM arguments in DevTools" class="code-screenshot" /></li>
+        </ul>
+        <h5 class='sidetext'>Understanding HEAPU8</h5>
+        <p>
+            WASM modules store all data in a flat byte array called <strong>linear memory</strong>. In 
+            Emscripten-generated modules (like this one), that memory is exposed as a JavaScript 
+            <code>Uint8Array</code> called <code>HEAPU8</code>. 
+        </p>
+        <p>
+            <code>HEAPU8</code> lets you read and write bytes directly in WASM memory:
+        </p>
+        <ul>
+            <li><code>HEAPU8[pointer]</code> returns the byte at the specified memory address.</li>
+            <li>You can interact with it just like a normal JavaScript array.</li>
+        </ul>
+        <p>To make debugging easier, we’ll define some helper functions to:</p>
+        <ul>
+            <li>Write bytes into WASM memory</li>
+            <li>Read raw bytes from a pointer</li>
+            <li>Read bytes as printable characters</li>
+            <li>Search for strings in WASM memory</li>
+        </ul>
+        <h5 class='sidetext'>Helper Functions for WASM Memory Debugging</h5>
+        <p>
+            Paste these helper functions into the Console in DevTools:
+        </p>
+        <pre><code class="language-javascript">function writeBytes(ptr, byteArray) {
+  if (!Array.isArray(byteArray)) {
+    throw new Error("byteArray must be an array of numbers");
+  }
+
+  for (let i = 0; i < byteArray.length; i++) {
+     byte = byteArray[i];
+    if (typeof byte !== "number" || byte < 0 || byte > 255) {
+      throw new Error(`Invalid byte at index ${i}: ${byte}`);
+    }
+    HEAPU8[ptr + i] = byte;
+  }
+}
+
+function readBytes(ptr, length) {
+  const bytes = HEAPU8.subarray(ptr, ptr + length); 
+  return Array.from(bytes); // returns raw byte array
+}
+function readBytesAsChars(ptr, length) {
+  const bytes = HEAPU8.subarray(ptr, ptr + length);
+  
+  return Array.from(bytes).map(b => {
+    if (b >= 32 && b <= 126) {
+      return String.fromCharCode(b);
+    } else {
+      return '.'; // Non-printable bytes shown as "."
+    }
+  }).join('');
+}
+
+
+
+function searchWasmMemory(searchStr) {
+   mem = Module.HEAPU8;                // WASM memory as Uint8Array
+   searchBytes = new TextEncoder().encode(searchStr);
+  
+  for (let i = 0; i < mem.length - searchBytes.length; i++) {
+    let found = true;
+    for (let j = 0; j < searchBytes.length; j++) {
+      if (mem[i + j] !== searchBytes[j]) {
+        found = false;
+        break;
+      }
+    }
+    if (found) {
+      console.log(`Found "${searchStr}" at memory address:`, i);
+      //return i; // return the index/address
+    }
+  }
+  console.log(`"${searchStr}" not found in memory`);
+  return -1;
+}
+
+a = bytes => bytes.reduce((acc, byte, i) => acc + (byte << (8 * i)), 0);</code></pre>
+        <p>
+            After pasting these, your DevTools console should look like this:
+        </p>
+        <img src="{{ '/blogs/PwningWasm-BreakingXssFilters/assets/debug3.png' | relative_url }}" 
+            alt="Helper functions loaded in DevTools console" class="code-screenshot" />
+        <h5 class='sidetext'>Reading Message Data from a Pointer</h5>
+        <p>
+            Now that we have our helper functions, let’s use them to inspect the message we typed:
+        </p>
+        <ul>
+            <li>Grab the pointer value of the message argument from the <strong>Scope</strong> tab in DevTools.</li>
+            <li>
+            In the console, run:
+            <pre><code class="language-javascript">readBytesAsChars(POINTER_HERE, LENGTH_HERE)</code></pre>
+            Replace <code>POINTER_HERE</code> with the pointer address, and <code>LENGTH_HERE</code> 
+            with the number of bytes you expect (start small, like <code>20</code>).
+            </li>
+        </ul>
+        <p>
+            You’ll see the exact message you typed appear in DevTools!
+        </p>
+        <img src="{{ '/blogs/PwningWasm-BreakingXssFilters/assets/debug4.png' | relative_url }}" 
+            alt="Screenshot showing message characters in DevTools" class="code-screenshot" />
+        <p>
+            Cool, right? Now let’s take this one step further. We’re finally stepping into the WebAssembly 
+            module itself. At this point, DevTools shows nothing but raw WebAssembly instructions — we’re 
+            no longer in JavaScript land, but inside the compiled <code>addMsg</code> function of the WASM module.
+            Before going deeper, let’s pause and get comfortable with what we’re looking at.
+        </p>
+        <h5 class='sidetext'>WASM Instructions: A Stack-Based Virtual Machine</h5>
+        <p>
+            WebAssembly doesn’t use CPU registers like x86 or ARM; instead, it’s a stack-based virtual machine.
+            Every calculation is done by pushing values onto a stack and popping them when needed. Instructions
+            don’t name registers — they just consume whatever is on top of the stack.
+        </p>
+        <p>Here’s a simple example:</p>
+        <pre><code class="language-javascript">
+i32.const 5      ;; push 5 onto the stack
+i32.const 3      ;; push 3
+i32.add          ;; pop top two numbers (5 and 3), add them, push result (8)</code></pre>
+        <p>
+            At the end, the stack has a single value: <code>8</code>. No registers, no addressing modes, just stack operations.
+        </p>
+        <h5 class='sidetext'>Function Calls: Indexed, Not Pointer-Based</h5>
+        <p>
+            When a function is called in WASM, there’s no concept of function pointers like in native C/C++.
+            Each function is assigned a fixed index at compile time, and function calls are simply by index:
+        </p>
+        <pre><code class="language-javascript">call $func15 ;; calls the function at index 15</code></pre>
+        <ul>
+            <li>It’s impossible to just “jump” to arbitrary memory like in a native binary.</li>
+            <li>Even indirect calls (function-pointer-like behavior) are strictly controlled through a function table.</li>
+            <li>This makes traditional exploitation techniques like ROP (Return-Oriented Programming) much harder in WASM.</li>
+        </ul>
+        <h5 class='sidetext'>Variables in WASM</h5>
+        <p>WASM has three main categories of variables you’ll see while debugging:</p>
+        <ul>
+            <li>
+            <strong>Stack Variables</strong>
+            <ul>
+                <li>Temporary values pushed and popped as instructions execute.</li>
+                <li>Every operation works directly on this stack.</li>
+                <li>Example: <code>i32.const 42</code> pushes <code>42</code> onto the stack.</li>
+            </ul>
+            </li>
+            <li>
+            <strong>Local Variables (<code>local</code>)</strong>
+            <ul>
+                <li>Variables local to a function (like C function variables).</li>
+                <li>Stored in a small local array and accessed with <code>get_local</code> or <code>set_local</code>.</li>
+                <li>
+                Example:
+                <pre><code class="language-javascript">local.get 0 ;; push the value of local variable #0 onto the stack
+local.set 1 ;; pop a value and store it in local variable #1</code></pre>
+                </li>
+            </ul>
+            </li>
+            <li>
+            <strong>Global Variables (<code>global</code>)</strong>
+            <ul>
+                <li>Shared across functions in the module.</li>
+                <li>Accessed with <code>global.get</code> and <code>global.set</code>.</li>
+                <li>
+                Example:
+                <pre><code class="language-javascript">global.get 0 ;; push the value of global #0
+global.set 1 ;; set global #1 to top of stack
+                </code></pre>
+                </li>
+            </ul>
+            </li>
+        </ul>
+        <p>
+           You can totally mess around with the WASM module at this point. Just keep stepping through instructions, drop breakpoints on the next function calls inside the current one, and cross-reference what’s running with the actual C source to see exactly where you are.
+           <br>
+            Keep an eye on the stack — watch values getting pushed and popped — and check out the arguments and variables sitting in memory. It’s all right there if you take the time to dig.<br>
+            Alright, that’s enough WASM debugging for now. Let’s stop geeking out on stepping through instructions and actually get back to solving the challenge.
+        </p>
+        <blockquote>
+            <em><code>Quick Tip</code> If stepping through WASM instructions in DevTools feels
+            overwhelming, check out this intro video:<br>
+            🔗 <a href="https://www.youtube.com/watch?v=ctdUuVQwqdg" target="_blank">Debugging WebAssembly in Chrome DevTools</a> —
+            it’s a great walkthrough of setting breakpoints, inspecting the stack, and correlating instructions with your C/C++ source.<em>
+        </blockquote>
     </div>
     
 </section>
