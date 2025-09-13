@@ -1171,7 +1171,8 @@ await page.close();</code></pre>
         </p>
     </div>
     <div id="toc" class="challenge-section">
-        <div class="section-content">
+        <div id="references" class="section-content">
+        <h4 class='text'>References</h4>
             <ul>
             <li><a href="https://v8.dev/docs/wasm-compilation-pipeline" target="_blank" rel="noopener noreferrer">
                 WebAssembly Compilation Pipeline (V8 Docs)
