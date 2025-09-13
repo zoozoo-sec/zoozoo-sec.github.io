@@ -1,6 +1,6 @@
 ---
 layout: default
-title: "Pwning WebAssembly: Bypassing XSS Filters in the WASM Heap Sandbox"
+title: "Pwning WebAssembly: Bypassing XSS Filters in the WASM Sandbox"
 description: "A deep dive into WebAssembly security, exploring how to analyze and exploit client-side XSS filters using vulnerabilities in WASM module."
 og_description: "Explore WebAssembly internals and security implications in WASM Linear Memory Sandbox."
 og_type: "article"
