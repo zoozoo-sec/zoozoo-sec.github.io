@@ -474,7 +474,7 @@ wasm.instance.exports.process(userInput);</code></pre>
                 <li>This pattern is  Emscripten glue: the WASM module owns the chat data model, while JavaScript is primarily a rendering and control layer.</li>
             </ul>
         <h5 class='sidetext'>Chat Logic: State Management</h5>
-        <p>The messages aren’t just stored in memory; they’re serialized into the URL through the <code>s query parameter</code></p>
+        <p>The messages aren’t just stored in memory; they’re serialized into the URL through the <code>s</code>query parameter</p>
         <pre><code class="language-javascript">ReportUrl.href = `${window.location.origin}?s=${btoa(JSON.stringify(saved))}`;
 //Found this snippet in main.js</code></pre>
         <p>Every message or action (add, edit, delete) gets pushed into a <code>saved</code> array, Base64-encoded, and stuck into the URL. When you reload the page, main() reads that query string, decodes it, and rebuilds the entire chat state.</p>
@@ -582,7 +582,7 @@ wasm.instance.exports.process(userInput);</code></pre>
             but exploiting it is a bit tricky if you’re not used to debugging WASM internals (I struggled with that myself).
         </p>
         <p>
-            The bug is a <strong>heap overflow</strong> in the <code>editMsg</code> function. While addMsg validates the length of input before allocating memory and storing it, editMsg skips any checks. It directly calls <code>memcpy</code> to copy user input into the existing message buffer, which means we can write past the allocated chunk.
+            The bug is a <code>heap overflow</code> in the editMsg function. While addMsg validates the length of input before allocating memory and storing it, editMsg skips any checks. It directly calls <code>memcpy</code> to copy user input into the existing message buffer, which means we can write past the allocated chunk.
         </p>
         <p>
             Let’s see this in action:
@@ -638,8 +638,8 @@ wasm.instance.exports.process(userInput);</code></pre>
         </p>
         <ul>
             <li>Go to the <strong>Sources</strong> tab.</li>
-            <li>Open <code>main.js</code> (you’ll find it under the site’s domain in DevTools).</li>
-            <li>Scroll to line <code>106</code> — this is where <code>addMsg</code> is called.</li>
+            <li>Open <code>main.js</code>.</li>
+            <li>Scroll to line <code>106</code> — this is where <code>addMsg</code> defined in the wasm module is called.</li>
             <li>Set a breakpoint here by clicking the line number.</li>
             <li>Now type a message in the app’s chat box and click submit.</li>
             <li>Execution will pause at your breakpoint:<br>
@@ -838,14 +838,18 @@ global.set 1 ;; set global #1 to top of stack
             </ul>
             </li>
         </ul>
+        <div style="background-color: #3e3e2e; padding: 10px; border-radius: 5px;">
         <p>
            You can totally mess around with the WASM module at this point. Just keep stepping through instructions, drop breakpoints on the next function calls inside the current one, and cross-reference what’s running with the actual C source to see exactly where you are.
            <br><br>
             Keep an eye on the stack — watch values getting pushed and popped — and check out the arguments and variables sitting in memory. It’s all right there if you take the time to dig.<br><br>
+            </p>
+        </div>
+        <p>
             Alright, that’s enough WASM debugging for now. Let’s stop geeking out on stepping through instructions and actually get back to solving the challenge.
         </p>
         <blockquote>
-            <em><code>Quick Tip</code> If stepping through WASM instructions in DevTools feels
+            <em><code>Quick Tip:</code> If stepping through WASM instructions in DevTools feels
             overwhelming, check out this intro video:<br>
             <a href="https://www.youtube.com/watch?v=BTLLPnW4t5s&t" target="_blank">Debugging WebAssembly in Chrome DevTools</a> —
             it’s a great walkthrough of setting breakpoints, inspecting the stack, and correlating instructions with your C/C++ source.</em>
