@@ -31,9 +31,11 @@ permalink: /blogs/PwningWasm-BreakingXssFilters/
                 runtimes, and a whole new attack surface. This post is basically me dumping what I’ve been learning so far — 
                 how WASM works, what it does well, and where it can be broken.
             </p>
+            <div style="background-color: #3e3e2e; padding: 2px; border-radius: 2px;">
             <p>
             <em><code>Quick Note:</code> I’m still learning and exploring WebAssembly security, So this post is a collection of my explorations and notes as I dive into WebAssembly security. If you spot mistakes, missing details, or have suggestions, I’d genuinely love your feedback — feel free to reach out to me via <a href="mailto:this.sarvesh@gmail.com">email</a>!</em>
             </p>
+            </div>
         </div>
     </div>
     <div id="toc" class="challenge-section">
