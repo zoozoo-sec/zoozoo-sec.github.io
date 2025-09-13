@@ -139,6 +139,9 @@
     font-size: 6px;
   }
 
+  .writeup-card h2{
+    font-size: 12px;
+  }
   .writeup-card h2,
   .writeup-card p,
   .writeup-card .date {
