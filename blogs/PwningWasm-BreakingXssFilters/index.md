@@ -747,7 +747,7 @@ function searchWasmMemory(searchStr) {
   console.log(`"${searchStr}" not found in memory`);
   return -1;
 }
-
+//Used to convert a list of bytes into a single integer pointer value.
 a = bytes => bytes.reduce((acc, byte, i) => acc + (byte << (8 * i)), 0);</code></pre>
         <p>
             After pasting these, your DevTools console should look like this:
