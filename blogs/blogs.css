@@ -136,12 +136,14 @@
     padding: 12px;
     height: auto;
     box-sizing: border-box;
-    font-size: 6px;
+    font-size: 4px;
   }
 
-  .writeup-card h2{
-    font-size: 12px;
+
+  .writeup-card h2 {
+    font-size: 18px; /* smaller heading for tablets */
   }
+
   .writeup-card h2,
   .writeup-card p,
   .writeup-card .date {
