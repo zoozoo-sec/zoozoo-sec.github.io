@@ -25,7 +25,7 @@ permalink: /blogs/PwningWasm-BreakingXssFilters/
         <p><em>September 2025</em></p>
             <p><br>
                 Lately, I’ve been trying to level up my pwn game, so I decided to dive into WebAssembly security. 
-                Everyone hypes WASM as this safe, sandboxed thing that makes running C/C++ in the browser “secure,” 
+                Everyone hypes WASM as safe, sandboxed thing that makes running C/C++ in the browser “secure,” 
                 but the more I played with it, the more I realized there’s a lot going on under the hood that most devs 
                 don’t even think about. It’s fast, yeah, but that speed comes with complexity: weird memory models, JS glue code, 
                 runtimes, and a whole new attack surface. This post is basically me dumping what I’ve been learning so far — 
