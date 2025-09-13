@@ -435,7 +435,7 @@ wasm.instance.exports.process(userInput);</code></pre>
     <div id="CTFWebApplication" class="section-content">
         <h4 class='text'>CTF Web Application - Breaking XSS!</h4>
         <p>
-        To wrap up this deep dive into WebAssembly security, let’s look at a vulnerable web application challenge from <code>Pentathon CTF 2025, called "chaat"</code>. This challenge demonstrates how a seemingly safe WASM app can still be exploited due to logic flaws and insecure data handling to drop a XSS payload. You can download the vulnerable application files <a href="{{ '/blogs/PwningWasm-BreakingXssFilters/assets/' | relative_url }}">here</a> and try it out yourself.
+        To wrap up this deep dive into WebAssembly security, let’s look at a vulnerable web application challenge from <code>Pentathon CTF 2025, called "chaat"</code>. This challenge demonstrates how a seemingly safe WASM app can still be exploited due to logic flaws and insecure data handling to drop a XSS payload. You can download the vulnerable application files <a href="{{ '/blogs/PwningWasm-BreakingXssFilters/assets/wasm_vulnerable_app.tar.gz' | relative_url }}">here</a> and try it out yourself.
         </p>
         <p>
         The CTF challenge is built like a typical single-page web app running a WASM module compiled from C. The application takes user input, processes it using WebAssembly logic, and renders output dynamically in the DOM.
