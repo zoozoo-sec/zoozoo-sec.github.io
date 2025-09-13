@@ -178,6 +178,9 @@ pre > code[class*="language-"] {
     text-align: left;      /* Align the bullets with the text */
 }
 
+#ref ul li a{
+    color: #5eead4;
+}
 
 #toc a:hover {
     color: #5eead4;
