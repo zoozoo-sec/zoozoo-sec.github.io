@@ -846,7 +846,7 @@ global.set 1 ;; set global #1 to top of stack
         <blockquote>
             <em><code>Quick Tip</code> If stepping through WASM instructions in DevTools feels
             overwhelming, check out this intro video:<br>
-            <a href="https://www.youtube.com/watch?v=BTLLPnW4t5s&t=89s" target="_blank">Debugging WebAssembly in Chrome DevTools</a> —
+            <a href="https://www.youtube.com/watch?v=BTLLPnW4t5s&t" target="_blank">Debugging WebAssembly in Chrome DevTools</a> —
             it’s a great walkthrough of setting breakpoints, inspecting the stack, and correlating instructions with your C/C++ source.</em>
         </blockquote>
         <p>
@@ -1090,7 +1090,6 @@ VM1601:49 Found "<article><p>%.*s</p></article>" at memory address: 65581</code>
                 <li>Watch your payload execute, bypassing all filters.</li>
             </ul>
             <p>The payload structure:</p>
-            <button class="copy-btn">Copy</button>
             <pre><code class="language-javascript">[
 {"action":"add","content":"hi","time":1756840476392},
 {"action":"add","content":"hi","time":1756840476392},
@@ -1149,11 +1148,11 @@ console.log("Second page HTML:\n", html2);
 await page.close();</code></pre>
             <p class="mt-4">Notice what’s going on:</p>
             <ul class="list-disc pl-6">
-                <li>The flag lives entirely in the DOM of the <strong>first page</strong>.</li>
-                <li>Your XSS payload only runs in the <strong>second page</strong>.</li>
+                <li>The flag lives entirely in the DOM of the <code>first page</code>.</li>
+                <li>Your XSS payload only runs in the <code>second page</code>.</li>
                 <li>
                 There’s no shared context or memory between these two browser pages, so you 
-                <strong>can’t exfiltrate</strong> the first page’s DOM from the second page, even with full XSS control.
+                <code>can’t exfiltrate</code> the first page’s DOM from the second page, even with full XSS control.
                 </li>
             </ul>
             <p class="mt-4">
@@ -1170,10 +1169,31 @@ await page.close();</code></pre>
             and maybe even sparked some ideas for your own tinkering. Keep that same curiosity, passion, and joy for learning alive because 
             that’s what makes this journey fun.
         </p>
-           
-        </p>
     </div>
-    
+    <div id="toc" class="challenge-section">
+        <div class="section-content">
+            <ul>
+            <li><a href="https://v8.dev/docs/wasm-compilation-pipeline" target="_blank" rel="noopener noreferrer">
+                WebAssembly Compilation Pipeline (V8 Docs)
+            </a></li>
+            <li><a href="https://v8.dev/blog/liftoff" target="_blank" rel="noopener noreferrer">
+                Liftoff: A New Baseline Compiler for WebAssembly
+            </a></li>
+            <li><a href="https://github.com/thlorenz/v8-perf/blob/master/compiler.md" target="_blank" rel="noopener noreferrer">
+                V8 Performance: Compiler Details
+            </a></li>
+            <li><a href="https://www.youtube.com/watch?v=BTLLPnW4t5s&t" target="_blank" rel="noopener noreferrer">
+                Debugging WebAssembly in Chrome DevTools (YouTube)
+            </a></li>
+            <li><a href="https://www.youtube.com/watch?v=DFPD9yI-C70" target="_blank" rel="noopener noreferrer">
+                WebAssembly for Hackers (YouTube)
+            </a></li>
+            <li><a href="https://www.youtube.com/watch?v=BHwqORo_83E" target="_blank" rel="noopener noreferrer">
+                Understanding WebAssembly Memory Model (YouTube)
+            </a></li>
+            </ul>
+        </div>
+    </div>   
 </section>
 </section>
 
@@ -1183,4 +1203,3 @@ await page.close();</code></pre>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/9000.0.1/components/prism-python.min.js" integrity="sha512-3qtI9+9JXi658yli19POddU1RouYtkTEhTHo6X5ilOvMiDfNvo6GIS6k2Ukrsx8MyaKSXeVrnIWeyH8G5EOyIQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/9000.0.1/components/prism-c.min.js" integrity="sha512-EWIJI7uQnA8ClViH2dvhYsNA7PHGSwSg03FAfulqpsFiTPHfhdQIvhkg/l3YpuXOXRF2Dk0NYKIl5zemrl1fmA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/9000.0.1/components/prism-javascript.min.js" integrity="sha512-yvw5BDA/GQu8umskpIOBhX2pDLrdOiriaK4kVxtD28QEGLV5rscmCfDjkrx52tIgzLgwzs1FsALV6eYDpGnEkQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-<script src="{{ '/writeups/copy.js' | relative_url }}"></script>
