@@ -841,16 +841,16 @@ global.set 1 ;; set global #1 to top of stack
         <div style="background-color: #3e3e2e; padding: 1px; border-radius: 1px;">
         <p>
            You can totally mess around with the WASM module at this point. Just keep stepping through instructions, drop breakpoints on the next function calls inside the current one, and cross-reference what’s running with the actual C source to see exactly where you are.
-           <br><br>
+           <br>
             Keep an eye on the stack — watch values getting pushed and popped — and check out the arguments and variables sitting in memory. It’s all right there if you take the time to dig.<br><br>
             </p>
-        </div>
-        <blockquote>
-            <em><code>Quick Tip:</code> If stepping through WASM instructions in DevTools feels
-            overwhelming, check out this intro video:<br>
-            <a href="https://www.youtube.com/watch?v=BTLLPnW4t5s&t" target="_blank">Debugging WebAssembly in Chrome DevTools</a> —
-            it’s a great walkthrough of setting breakpoints, inspecting the stack, and correlating instructions with your C/C++ source.</em>
-        </blockquote>
+            <blockquote>
+                <em><code>Quick Tip:</code> If stepping through WASM instructions in DevTools feels
+                overwhelming, check out this intro video:<br>
+                <a href="https://www.youtube.com/watch?v=BTLLPnW4t5s&t" target="_blank">Debugging WebAssembly in Chrome DevTools</a> —
+                it’s a great walkthrough of setting breakpoints, inspecting the stack, and correlating instructions with your C/C++ source.</em>
+            </blockquote>
+        </div>      
         <p>
             Alright, back to business. Now that we’re comfortable stepping through WASM, let’s move deeper into <code>addMsg()</code> and grab the actual pointers that matter.
         </p>
