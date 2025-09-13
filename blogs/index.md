@@ -15,7 +15,7 @@ permalink: /blogs/
 <section id="blogs">
   <div class="writeup-grid">
     <a href="{{ '/blogs/PwningWasm-BreakingXssFilters' | relative_url }}" class="writeup-card">
-      <h2>Pwning WebAssembly:</h2><h4> Bypassing XSS Filters in the WASM Sandbox</h4>
+      <h2>Pwning WebAssembly:</h2><p> Bypassing XSS Filters in the WASM Sandbox</p>
       <span class="date">September 2025</span>
     </a>
   </div>
