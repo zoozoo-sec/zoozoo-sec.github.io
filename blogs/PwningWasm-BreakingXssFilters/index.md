@@ -1169,7 +1169,7 @@ await page.close();</code></pre>
             and maybe even sparked some ideas for your own tinkering. Keep that same curiosity, passion, and joy for learning alive because 
             that’s what makes this journey fun.
         </p>
-    h4 class='text'>References</h4>
+    <h4 class='text'>References</h4>
     </div>
     <div id="references" class="challenge-section">
     <h4 class='text'>References</h4>
