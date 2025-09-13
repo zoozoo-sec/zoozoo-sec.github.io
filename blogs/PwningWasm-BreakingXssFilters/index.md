@@ -1114,6 +1114,52 @@ VM1601:49 Found "<article><p>%.*s</p></article>" at memory address: 65581</code>
                 And just like that, we’ve bypassed all sanitization logic, turning the chatbox into a 
                 <code>JavaScript payload dropper</code> — straight out of WASM linear memory manipulation.
             </p>
+            <h5 class='sidetext'>Getting the Flag</h5>
+            <p>
+                Let’s not dive too deep into this part since this post is all about <strong>WASM security</strong>, not flag retrieval. 
+                But for context, the <code>bot.js</code> file is where the flag is handled. Here’s what happens:
+            </p>
+            <ul class="list-disc pl-6">
+                <li>The bot injects the flag into the chat by creating a message containing the flag.</li>
+                <li>This message is loaded into a first page in a headless Chrome instance.</li>
+                <li>Your payload URL (with a base64-encoded <code>s</code> parameter) is opened in a second page.</li>
+            </ul>
+            <p class="mt-4">The code snippet makes this flow clear:</p>
+            <pre><code class="language-javascript">page = await browser.newPage();
+            visit = `[{"action":"add","content":"${FLAG}","time":1729881873363}]`
+console.log(visit)
+await page.goto(`http://localhost:3000/?s=${btoa(visit)}`);
+
+await new Promise((resolve) => setTimeout(resolve, 3000));
+
+const html1 = await page.content();
+console.log("First page HTML:\n", html1);
+
+await page.goto(
+`http://localhost:3000/?s=${id}`,
+{ timeout: 5000 }
+);
+
+await new Promise((resolve) => setTimeout(resolve, 3000));
+
+const html2 = await page.content();
+console.log("Second page HTML:\n", html2);
+
+await page.close();</code></pre>
+            <p class="mt-4">Notice what’s going on:</p>
+            <ul class="list-disc pl-6">
+                <li>The flag lives entirely in the DOM of the <strong>first page</strong>.</li>
+                <li>Your XSS payload only runs in the <strong>second page</strong>.</li>
+                <li>
+                There’s no shared context or memory between these two browser pages, so you 
+                <strong>can’t exfiltrate</strong> the first page’s DOM from the second page, even with full XSS control.
+                </li>
+            </ul>
+            <p class="mt-4">
+                I confirmed this with several web security experts, and it seems intentional: 
+                this challenge (by <a href="https://traboda.com/ctf" target="_blank" rel="noopener noreferrer"><code>Traboda</code></a>, a platform partner of <strong>Pentathon 2025</strong>) is designed this way. 
+                If not, it’d mean the challenge was broken — which would be a surprising oversight for an event like this!
+            </p>
     </div>
     
 </section>
