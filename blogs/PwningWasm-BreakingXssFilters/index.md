@@ -840,7 +840,7 @@ global.set 1 ;; set global #1 to top of stack
             </ul>
             </li>
         </ul>
-        <div style="background-color: #3e3e2e; padding: 2px; border-radius: 2px;">
+        <div style="background-color: #2e3e4e; padding: 2px; border-radius: 2px;">
         <p>
            You can totally mess around with the WASM module at this point. Just keep stepping through instructions, drop breakpoints on the next function calls inside the current one, and cross-reference what’s running with the actual C source to see exactly where you are. Keep an eye on the stack — watch values getting pushed and popped — and check out the arguments and variables sitting in memory. It’s all right there if you take the time to dig.<br>
             </p>
