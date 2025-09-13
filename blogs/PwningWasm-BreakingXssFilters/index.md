@@ -838,16 +838,13 @@ global.set 1 ;; set global #1 to top of stack
             </ul>
             </li>
         </ul>
-        <div style="background-color: #3e3e2e; padding: 10px; border-radius: 5px;">
+        <div style="background-color: #3e3e2e; padding: 10px; border-radius: 1px;">
         <p>
            You can totally mess around with the WASM module at this point. Just keep stepping through instructions, drop breakpoints on the next function calls inside the current one, and cross-reference what’s running with the actual C source to see exactly where you are.
            <br><br>
             Keep an eye on the stack — watch values getting pushed and popped — and check out the arguments and variables sitting in memory. It’s all right there if you take the time to dig.<br><br>
             </p>
         </div>
-        <p>
-            Alright, that’s enough WASM debugging for now. Let’s stop geeking out on stepping through instructions and actually get back to solving the challenge.
-        </p>
         <blockquote>
             <em><code>Quick Tip:</code> If stepping through WASM instructions in DevTools feels
             overwhelming, check out this intro video:<br>
