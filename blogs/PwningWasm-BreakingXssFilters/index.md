@@ -1170,9 +1170,9 @@ await page.close();</code></pre>
             that’s what makes this journey fun.
         </p>
     </div>
-    <div id="toc" class="challenge-section">
+    <h4 class='text'>References</h4>
+    <div id="ref" class="challenge-section">
         <div id="references" class="section-content">
-        <h4 class='text'>References</h4>
             <ul>
             <li><a href="https://v8.dev/docs/wasm-compilation-pipeline" target="_blank" rel="noopener noreferrer">
                 WebAssembly Compilation Pipeline (V8 Docs)
@@ -1191,6 +1191,9 @@ await page.close();</code></pre>
             </a></li>
             <li><a href="https://www.youtube.com/watch?v=BHwqORo_83E" target="_blank" rel="noopener noreferrer">
                 Understanding WebAssembly Memory Model (YouTube)
+            </a></li>
+            <li><a href="https://ssd-disclosure.com/an-introduction-to-chrome-exploitation-webassembly-edition/" target="_blank" rel="noopener noreferrer">
+                An Introduction to Chrome Exploitation: WebAssembly Edition (SSD-Disclosure)
             </a></li>
             </ul>
         </div>
