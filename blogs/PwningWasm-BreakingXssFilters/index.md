@@ -1090,6 +1090,7 @@ VM1601:49 Found "<article><p>%.*s</p></article>" at memory address: 65581</code>
                 <li>Watch your payload execute, bypassing all filters.</li>
             </ul>
             <p>The payload structure:</p>
+            <button class="copy-btn">Copy</button>
             <pre><code class="language-javascript">[
 {"action":"add","content":"hi","time":1756840476392},
 {"action":"add","content":"hi","time":1756840476392},
@@ -1158,7 +1159,7 @@ await page.close();</code></pre>
             <p class="mt-4">
                 I confirmed this with several web security experts, and it seems intentional: 
                 this challenge (by <a href="https://traboda.com/ctf" target="_blank" rel="noopener noreferrer"><code>Traboda</code></a>, a platform partner of <code>Pentathon 2025</code>) is designed this way. 
-                If not, it’d mean the challenge was broken — which would be a surprising oversight for an event like this!
+                If not, it’d mean the challenge was broken, which would be a surprising oversight for an event like this!
             </p>
         <h4 class='text'>Wrap Up</h4>
         <p>
@@ -1166,11 +1167,10 @@ await page.close();</code></pre>
             That’s some serious patience and dedication to learning new things. 
             Thanks a ton for sticking around and reading through everything I wrote here. 
             Hopefully, this deep dive gave you a solid understanding of <code>WASM security</code> 
-            and maybe even sparked some ideas for your own tinkering.
-        </p>
-        <p class="mt-4">
-            Keep that same curiosity, passion, and joy for learning alive because 
+            and maybe even sparked some ideas for your own tinkering. Keep that same curiosity, passion, and joy for learning alive because 
             that’s what makes this journey fun.
+        </p>
+           
         </p>
     </div>
     
@@ -1183,3 +1183,4 @@ await page.close();</code></pre>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/9000.0.1/components/prism-python.min.js" integrity="sha512-3qtI9+9JXi658yli19POddU1RouYtkTEhTHo6X5ilOvMiDfNvo6GIS6k2Ukrsx8MyaKSXeVrnIWeyH8G5EOyIQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/9000.0.1/components/prism-c.min.js" integrity="sha512-EWIJI7uQnA8ClViH2dvhYsNA7PHGSwSg03FAfulqpsFiTPHfhdQIvhkg/l3YpuXOXRF2Dk0NYKIl5zemrl1fmA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/9000.0.1/components/prism-javascript.min.js" integrity="sha512-yvw5BDA/GQu8umskpIOBhX2pDLrdOiriaK4kVxtD28QEGLV5rscmCfDjkrx52tIgzLgwzs1FsALV6eYDpGnEkQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="{{ '/writeups/copy.js' | relative_url }}"></script>
