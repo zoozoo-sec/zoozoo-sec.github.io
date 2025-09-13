@@ -1157,9 +1157,21 @@ await page.close();</code></pre>
             </ul>
             <p class="mt-4">
                 I confirmed this with several web security experts, and it seems intentional: 
-                this challenge (by <a href="https://traboda.com/ctf" target="_blank" rel="noopener noreferrer"><code>Traboda</code></a>, a platform partner of <strong>Pentathon 2025</strong>) is designed this way. 
+                this challenge (by <a href="https://traboda.com/ctf" target="_blank" rel="noopener noreferrer"><code>Traboda</code></a>, a platform partner of <code>Pentathon 2025</code>) is designed this way. 
                 If not, it’d mean the challenge was broken — which would be a surprising oversight for an event like this!
             </p>
+        <h4 class='text'>Wrap Up</h4>
+        <p>
+            Uff, this turned into quite a long post! If you’ve made it this far, hats off to you. 
+            That’s some serious patience and dedication to learning new things. 
+            Thanks a ton for sticking around and reading through everything I wrote here. 
+            Hopefully, this deep dive gave you a solid understanding of <code>WASM security</code> 
+            and maybe even sparked some ideas for your own tinkering.
+        </p>
+        <p class="mt-4">
+            Keep that same curiosity, passion, and joy for learning alive because 
+            that’s what makes this journey fun.
+        </p>
     </div>
     
 </section>
