@@ -37,7 +37,14 @@
     </main>
 
     {% include footer.html %}
-    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-1WXG06FBJV"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-1WXG06FBJV');
+    </script>
     <!-- Scripts -->
     <script src="{{ '/assets/js/script.js' | relative_url }}"></script>
     <canvas id="matrix"></canvas>
