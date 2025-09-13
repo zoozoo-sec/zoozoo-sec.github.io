@@ -1172,7 +1172,6 @@ await page.close();</code></pre>
     <h4 class='text'>References</h4>
     </div>
     <div id="references" class="challenge-section">
-    <h4 class='text'>References</h4>
         <div id="ref" class="section-content">
             <ul>
             <li><a href="https://v8.dev/docs/wasm-compilation-pipeline" target="_blank" rel="noopener noreferrer">
