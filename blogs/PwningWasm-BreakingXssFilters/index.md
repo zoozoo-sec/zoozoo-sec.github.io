@@ -50,6 +50,7 @@ permalink: /blogs/PwningWasm-BreakingXssFilters/
                 <li><a href="#attack-surface">The Real Attack Surface in WASM</a></li>
                 <li><a href="#rust-wasm">Rust and WASM: Memory Safety. </a></li>
                 <li><a href="#CTFWebApplication">CTF Web Application - Breaking XSS! </a></li>
+                <li><a href="#wrapup">Wrap Up</a></li>
             </ul>
         </div>
     </div>
@@ -1120,15 +1121,17 @@ VM1601:49 Found "<article><p>%.*s</p></article>" at memory address: 65581</code>
             <p>
                 Let’s not dive too deep into this part since this post is all about <strong>WASM security</strong>, not flag retrieval.
             </p>
-        <h4 class='text'>Wrap Up</h4>
-        <p>
-            Uff, this turned into quite a long post! If you’ve made it this far, hats off to you. 
-            That’s some serious patience and dedication to learning new things. 
-            Thanks a ton for sticking around and reading through everything I wrote here. 
-            Hopefully, this deep dive gave you a solid understanding of <code>WASM security</code> 
-            and maybe even sparked some ideas for your own tinkering. Keep that same curiosity, passion, and joy for learning alive because 
-            that’s what makes this journey fun.
-        </p>
+        <div id="wrapup">
+            <h4 class='text'>Wrap Up</h4>
+            <p>
+                Uff, this turned into quite a long post! If you’ve made it this far, hats off to you. 
+                That’s some serious patience and dedication to learning new things. 
+                Thanks a ton for sticking around and reading through everything I wrote here. 
+                Hopefully, this deep dive gave you a solid understanding of <code>WASM security</code> 
+                and maybe even sparked some ideas for your own tinkering. Keep that same curiosity, passion, and joy for learning alive because 
+                that’s what makes this journey fun.
+            </p>
+        </div>
     <h4 class='text'>References</h4>
     </div>
     <div id="references" class="challenge-section">
