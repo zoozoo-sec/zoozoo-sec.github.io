@@ -1,0 +1,18 @@
+- date: "2025-03"
+  text: "Writeups: HackTheBox Cyber Apocalypse 2025"
+  url: "/writeups/HackTheBox-CyberApocalypse2025"
+- date: "2025-04"
+  text: "Writeups: NCIIPC-AICTE Pentathon 2025, qualifier round"
+  url: "/writeups/Pentathon2025"
+- date: "2025-08"
+  text: "Writeups: JustCTF 2025 pwn challenges"
+  url: "/writeups/JustCTF2025"
+- date: "2025-09"
+  text: 'Posted "Pwning WebAssembly" — bypassing XSS filters in the WASM sandbox'
+  url: "/blogs/PwningWasm-BreakingXssFilters"
+- date: "2026-07"
+  text: 'Uploaded my entire OSCP notes here'
+  url: "https://github.com/zoozoo-sec/OSCP-notes"
+- date: "2026-07"
+  text: 'Hey, check out my new OSCP certificate!'
+  url: "https://credentials.offsec.com/3b60dc52-a27b-4494-9fed-db99157b654d#acc.uJ5nHsBi"

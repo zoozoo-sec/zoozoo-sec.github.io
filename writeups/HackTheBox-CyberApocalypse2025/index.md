@@ -9,28 +9,36 @@ keywords: "writeups,Sarvesh Aadhithya,CTFs, Hackthebox, HTB, Cyber Apocalypse, T
 permalink: /writeups/HackTheBox-CyberApocalypse2025/
 ---
 
-<!-- Link Bootstrap CSS (add this to your <head> if it's not already included) -->
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/9000.0.1/themes/prism-tomorrow.min.css" integrity="sha512-kSwGoyIkfz4+hMo5jkJngSByil9jxJPKbweYec/UgS+S1EgE45qm4Gea7Ks2oxQ7qiYyyZRn66A9df2lMtjIsw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 <link rel="stylesheet" href="{{ '/writeups/writeup-page.css' | relative_url }}" />
 
 <section id="back">
-<div id="challenge-links">
-        <h1 class="text"><code>HackTheBox Cyber Apocalypse 2025</code></h1>
-        <ul class="list-unstyled">
-            <li><a href="#quack-quack"><code>Quack-Quack</code></a></li>
-            <li><a href="#blessing"><code>Blessing</code></a></li>
-            <li><a href="#laconic"><code>Laconic</code></a></li>
-            <li><a href="#crossbow"><code>Crossbow</code></a></li>
-            <li><a href="#contractor"><code>Contractor</code></a></li>
-            <li><a href="#strategist"><code>Strategist</code></a></li>
-        </ul>
-    </div>
+<h1 class="text"><code>HackTheBox Cyber Apocalypse 2025</code></h1>
 </section>
 
+<div class="pentest-floating-nav" id="pentest-nav">
+  <button type="button" class="pentest-nav-toggle" aria-expanded="false" aria-controls="pentest-nav-panel">
+    <span>Challenges</span>
+  </button>
+  <div class="pentest-nav-panel" id="pentest-nav-panel">
+    <div class="pentest-nav-title">HackTheBox Cyber Apocalypse 2025</div>
+    <ul>
+      <li><a href="#quack-quack" data-target="quack-quack">Quack-Quack</a></li>
+      <li><a href="#blessing" data-target="blessing">Blessing</a></li>
+      <li><a href="#laconic" data-target="laconic">Laconic</a></li>
+      <li><a href="#crossbow" data-target="crossbow">Crossbow</a></li>
+      <li><a href="#contractor" data-target="contractor">Contractor</a></li>
+      <li><a href="#strategist" data-target="strategist">Strategist</a></li>
+    </ul>
+  </div>
+</div>
+
+<noscript><style>.pentest-section{ display: block !important; }</style></noscript>
+
 <section id="back">
-<section id="blueback" class="container">
-    <div id="quack-quack" class="challenge-section">
+<section id="blueback">
+
+<div class="pentest-section" id="quack-quack">
         <div class="section-content">
             <b>Name:</b> <span class="text"> Quack-Quack </span><br>
             <b>Category:</b> Binary Exploitation <br>
@@ -113,13 +121,9 @@ io.sendline(payload2)
 io.interactive()</code></pre>
         </div>
     </div>
-</section>
-</section>
 
 
-<section id="back">
-<section id="blueback" class="container">
-    <div id="blessing" class="challenge-section">
+<div class="pentest-section" id="blessing">
         <div class="section-content">
             <b>Name:</b> <span class="text"> Blessing </span><br>
             <b>Category:</b> Binary Exploitation <br>
@@ -160,14 +164,10 @@ io.interactive()</code></pre>
             <img src="{{ '/writeups/HackTheBox-CyberApocalypse2025/assets/blessing.png' | relative_url }}" alt="blessing" class="side-image" />
         </div>
     </div>
-</section>
-</section>
 
 
 
-<section id="back">
-<section id="blueback" class="container">
-    <div id="laconic" class="challenge-section">
+<div class="pentest-section" id="laconic">
         <div class="section-content">
             <b>Name:</b> <span class="text"> Laconic </span><br>
             <b>Category:</b> Binary Exploitation <br>
@@ -243,13 +243,9 @@ io.sendline(payload)
 io.interactive()</code></pre>
         </div>
     </div>
-</section>
-</section>
 
 
-<section id="back">
-    <section id="blueback" class="container">
-        <div id="crossbow" class="challenge-section">
+<div class="pentest-section" id="crossbow">
             <div class="section-content">
                 <b>Name:</b> <span class="text"> Crossbow </span><br>
                 <b>Category:</b> Binary Exploitation <br>
@@ -345,14 +341,10 @@ io.sendline(b"/bin/bash\x00\x00\x00\x00\x00\x00\x00" + p64(0x40d000) + b"\x00"*5
 io.interactive()</code></pre>
             </div>
         </div>
-    </section>
-</section>
 
 
 
-<section id="back">
-    <section id="blueback" class="container">
-        <div id="contractor" class="challenge-section">
+<div class="pentest-section" id="contractor">
             <div class="section-content">
                 <b>Name:</b> <span class="text"> Contractor </span><br>
                 <b>Category:</b> Binary Exploitation <br>
@@ -429,13 +421,9 @@ while True:
     io.interactive()</code></pre>
             </div>
         </div>
-    </section>
-</section>
 
 
-<section id="back">
-<section id="blueback" class="container">
-    <div id="strategist" class="challenge-section">
+<div class="pentest-section" id="strategist">
         <div class="section-content">
             <b>Name:</b> <span class="text"> Strategist </span><br>
             <b>Category:</b> Binary Exploitation <br>
@@ -578,18 +566,18 @@ def main():
 main()</code></pre>
         </div>
     </div>
-</section>
-</section>
 
 
+
+
+</section>
+</section>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/9000.0.1/prism.min.js" integrity="sha512-UOoJElONeUNzQbbKQbjldDf9MwOHqxNz49NNJJ1d90yp+X9edsHyJoAs6O4K19CZGaIdjI5ohK+O2y5lBTW6uQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/9000.0.1/components/prism-python.min.js" integrity="sha512-3qtI9+9JXi658yli19POddU1RouYtkTEhTHo6X5ilOvMiDfNvo6GIS6k2Ukrsx8MyaKSXeVrnIWeyH8G5EOyIQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/9000.0.1/components/prism-c.min.js" integrity="sha512-EWIJI7uQnA8ClViH2dvhYsNA7PHGSwSg03FAfulqpsFiTPHfhdQIvhkg/l3YpuXOXRF2Dk0NYKIl5zemrl1fmA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/9000.0.1/components/prism-bash.min.js" integrity="sha512-35RBtvuCKWANuRid6RXP2gYm4D5RMieVL/xbp6KiMXlIqgNrI7XRUh9HurE8lKHW4aRpC0TZU3ZfqG8qmQ35zA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
-<!-- Link Bootstrap JS and Popper.js (add these at the end of the <body>) -->
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
 <script src="{{ '/writeups/copy.js' | relative_url }}"></script>
+<script src="{{ '/writeups/pentest-nav.js' | relative_url }}"></script>
 

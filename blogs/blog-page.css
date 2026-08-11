@@ -1,12 +1,13 @@
 #blueback {
-    max-width: 1100px;
-    width: 100%;
+    max-width: 1200px;
+    width: 92%;
+    margin: 0 auto;
     text-align: center;
-    padding: 20px;
-    background: #161b22;
-    color: #f0f6fc;
-    border-radius: 8px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    padding: 50px;
+    background: #131316;
+    border: 1px solid #242428;
+    color: #e8e8e6;
+    border-radius: 10px;
 }
 
 .back p,
@@ -19,6 +20,30 @@
   font-size: inherit;
   line-height: inherit;
   font-family: inherit;
+}
+
+.back ul,
+.back ol,
+.section-content ul,
+.section-content ol {
+  padding-left: 1.5em;
+  margin-bottom: 1rem;
+}
+
+.back li,
+.section-content li {
+  margin-bottom: 0.4rem;
+}
+
+.back ul li::marker,
+.section-content ul li::marker {
+  color: #5eead4;
+}
+
+.back ol li::marker,
+.section-content ol li::marker {
+  color: #5eead4;
+  font-weight: 600;
 }
 
 ul.list-unstyled a {
@@ -141,9 +166,9 @@ pre > code[class*="language-"] {
   text-align: center;
   justify-content: center;
   align-items: center;
-  padding: 80px 20px;
-  background: #1e1e1e;
-  color: #ffffff;
+  padding: 60px 20px;
+  background: transparent;
+  color: #e8e8e6;
 }
 
 
@@ -210,7 +235,7 @@ pre > code[class*="language-"] {
 
       
     #blueback {
-        display: contents;
+        padding: 20px;
     }
     pre {
         font-size: 0.9rem; /* Decrease font size for smaller screens */

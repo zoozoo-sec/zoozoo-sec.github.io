@@ -9,27 +9,34 @@ keywords: "writeups,Sarvesh Aadhithya,CTFs, JustCTF, 2025,zoozoo-sec, zoozoo, ba
 permalink: /writeups/JustCTF2025/
 ---
 
-<!-- Link Bootstrap CSS (add this to your <head> if it's not already included) -->
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/9000.0.1/themes/prism-tomorrow.min.css" integrity="sha512-kSwGoyIkfz4+hMo5jkJngSByil9jxJPKbweYec/UgS+S1EgE45qm4Gea7Ks2oxQ7qiYyyZRn66A9df2lMtjIsw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 <link rel="stylesheet" href="{{ '/writeups/writeup-page.css' | relative_url }}" />
 
 
-<section id="back" class="back">
-<div id="challenge-links">
-        <h1 class="text"><code>
-JustCTF 2025</code></h1>
-        <ul>
-            <li><a href="#shellcodeprinter"><code>Shellcode Printer</code></a></li>
-            <li><a href="#babyheap"><code>Baby Heap</code></a></li>
-            <li><a href="#prospector"><code>Prospector</code></a></li>
-        </ul>
-    </div>
+<section id="back">
+<h1 class="text"><code>JustCTF 2025</code></h1>
 </section>
 
+<div class="pentest-floating-nav" id="pentest-nav">
+  <button type="button" class="pentest-nav-toggle" aria-expanded="false" aria-controls="pentest-nav-panel">
+    <span>Challenges</span>
+  </button>
+  <div class="pentest-nav-panel" id="pentest-nav-panel">
+    <div class="pentest-nav-title">JustCTF 2025</div>
+    <ul>
+      <li><a href="#shellcodeprinter" data-target="shellcodeprinter">Shellcode Printer</a></li>
+      <li><a href="#babyheap" data-target="babyheap">Baby Heap</a></li>
+      <li><a href="#prospector" data-target="prospector">Prospector</a></li>
+    </ul>
+  </div>
+</div>
+
+<noscript><style>.pentest-section{ display: block !important; }</style></noscript>
+
 <section id="back">
-<section id="blueback" class="container">
-    <div id="shellcodeprinter" class="challenge-section">
+<section id="blueback">
+
+<div class="pentest-section" id="shellcodeprinter">
         <div class="section-content">
             <b>Name:</b> <span class="text"> Shellcode Printing</span><br>
             <b>Category:</b> Binary Exploitation<br>
@@ -159,13 +166,9 @@ if __name__ == "__main__":
     exploit()</code></pre>
         </div>
     </div>
-</section>
-</section>
 
 
-<section id="back">
-  <section id="blueback" class="container">
-    <div id="babyheap" class="challenge-section">
+<div class="pentest-section" id="babyheap">
       <div class="section-content">
         <b>Name:</b> <span class="text"> Baby Heap </span><br>
         <b>Category:</b> Binary Exploitation<br>
@@ -404,12 +407,8 @@ if __name__ == "__main__":
 </code></pre>
 </div>
 </div>
-  </section>
-</section>
 
-<section id="back">
-  <section id="blueback" class="container">
-    <div id="prospector" class="challenge-section">
+<div class="pentest-section" id="prospector">
       <div class="section-content">
         <b>Challenge Name:</b> <span class="text">Prospector</span><br>
         <b>Category:</b> Binary Exploitation
@@ -569,12 +568,15 @@ if __name__ == "__main__":
     exploit()</code></pre>
       </div>
     </div>
-  </section>
+
+
+
+
 </section>
-
-
+</section>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/9000.0.1/prism.min.js" integrity="sha512-UOoJElONeUNzQbbKQbjldDf9MwOHqxNz49NNJJ1d90yp+X9edsHyJoAs6O4K19CZGaIdjI5ohK+O2y5lBTW6uQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/9000.0.1/components/prism-python.min.js" integrity="sha512-3qtI9+9JXi658yli19POddU1RouYtkTEhTHo6X5ilOvMiDfNvo6GIS6k2Ukrsx8MyaKSXeVrnIWeyH8G5EOyIQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/9000.0.1/components/prism-c.min.js" integrity="sha512-EWIJI7uQnA8ClViH2dvhYsNA7PHGSwSg03FAfulqpsFiTPHfhdQIvhkg/l3YpuXOXRF2Dk0NYKIl5zemrl1fmA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="{{ '/writeups/copy.js' | relative_url }}"></script>
+<script src="{{ '/writeups/pentest-nav.js' | relative_url }}"></script>

@@ -21,17 +21,19 @@
 
     <!-- Title and Favicon -->
     <title>{{ page.title | default: 'Sarvesh Aadhithya' }}</title>
-    <link rel="icon" type="image/png" href="{{ '/assets/img/favicon.ico' | relative_url }}" />
+    <link rel="icon" type="image/x-icon" href="{{ '/assets/img/favicon.ico' | relative_url }}" />
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ '/assets/img/favicon-32.png' | relative_url }}" />
+    <link rel="apple-touch-icon" href="{{ '/assets/img/apple-touch-icon.png' | relative_url }}" />
 
     <!-- Stylesheets -->
     <link rel="stylesheet" href="{{ '/assets/css/style.css' | relative_url }}" />
     <link rel="stylesheet" href="{{ '/assets/css/mediaqueries.css' | relative_url }}" />
-    <link rel="stylesheet" href="{{ '/assets/css/blogs.css' | relative_url }}" />
   </head>
-  
-  <body>
+
+  <body{% if page.url == '/' %} data-particle-game="on"{% endif %}>
+    <canvas id="bg-particles"></canvas>
     {% include header.html %}
-    
+
     <main>
       {{ content }}
     </main>
@@ -47,7 +49,6 @@
     </script>
     <!-- Scripts -->
     <script src="{{ '/assets/js/script.js' | relative_url }}"></script>
-    <canvas id="matrix"></canvas>
-    <script src="{{ '/assets/js/matrix.js' | relative_url }}"></script>
+    <script src="{{ '/assets/js/particles.js' | relative_url }}"></script>
   </body>
 </html>

@@ -1,0 +1,5 @@
+current directory: /run/media/zoozoo/data/portfolio_/vendor/bundle/ruby/3.3.0/gems/sass-embedded-1.86.0/ext/sass
+/usr/bin/ruby3.3 -I/usr/lib/ruby/vendor_ruby -rrubygems /run/media/zoozoo/data/portfolio_/vendor/bundle/ruby/3.3.0/gems/rake-13.2.1/exe/rake RUBYARCHDIR\=/run/media/zoozoo/data/portfolio_/vendor/bundle/ruby/3.3.0/extensions/x86_64-linux-gnu/3.3.0/sass-embedded-1.86.0 RUBYLIBDIR\=/run/media/zoozoo/data/portfolio_/vendor/bundle/ruby/3.3.0/extensions/x86_64-linux-gnu/3.3.0/sass-embedded-1.86.0
+gem install --force --install-dir /run/media/zoozoo/data/portfolio_/vendor/bundle/ruby/3.3.0/gems/sass-embedded-1.86.0/ext/sass/ruby --no-document --ignore-dependencies --platform x86_64-linux-gnu --version 1.86.0 sass-embedded
+mv /run/media/zoozoo/data/portfolio_/vendor/bundle/ruby/3.3.0/gems/sass-embedded-1.86.0/ext/sass/ruby/gems/sass-embedded-1.86.0-x86_64-linux-gnu/ext/sass/dart-sass dart-sass
+rm -rf /run/media/zoozoo/data/portfolio_/vendor/bundle/ruby/3.3.0/gems/sass-embedded-1.86.0/ext/sass/ruby

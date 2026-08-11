@@ -8,8 +8,6 @@ keywords: "WebAssembly, WASM, XSS, sandbox security, client-side security, binar
 permalink: /blogs/PwningWasm-BreakingXssFilters/
 ---
 
-<!-- Link Bootstrap CSS (add this to your <head> if it's not already included) -->
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/9000.0.1/themes/prism-tomorrow.min.css" integrity="sha512-kSwGoyIkfz4+hMo5jkJngSByil9jxJPKbweYec/UgS+S1EgE45qm4Gea7Ks2oxQ7qiYyyZRn66A9df2lMtjIsw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 <link rel="stylesheet" href="{{ '/blogs/blog-page.css' | relative_url }}" />
 

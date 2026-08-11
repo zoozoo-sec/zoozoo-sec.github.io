@@ -1,12 +1,13 @@
 #blueback {
-    max-width: 1100px;
-    width: 100%;
+    max-width: 1200px;
+    width: 92%;
+    margin: 0 auto;
     text-align: center;
-    padding: 20px;
-    background: #161b22;
-    color: #f0f6fc;
-    border-radius: 8px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    padding: 50px;
+    background: #131316;
+    border: 1px solid #242428;
+    color: #e8e8e6;
+    border-radius: 10px;
 }
 
 .back p,
@@ -19,6 +20,30 @@
   font-size: inherit;
   line-height: inherit;
   font-family: inherit;
+}
+
+.back ul,
+.back ol,
+.section-content ul,
+.section-content ol {
+  padding-left: 1.5em;
+  margin-bottom: 1rem;
+}
+
+.back li,
+.section-content li {
+  margin-bottom: 0.4rem;
+}
+
+.back ul li::marker,
+.section-content ul li::marker {
+  color: #5eead4;
+}
+
+.back ol li::marker,
+.section-content ol li::marker {
+  color: #5eead4;
+  font-weight: 600;
 }
 
 ul.list-unstyled a {
@@ -124,9 +149,9 @@ h3 {
   text-align: center;
   justify-content: center;
   align-items: center;
-  padding: 80px 20px;
-  background: #1e1e1e;
-  color: #ffffff;
+  padding: 60px 20px;
+  background: transparent;
+  color: #e8e8e6;
 }
 
 
@@ -160,7 +185,7 @@ h3 {
 
       
     #blueback {
-        display: contents;
+        padding: 20px;
     }
     pre {
         font-size: 0.9rem; /* Decrease font size for smaller screens */
@@ -204,6 +229,240 @@ h3 {
 
     #challenge-links li {
         margin: 5px 0; /* Adjust margin for smaller devices */
+    }
+}
+
+/* ============================================================
+   Multi-machine pentest writeup pages (Windows/Linux/AD)
+   ============================================================ */
+
+/* Only one machine section visible at a time — JS adds .is-active
+   to the selected one; CSS hides the rest from first paint. */
+.pentest-section {
+    display: none;
+    text-align: left;
+    padding: 0 0 2rem;
+}
+
+.pentest-section.is-active {
+    display: block;
+}
+
+/* Floating machine-picker, docked to the middle-left of the viewport */
+.pentest-floating-nav {
+    position: fixed;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+    z-index: 200;
+}
+
+.pentest-nav-toggle {
+    writing-mode: vertical-rl;
+    background: #131316;
+    border: 1px solid #242428;
+    border-left: none;
+    color: #8a8a8a;
+    font-family: monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 1.1rem 0.55rem;
+    border-radius: 0 8px 8px 0;
+    cursor: pointer;
+    transition: color 150ms ease, background 150ms ease;
+}
+
+.pentest-nav-toggle:hover,
+.pentest-floating-nav.is-open .pentest-nav-toggle {
+    color: #e8e8e6;
+    background: #1a1a1d;
+}
+
+.pentest-nav-panel {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    margin-left: 2.6rem;
+    transform: translateY(-50%) translateX(-8px);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    width: 250px;
+    max-height: 70vh;
+    overflow-y: auto;
+    background: rgba(10, 10, 10, 0.98);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid #242428;
+    border-radius: 8px;
+    padding: 0.75rem;
+    transition: opacity 180ms ease, transform 180ms ease, visibility 0s linear 180ms;
+}
+
+.pentest-floating-nav.is-open .pentest-nav-panel {
+    transform: translateY(-50%) translateX(0);
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transition: opacity 180ms ease, transform 180ms ease;
+}
+
+.pentest-nav-title {
+    font-family: monospace;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #5c5c5c;
+    margin-bottom: 0.6rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #242428;
+}
+
+.pentest-nav-panel ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+}
+
+.pentest-nav-panel a {
+    display: block;
+    padding: 0.45rem 0.55rem;
+    border-radius: 6px;
+    color: #8a8a8a;
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: background 150ms ease, color 150ms ease;
+}
+
+.pentest-nav-panel a:hover {
+    background: #1a1a1d;
+    color: #e8e8e6;
+}
+
+.pentest-nav-panel a.is-active {
+    color: #5eead4;
+    background: rgba(94, 234, 212, 0.08);
+}
+
+@media (max-width: 700px) {
+    .pentest-nav-toggle {
+        padding: 0.9rem 0.45rem;
+        font-size: 0.68rem;
+    }
+
+    .pentest-nav-panel {
+        width: min(78vw, 260px);
+    }
+}
+
+.pentest-section h2 {
+    font-size: 1.6rem;
+    color: #5eead4;
+    margin-bottom: 0.25rem;
+}
+
+.pentest-meta {
+    font-family: monospace;
+    font-size: 0.85rem;
+    color: #8a8a8a;
+    margin-bottom: 1.25rem;
+}
+
+.pentest-meta .pdate {
+    color: #5c5c5c;
+}
+
+.pentest-section h3 {
+    font-size: 1.15rem;
+    color: #6cb4f9;
+    text-decoration: none;
+    margin-top: 2rem;
+    margin-bottom: 0.75rem;
+}
+
+.pentest-section p,
+.pentest-section li {
+    color: #c9d1d9;
+    line-height: 1.7;
+    text-align: left;
+}
+
+.pentest-section ul,
+.pentest-section ol {
+    margin: 0 0 1rem 1.25rem;
+}
+
+.pentest-section ul li::marker {
+    color: #5eead4;
+}
+
+.pentest-section ol li::marker {
+    color: #5eead4;
+    font-weight: 600;
+}
+
+.pentest-section pre {
+    background: #0d0d0f;
+    border: 1px solid #242428;
+    border-radius: 8px;
+    padding: 1rem;
+    overflow-x: auto;
+    margin: 1rem 0;
+}
+
+.pentest-section code {
+    font-family: monospace;
+    font-size: 0.85rem;
+    color: #d63384;
+}
+
+.pentest-section pre code {
+    color: #d4d4d4;
+    background: transparent;
+}
+
+.pentest-section p code,
+.pentest-section li code {
+    background: #1c1c1f;
+    padding: 0.1em 0.4em;
+    border-radius: 4px;
+}
+
+.pentest-section table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+    font-size: 0.9rem;
+    display: block;
+    overflow-x: auto;
+}
+
+.pentest-section th,
+.pentest-section td {
+    border: 1px solid #242428;
+    padding: 0.5rem 0.75rem;
+    text-align: left;
+}
+
+.pentest-section th {
+    background: #1a1a1d;
+    color: #e8e8e6;
+}
+
+.pentest-section blockquote {
+    border-left: 3px solid #5eead4;
+    padding-left: 1rem;
+    color: #8a8a8a;
+    margin: 1rem 0;
+}
+
+@media (max-width: 600px) {
+    .pentest-toc {
+        columns: 1;
     }
 }
 
