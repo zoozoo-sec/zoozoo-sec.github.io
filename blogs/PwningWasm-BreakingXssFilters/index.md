@@ -11,8 +11,26 @@ permalink: /blogs/PwningWasm-BreakingXssFilters/
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/9000.0.1/themes/prism-tomorrow.min.css" integrity="sha512-kSwGoyIkfz4+hMo5jkJngSByil9jxJPKbweYec/UgS+S1EgE45qm4Gea7Ks2oxQ7qiYyyZRn66A9df2lMtjIsw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 <link rel="stylesheet" href="{{ '/blogs/blog-page.css' | relative_url }}" />
 
-
-
+<div class="section-nav" id="section-nav">
+  <button type="button" class="section-nav-toggle" aria-expanded="false" aria-controls="section-nav-panel">
+    <span>Sections</span>
+  </button>
+  <div class="section-nav-panel" id="section-nav-panel">
+    <div class="section-nav-title">Contents</div>
+    <ul>
+      <li><a href="#what-is-wasm">What’s WebAssembly?</a></li>
+      <li><a href="#under-the-hood">How WebAssembly Works Under the Hood</a></li>
+      <li><a href="#tiered-compilation">Tiered Compilation: Liftoff and Turbofan</a></li>
+      <li><a href="#memory-model">Memory Model: The Heart of the Sandbox</a></li>
+      <li><a href="#js-glue">The JS Glue: WASM’s Gateway to the Outside World</a></li>
+      <li><a href="#why-not-classic">Why Traditional C/C++ Exploits Don’t Work in WASM</a></li>
+      <li><a href="#attack-surface">The Real Attack Surface in WASM</a></li>
+      <li><a href="#rust-wasm">Rust and WASM: Memory Safety.</a></li>
+      <li><a href="#CTFWebApplication">CTF Web Application - Breaking XSS!</a></li>
+      <li><a href="#wrapup">Wrap Up</a></li>
+    </ul>
+  </div>
+</div>
 
 
 <section id="back">
@@ -34,22 +52,6 @@ permalink: /blogs/PwningWasm-BreakingXssFilters/
             <em><code>Quick Note:</code> I’m still learning and exploring WebAssembly security, So this post is a collection of my explorations and notes as I dive into WebAssembly security. If you spot mistakes, missing details, or have suggestions, I’d genuinely love your feedback — feel free to reach out to me via <a href="mailto:this.sarvesh@gmail.com">email</a>!</em>
             </p>
             </div>
-        </div>
-    </div>
-    <div id="toc" class="challenge-section">
-        <div class="section-content">
-            <ul>
-                <li><a href="#what-is-wasm">What’s WebAssembly?</a></li>
-                <li><a href="#under-the-hood">How WebAssembly Works Under the Hood</a></li>
-                <li><a href="#tiered-compilation">Tiered Compilation: Liftoff and Turbofan</a></li>
-                <li><a href="#memory-model">Memory Model: The Heart of the Sandbox</a></li>
-                <li><a href="#js-glue">The JS Glue: WASM’s Gateway to the Outside World</a></li>
-                <li><a href="#why-not-classic">Why Traditional C/C++ Exploits Don’t Work in WASM</a></li>
-                <li><a href="#attack-surface">The Real Attack Surface in WASM</a></li>
-                <li><a href="#rust-wasm">Rust and WASM: Memory Safety. </a></li>
-                <li><a href="#CTFWebApplication">CTF Web Application - Breaking XSS! </a></li>
-                <li><a href="#wrapup">Wrap Up</a></li>
-            </ul>
         </div>
     </div>
     <div id="what-is-wasm" class="section-content">
@@ -1168,3 +1170,4 @@ VM1601:49 Found "<article><p>%.*s</p></article>" at memory address: 65581</code>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/9000.0.1/components/prism-python.min.js" integrity="sha512-3qtI9+9JXi658yli19POddU1RouYtkTEhTHo6X5ilOvMiDfNvo6GIS6k2Ukrsx8MyaKSXeVrnIWeyH8G5EOyIQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/9000.0.1/components/prism-c.min.js" integrity="sha512-EWIJI7uQnA8ClViH2dvhYsNA7PHGSwSg03FAfulqpsFiTPHfhdQIvhkg/l3YpuXOXRF2Dk0NYKIl5zemrl1fmA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/9000.0.1/components/prism-javascript.min.js" integrity="sha512-yvw5BDA/GQu8umskpIOBhX2pDLrdOiriaK4kVxtD28QEGLV5rscmCfDjkrx52tIgzLgwzs1FsALV6eYDpGnEkQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="{{ '/blogs/section-nav.js' | relative_url }}"></script>
