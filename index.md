@@ -12,7 +12,6 @@ author: "Sarvesh Aadhithya"
     <span class="sep">/</span>
     <div class="social-links">
       <a href="https://x.com/_zoozoo/" target="_blank" rel="noopener">Twitter</a>
-      <a href="https://discord.com/users/854751340688048198" target="_blank" rel="noopener">Discord</a>
       <a href="mailto:this.sarvesh@gmail.com">Mail</a>
     </div>
   </div>
