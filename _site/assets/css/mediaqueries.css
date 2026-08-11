@@ -1,0 +1,76 @@
+/* ================================
+   Desktop scale-up (rem-based, so this cascades through
+   nav, hero, terminal, footer, and article typography)
+================================ */
+@media screen and (min-width: 1000px) {
+  html {
+    font-size: 17.5px;
+  }
+}
+
+@media screen and (min-width: 1440px) {
+  html {
+    font-size: 19px;
+  }
+}
+
+/* Large screens only — widen the bio and terminal so their right
+   edge lines up with the end of the one-line hero-role sentence. */
+@media screen and (min-width: 1000px) {
+  .hero-bio {
+    max-width: 905px;
+  }
+
+  .terminal-window {
+    max-width: 905px;
+  }
+}
+
+/* Below this, "Low-level ... Assembly" no longer fits on one line at
+   full size even with the widened hero column — let it wrap instead
+   of shrinking the font or scrolling. */
+@media screen and (max-width: 820px) {
+  .hero-role {
+    white-space: normal;
+  }
+}
+
+/* ================================
+   Tablet and below (nav collapses to hamburger)
+================================ */
+@media screen and (max-width: 768px) {
+  #desktop-nav {
+    display: none;
+  }
+
+  #hamburger-nav {
+    display: flex;
+  }
+
+  #profile {
+    padding: 4rem 1.25rem 3rem;
+  }
+
+  .hero-name {
+    font-size: 1.75rem;
+  }
+
+  .hero-bio {
+    font-size: 1rem;
+  }
+}
+
+/* ================================
+   Small screens
+================================ */
+@media screen and (max-width: 480px) {
+  #desktop-nav,
+  #hamburger-nav {
+    padding: 1rem 1.25rem;
+  }
+
+  .footer-links {
+    flex-wrap: wrap;
+    gap: 1rem 1.5rem;
+  }
+}

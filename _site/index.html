@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- SEO Meta Tags -->
+    <meta name="description" content="Portfolio - A showcase of my Cybersecurity Blogs, skills, and writeups.">
+    <meta name="keywords" content="Sarvesh Aadhithya, zoozoo, zoozoo-sec, Portfolio, Cybersecurity, Web Security, Penetration Testing, Binary Exploitation, Pwning, Reverse Engineering">
+    <meta name="author" content="Sarvesh Aadhithya">
+
+    <!-- Open Graph Meta Tags for Social Media -->
+    <meta property="og:title" content="Sarvesh Aadhithya">
+    <meta property="og:description" content="Explore my cybersecurity blogs, CTF writeups, and research.">
+    <meta property="og:image" content="https://zoozoo-sec.github.io/assets/img/profile.png">
+    <meta property="og:url" content="http://localhost:4000/">
+    <meta property="og:type" content="website">
+
+    <meta name="google-site-verification" content="EkoD8s1_tAO9DoNE-wVHKgf472-GAPUwxLL1RjLf9BU" />
+    
+    
+    <link rel="canonical" href="http://localhost:4000/">
+
+    <!-- Title and Favicon -->
+    <title>Sarvesh Aadhithya</title>
+    <link rel="icon" type="image/x-icon" href="/assets/img/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32.png" />
+    <link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png" />
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="/assets/css/style.css" />
+    <link rel="stylesheet" href="/assets/css/mediaqueries.css" />
+  </head>
+
+  <body data-particle-game="on">
+    <canvas id="bg-particles"></canvas>
+    <nav id="desktop-nav">
+  <div class="logo">zoozoo</div>
+
+  <div>
+    <ul class="nav-links">
+      <li><a href="/index">Home</a></li>
+      <li><a href="/blogs/">Blogs</a></li>
+      <li><a href="/writeups/">Writeups</a></li>
+    </ul>
+  </div>
+</nav>
+
+<nav id="hamburger-nav">
+  <span class="nav-name">zoozoo</span>
+  <div class="hamburger-menu">
+    <div class="hamburger-icon" onclick="toggleMenu()">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+
+    <ul class="menu-links">
+      <li><a href="/index" onclick="toggleMenu()">Home</a></li>
+      <li><a href="/blogs/" onclick="toggleMenu()">Blogs</a></li>
+      <li><a href="/writeups/" onclick="toggleMenu()">Writeups</a></li>
+    </ul>
+  </div>
+</nav>
+
+
+
+    <main>
+      <section id="profile">
+  <div class="identity">
+    <span>Sarvesh Aadhithya</span>
+    <span class="sep">/</span>
+    <span class="handle">@zoozoo</span>
+    <span class="sep">/</span>
+    <div class="social-links">
+      <a href="https://x.com/_zoozoo/" target="_blank" rel="noopener">Twitter</a>
+      <a href="https://github.com/zoozoo-sec" target="_blank" rel="noopener">GitHub</a>
+      <a href="mailto:this.sarvesh@gmail.com">Mail</a>
+    </div>
+  </div>
+
+  <h1 class="hero-name">Sarvesh Aadhithya</h1>
+  <p class="hero-role">Low-level <del class="hero-role-strike">Security Researcher</del> <span class="hero-role-alt">- Someone who Probably Knows C and Assembly</span></p>
+  <p class="hero-bio">
+    I dig into binaries, kernels, firmwares and browser internals to understand how they work and find out where they
+    break. I write about the things I learn here, mostly through CTF writeups and posts on exploit development, memory corruption, and vulnerability research.
+  </p>
+
+  <div class="terminal-window" aria-label="Recent activity">
+    <div class="terminal-titlebar">
+      <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+      <span class="terminal-title">gdb</span>
+    </div>
+    <div class="terminal-body">
+      <p class="terminal-line prompt">(gdb) info recent</p>
+      
+      <p class="terminal-line">
+        <span class="t-tag">[+]</span><span class="t-date">2025-03</span><a href="/writeups/HackTheBox-CyberApocalypse2025">Writeups: HackTheBox Cyber Apocalypse 2025</a>
+      </p>
+      
+      <p class="terminal-line">
+        <span class="t-tag">[+]</span><span class="t-date">2025-04</span><a href="/writeups/Pentathon2025">Writeups: NCIIPC-AICTE Pentathon 2025, qualifier round</a>
+      </p>
+      
+      <p class="terminal-line">
+        <span class="t-tag">[+]</span><span class="t-date">2025-08</span><a href="/writeups/JustCTF2025">Writeups: JustCTF 2025 pwn challenges</a>
+      </p>
+      
+      <p class="terminal-line">
+        <span class="t-tag">[+]</span><span class="t-date">2025-09</span><a href="/blogs/PwningWasm-BreakingXssFilters">Posted "Pwning WebAssembly" — bypassing XSS filters in the WASM sandbox</a>
+      </p>
+      
+      <p class="terminal-line">
+        <span class="t-tag">[+]</span><span class="t-date">2026-07</span><a href="https://github.com/zoozoo-sec/OSCP-notes">Uploaded my entire OSCP notes here</a>
+      </p>
+      
+      <p class="terminal-line">
+        <span class="t-tag">[+]</span><span class="t-date">2026-07</span><a href="https://credentials.offsec.com/3b60dc52-a27b-4494-9fed-db99157b654d#acc.uJ5nHsBi">Hey, check out my new OSCP certificate!</a>
+      </p>
+      
+      <p class="terminal-line prompt">(gdb) <span class="cursor">_</span></p>
+    </div>
+  </div>
+</section>
+
+<div class="particle-game-hud" id="particle-game-hud">
+  <span class="pg-dot"></span>
+  <span class="pg-text">
+    <span class="pg-hook">Tired of doomscrolling? Let's Test your attention span.</span>
+    <span id="particle-game-msg">follow the glowing dot</span>
+    <span class="pg-stats">focus <span id="particle-game-timer">0.0s</span> · best <span id="particle-game-best">0.0s</span></span>
+  </span>
+</div>
+
+
+    </main>
+
+    <footer class="footer">
+ 
+    <div class="footer-nav">
+      <ul class="footer-links">
+        <li><a href="/index">Home</a></li>
+        <li><a href="/blogs/">Blogs</a></li>
+        <li><a href="/writeups/">Writeups</a></li>
+      </ul>
+    </div>
+
+  <p>&copy; 2026 Sarvesh Aadhithya. All rights reserved.</p>
+</footer>
+
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-1WXG06FBJV"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-1WXG06FBJV');
+    </script>
+    <!-- Scripts -->
+    <script src="/assets/js/script.js"></script>
+    <script src="/assets/js/particles.js"></script>
+  </body>
+</html>
