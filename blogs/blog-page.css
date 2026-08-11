@@ -96,6 +96,11 @@ ul.list-unstyled a {
     text-align: left;  /* Left-align text */
 }
 
+pre {
+    overflow-x: auto;
+    max-width: 100%;
+}
+
 /* Adjust pre code box */
 pre[class*="language-"],
 code[class*="language-"] {

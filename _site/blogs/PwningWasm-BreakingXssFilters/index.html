@@ -82,7 +82,7 @@
                 runtimes, and a whole new attack surface. This post is basically me dumping what I’ve been learning so far — 
                 how WASM works, what it does well, and where it can be broken.
             </p>
-            <div style="background-color: #2e3e4e; padding: 2px; border-radius: 2px;">
+            <div style="background-color: #2e3e4e; padding: 16px; border-radius: 6px;">
             <p>
             <em><code>Quick Note:</code> I’m still learning and exploring WebAssembly security, So this post is a collection of my explorations and notes as I dive into WebAssembly security. If you spot mistakes, missing details, or have suggestions, I’d genuinely love your feedback — feel free to reach out to me via <a href="mailto:this.sarvesh@gmail.com">email</a>!</em>
             </p>
@@ -887,7 +887,7 @@ global.set 1 ;; set global #1 to top of stack
             </ul>
             </li>
         </ul>
-        <div style="background-color: #2e3e4e; padding: 2px; border-radius: 2px;">
+        <div style="background-color: #2e3e4e; padding: 16px; border-radius: 6px;">
         <p>
            You can totally mess around with the WASM module at this point. Just keep stepping through instructions, drop breakpoints on the next function calls inside the current one, and cross-reference what’s running with the actual C source to see exactly where you are. Keep an eye on the stack — watch values getting pushed and popped — and check out the arguments and variables sitting in memory. It’s all right there if you take the time to dig.<br />
             </p>
