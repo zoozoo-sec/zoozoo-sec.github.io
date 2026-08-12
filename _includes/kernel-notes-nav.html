@@ -1,0 +1,45 @@
+<div class="notes-floating-nav" id="notes-nav">
+  <button type="button" class="notes-nav-toggle" aria-expanded="false" aria-controls="notes-nav-panel">
+    <span>Sections</span>
+  </button>
+  <div class="notes-nav-panel" id="notes-nav-panel">
+    <div class="notes-nav-title">Kernel Exploitation Notes</div>
+    <ul class="notes-nav-overview">
+      <li><a href="{{ '/blogs/notes/kernel-exploitation/' | relative_url }}"{% if page.note_id == 'overview' %} class="is-active"{% endif %}>Overview</a></li>
+    </ul>
+    <div class="notes-nav-group-title">Internals</div>
+    <ul>
+      <li><a href="{{ '/blogs/notes/kernel-exploitation/internals/buddy-allocator/' | relative_url }}"{% if page.note_id == 'internals/buddy-allocator' %} class="is-active"{% endif %}>Buddy Allocator</a></li>
+      <li><a href="{{ '/blogs/notes/kernel-exploitation/internals/cross-cache-mitigations/' | relative_url }}"{% if page.note_id == 'internals/cross-cache-mitigations' %} class="is-active"{% endif %}>How Google Mitigates Cross-Cache Attacks?</a></li>
+      <li><a href="{{ '/blogs/notes/kernel-exploitation/internals/how-syscalls-work/' | relative_url }}"{% if page.note_id == 'internals/how-syscalls-work' %} class="is-active"{% endif %}>How Syscalls Work?</a></li>
+      <li><a href="{{ '/blogs/notes/kernel-exploitation/internals/kernel-module-internals/' | relative_url }}"{% if page.note_id == 'internals/kernel-module-internals' %} class="is-active"{% endif %}>Kernel Module Internals</a></li>
+      <li><a href="{{ '/blogs/notes/kernel-exploitation/internals/slub-allocator/' | relative_url }}"{% if page.note_id == 'internals/slub-allocator' %} class="is-active"{% endif %}>Linux SLUB Allocator</a></li>
+    </ul>
+    <div class="notes-nav-group-title">Heap Spraying</div>
+    <ul>
+      <li><a href="{{ '/blogs/notes/kernel-exploitation/heap-spraying/msg-msg/' | relative_url }}"{% if page.note_id == 'heap-spraying/msg-msg' %} class="is-active"{% endif %}>msg_msg</a></li>
+      <li><a href="{{ '/blogs/notes/kernel-exploitation/heap-spraying/pipe-buffer/' | relative_url }}"{% if page.note_id == 'heap-spraying/pipe-buffer' %} class="is-active"{% endif %}>pipe_buffer</a></li>
+      <li><a href="{{ '/blogs/notes/kernel-exploitation/heap-spraying/seq-file/' | relative_url }}"{% if page.note_id == 'heap-spraying/seq-file' %} class="is-active"{% endif %}>seq_file</a></li>
+      <li><a href="{{ '/blogs/notes/kernel-exploitation/heap-spraying/timerfd-ctx/' | relative_url }}"{% if page.note_id == 'heap-spraying/timerfd-ctx' %} class="is-active"{% endif %}>timerfd_ctx</a></li>
+      <li><a href="{{ '/blogs/notes/kernel-exploitation/heap-spraying/tty-struct/' | relative_url }}"{% if page.note_id == 'heap-spraying/tty-struct' %} class="is-active"{% endif %}>tty_struct</a></li>
+    </ul>
+    <div class="notes-nav-group-title">KROP</div>
+    <ul>
+      <li><a href="{{ '/blogs/notes/kernel-exploitation/krop/rop/' | relative_url }}"{% if page.note_id == 'krop/rop' %} class="is-active"{% endif %}>ROP</a></li>
+      <li><a href="{{ '/blogs/notes/kernel-exploitation/krop/ropbot-angrop/' | relative_url }}"{% if page.note_id == 'krop/ropbot-angrop' %} class="is-active"{% endif %}>RopBot / Angrop</a></li>
+    </ul>
+    <div class="notes-nav-group-title">Page Spraying (Cross-Cache Attacks)</div>
+    <ul>
+      <li><a href="{{ '/blogs/notes/kernel-exploitation/page-spraying/dirty-creds/' | relative_url }}"{% if page.note_id == 'page-spraying/dirty-creds' %} class="is-active"{% endif %}>Dirty Creds</a></li>
+      <li><a href="{{ '/blogs/notes/kernel-exploitation/page-spraying/dirty-file/' | relative_url }}"{% if page.note_id == 'page-spraying/dirty-file' %} class="is-active"{% endif %}>Dirty File</a></li>
+      <li><a href="{{ '/blogs/notes/kernel-exploitation/page-spraying/dirty-page/' | relative_url }}"{% if page.note_id == 'page-spraying/dirty-page' %} class="is-active"{% endif %}>Dirty Page</a></li>
+      <li><a href="{{ '/blogs/notes/kernel-exploitation/page-spraying/pmd-overwrite/' | relative_url }}"{% if page.note_id == 'page-spraying/pmd-overwrite' %} class="is-active"{% endif %}>PMD Overwrite</a></li>
+    </ul>
+    <div class="notes-nav-group-title">Targets</div>
+    <ul>
+      <li><a href="{{ '/blogs/notes/kernel-exploitation/targets/commit-creds/' | relative_url }}"{% if page.note_id == 'targets/commit-creds' %} class="is-active"{% endif %}>Commit Creds</a></li>
+      <li><a href="{{ '/blogs/notes/kernel-exploitation/targets/core-pattern/' | relative_url }}"{% if page.note_id == 'targets/core-pattern' %} class="is-active"{% endif %}>core_pattern</a></li>
+      <li><a href="{{ '/blogs/notes/kernel-exploitation/targets/modprobe-path/' | relative_url }}"{% if page.note_id == 'targets/modprobe-path' %} class="is-active"{% endif %}>modprobe_path</a></li>
+    </ul>
+  </div>
+</div>

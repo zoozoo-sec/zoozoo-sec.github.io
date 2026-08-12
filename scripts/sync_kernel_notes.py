@@ -1,0 +1,544 @@
+#!/usr/bin/env python3
+"""
+Sync Obsidian kernel-exploitation notes into the "Kernel Exploitation Notes"
+section of the site (blogs/notes/kernel-exploitation/).
+
+Usage:
+    python3 scripts/sync_kernel_notes.py
+    python3 scripts/sync_kernel_notes.py --vault "/path/to/kpw_notes" --dry-run
+    python3 scripts/sync_kernel_notes.py --prune   # also delete pages whose source note is gone
+
+What it does, every run:
+  1. Scans every category subfolder in the vault (each top-level folder =
+     one category, e.g. "Heap Spraying"), skipping `.obsidian`, any file
+     named "_Template.md", and any file with "MOC" in its name.
+  2. For each note: strips YAML frontmatter, resolves [[wiki-links]] and
+     `related:` entries against every other note in the vault, copies
+     any ![[embedded images]] into that category's assets/ folder,
+     de-links local filesystem paths (they'd be dead links once published),
+     extracts a trailing/leading "#tag #tag2" line into tag pills, and
+     writes out a Jekyll page with a metadata panel built from whatever
+     frontmatter fields are present.
+  3. Regenerates the shared floating nav include (grouped by category)
+     and the overview/index page — an intro paragraph followed by a
+     tree view of every category/note, each note name a real link.
+
+The intro paragraph lives in its own file, blogs/notes/kernel-exploitation/
+_intro.md, created with a default the first time this runs. Edit that
+file directly whenever you want — reruns read it back in and never
+overwrite it, so your wording is never clobbered by a resync.
+
+An empty source file (0 bytes) is synced as a real page with a
+"Note not written yet — to be added." placeholder, so you can create a
+stub file in Obsidian and have the site pick it up immediately, then
+fill it in later without needing to run anything else.
+
+Categories/notes already published keep their existing slugs (see the
+override dicts below) even if the auto-slugified name would differ, so
+re-running this never changes a URL that's already live. Brand new
+categories/notes get a slug auto-generated from their name/filename.
+"""
+
+import argparse
+import os
+import re
+import shutil
+import sys
+
+try:
+    import yaml
+except ImportError:
+    sys.exit("PyYAML is required: pip install pyyaml (or run via `bundle exec ruby` env if that has it)")
+
+# ---------------------------------------------------------------------------
+# Defaults — override via CLI flags if your paths differ.
+# ---------------------------------------------------------------------------
+DEFAULT_VAULT = os.path.expanduser("~/Documents/kpwn/notes/kpw_notes")
+DEFAULT_SITE_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_URL = "/blogs/notes/kernel-exploitation/"
+
+SKIP_DIR_NAMES = {".obsidian"}
+SKIP_FILE_PATTERNS = [re.compile(r"MOC", re.IGNORECASE), re.compile(r"^_Template$", re.IGNORECASE)]
+
+# Slugs/titles already live on the site — keep these stable across reruns.
+CATEGORY_SLUG_OVERRIDES = {
+    "internals": "internals",
+    "heap spraying": "heap-spraying",
+    "krop": "krop",
+    "page spraying(cross cache attacks)": "page-spraying",
+    "targets": "targets",
+}
+CATEGORY_TITLE_OVERRIDES = {
+    "internals": "Internals",
+    "heap spraying": "Heap Spraying",
+    "krop": "KROP",
+    "page spraying(cross cache attacks)": "Page Spraying (Cross-Cache Attacks)",
+    "targets": "Targets",
+}
+# key = normalized (lowercased) filename stem -> slug/title override
+NOTE_SLUG_OVERRIDES = {
+    "linux slub allocator": "slub-allocator",
+    "how google mitigates cross cache attacks": "cross-cache-mitigations",
+}
+NOTE_TITLE_OVERRIDES = {
+    "how google mitigates cross cache attacks": "How Google Mitigates Cross-Cache Attacks?",
+    "ropbot-angrop": "RopBot / Angrop",
+    "how syscalls work": "How Syscalls Work?",
+    "kernel module internals": "Kernel Module Internals",
+}
+
+# Category display order — known ones first, any new category appended
+# alphabetically after these.
+CATEGORY_ORDER = ["internals", "heap-spraying", "krop", "page-spraying", "targets"]
+
+TAG_LINE_RE = re.compile(r"^#[\w-]+(?:\s+#[\w-]+)*\s*$")
+WIKILINK_RE = re.compile(r"\[\[([^\]]+)\]\]")
+EMBED_RE = re.compile(r"!\[\[([^\]]+)\]\]")
+MD_LINK_RE = re.compile(r"\[([^\]]+)\]\(([^)]+)\)")
+
+
+def slugify(name):
+    s = name.strip().lower()
+    s = re.sub(r"[^a-z0-9]+", "-", s)
+    return s.strip("-")
+
+
+def norm(s):
+    s = s.strip().strip("?").strip('"')
+    s = s.split("/")[-1]
+    return s.strip().lower()
+
+
+def should_skip_file(filename):
+    if not filename.lower().endswith(".md"):
+        return True
+    stem = filename[:-3]
+    return any(p.search(stem) for p in SKIP_FILE_PATTERNS)
+
+
+def discover_vault(vault_root):
+    """Returns [(cat_slug, cat_title, cat_dir_name, [(src_name, note_slug, title), ...]), ...]"""
+    categories = []
+    known_cat_slugs = {}
+    for entry in sorted(os.listdir(vault_root)):
+        full = os.path.join(vault_root, entry)
+        if not os.path.isdir(full) or entry in SKIP_DIR_NAMES or entry.startswith("."):
+            continue
+        key = entry.strip().lower()
+        cat_slug = CATEGORY_SLUG_OVERRIDES.get(key, slugify(entry))
+        cat_title = CATEGORY_TITLE_OVERRIDES.get(key, entry)
+        notes = []
+        for fname in sorted(os.listdir(full)):
+            if not os.path.isfile(os.path.join(full, fname)) or should_skip_file(fname):
+                continue
+            stem = fname[:-3]
+            nkey = stem.strip().strip("?").strip().lower()
+            note_slug = NOTE_SLUG_OVERRIDES.get(nkey, slugify(stem))
+            title = NOTE_TITLE_OVERRIDES.get(nkey, stem)
+            notes.append((fname, note_slug, title))
+        if notes:
+            categories.append((cat_slug, cat_title, entry, notes))
+            known_cat_slugs[cat_slug] = True
+
+    categories.sort(key=lambda c: (CATEGORY_ORDER.index(c[0]) if c[0] in CATEGORY_ORDER else 999, c[0]))
+    return categories
+
+
+def build_lookup(categories):
+    lookup = {}
+    for cat_slug, cat_title, cat_dir, notes in categories:
+        for src_name, note_slug, title in notes:
+            stem = src_name[:-3]
+            for alias in {title, stem, title.rstrip("?")}:
+                lookup[norm(alias)] = (cat_slug, note_slug, title)
+    return lookup
+
+
+def split_frontmatter(raw):
+    # Require a literal leading "---" (only a BOM may precede it) — a stray
+    # leading blank/tab before a mid-document "---" horizontal rule must
+    # NOT be misread as the start of frontmatter, or real content between
+    # the two gets silently swallowed as "YAML".
+    stripped = raw.lstrip("﻿")
+    if not stripped.startswith("---"):
+        return {}, raw
+    parts = stripped.split("\n", 1)
+    rest = parts[1] if len(parts) > 1 else ""
+    end_match = re.search(r"\n---\s*\n", rest)
+    if not end_match:
+        return {}, raw
+    fm_text = rest[: end_match.start()]
+    body = rest[end_match.end():]
+    try:
+        fm = yaml.safe_load(fm_text) or {}
+    except yaml.YAMLError:
+        fm = {}
+    if not isinstance(fm, dict):
+        fm = {}
+    return fm, body
+
+
+def extract_tags(body):
+    lines = body.strip("\n").split("\n")
+    tags = []
+    scan_idx = list(range(min(3, len(lines)))) + list(range(max(0, len(lines) - 3), len(lines)))
+    for idx in sorted(set(scan_idx)):
+        if TAG_LINE_RE.match(lines[idx].strip()):
+            tags = lines[idx].strip().split()
+            del lines[idx]
+            break
+    tags = [t.lstrip("#") for t in tags]
+    return tags, "\n".join(lines).strip("\n")
+
+
+def as_list(val):
+    if val is None:
+        return []
+    if isinstance(val, list):
+        return [str(v) for v in val]
+    return [str(val)]
+
+
+def render_meta_html(fm, lookup, cur_cat, cur_slug):
+    rows = []
+    skip_keys = {"category", "technique", "related", "summary"}
+    for key, val in fm.items():
+        if key in skip_keys:
+            continue
+        vals = as_list(val)
+        if not vals:
+            continue
+        label = key.replace("_", " ").replace("-", " ").title()
+        chips = "".join('<span class="note-meta-chip">{}</span>'.format(v) for v in vals)
+        rows.append(
+            '<div class="note-meta-row"><span class="note-meta-key">{}</span>'
+            '<span class="note-meta-val">{}</span></div>'.format(label, chips)
+        )
+
+    related_links = []
+    for r in as_list(fm.get("related")):
+        r_clean = r.strip().strip('"').lstrip("[").rstrip("]").strip()
+        if not r_clean:
+            continue
+        resolved = lookup.get(norm(r_clean))
+        if resolved:
+            cat_slug, note_slug, title = resolved
+            if cat_slug == cur_cat and note_slug == cur_slug:
+                continue
+            related_links.append(
+                '<a class="note-meta-chip note-meta-link" href="{}{}/{}/">{}</a>'.format(
+                    BASE_URL, cat_slug, note_slug, title
+                )
+            )
+    if related_links:
+        rows.append(
+            '<div class="note-meta-row"><span class="note-meta-key">Related</span>'
+            '<span class="note-meta-val">{}</span></div>'.format("".join(related_links))
+        )
+
+    if not rows:
+        return ""
+    return '<div class="note-meta">{}</div>\n'.format("\n".join(rows))
+
+
+def convert_wikilinks(text, lookup):
+    def sub(m):
+        target = m.group(1).strip()
+        resolved = lookup.get(norm(target))
+        if not resolved:
+            return target
+        cat_slug, note_slug, title = resolved
+        return "[{}]({}{}/{}/)".format(target, BASE_URL, cat_slug, note_slug)
+    return WIKILINK_RE.sub(sub, text)
+
+
+def convert_local_links(text):
+    def sub(m):
+        label, url = m.group(1), m.group(2)
+        if url.startswith(("http://", "https://", "/blogs/", "#", "mailto:")):
+            return m.group(0)
+        return "`{}`".format(label)
+    return MD_LINK_RE.sub(sub, text)
+
+
+def process_note(src_path, cat_slug, note_slug, title, vault_root, lookup, out_assets_dir):
+    with open(src_path, encoding="utf-8") as f:
+        raw = f.read()
+
+    if raw.strip() == "":
+        return {"tags": [], "meta_html": "", "body": "*Note not written yet — to be added.*",
+                "is_empty": True}
+
+    fm, body = split_frontmatter(raw)
+    body = body.strip("\n")
+    tags, body = extract_tags(body)
+
+    src_dir = os.path.dirname(src_path)
+
+    def embed_sub(m):
+        fname = m.group(1).strip()
+        candidates = [os.path.join(src_dir, fname), os.path.join(vault_root, fname)]
+        src_img = next((c for c in candidates if os.path.exists(c)), None)
+        safe_name = re.sub(r"[^a-zA-Z0-9.]+", "-", fname).strip("-").lower()
+        if src_img:
+            os.makedirs(out_assets_dir, exist_ok=True)
+            shutil.copyfile(src_img, os.path.join(out_assets_dir, safe_name))
+        return '<img class="note-img" src="{{{{ \'{}{}/assets/{}\' | relative_url }}}}" alt="screenshot" />'.format(
+            BASE_URL, cat_slug, safe_name
+        )
+
+    body = EMBED_RE.sub(embed_sub, body)
+    body = convert_wikilinks(body, lookup)
+    body = convert_local_links(body)
+    meta_html = render_meta_html(fm, lookup, cat_slug, note_slug)
+
+    return {"tags": tags, "meta_html": meta_html, "body": body, "is_empty": False}
+
+
+PAGE_TEMPLATE = """---
+layout: default
+title: "{title} — Kernel Exploitation Notes"
+description: "{description}"
+og_description: "{description}"
+og_type: "article"
+keywords: "kernel exploitation, linux kernel, {slug_keywords}, zoozoo-sec"
+permalink: {permalink}
+note_id: {cat_slug}/{note_slug}
+---
+
+<link rel="stylesheet" href="{{{{ '/blogs/notes/notes-page.css' | relative_url }}}}" />
+
+{{% include kernel-notes-nav.html %}}
+
+<section id="back">
+<div id="blueback">
+
+<div class="note-content" markdown="1">
+
+# {title}
+{tags_html}
+{meta_html}
+{content}
+
+</div>
+
+</div>
+</section>
+
+<script src="{{{{ '/blogs/notes/notes-nav.js' | relative_url }}}}"></script>
+"""
+
+
+def write_nav_include(categories, includes_dir, dry_run):
+    lines = [
+        '<div class="notes-floating-nav" id="notes-nav">',
+        '  <button type="button" class="notes-nav-toggle" aria-expanded="false" aria-controls="notes-nav-panel">',
+        '    <span>Sections</span>',
+        '  </button>',
+        '  <div class="notes-nav-panel" id="notes-nav-panel">',
+        '    <div class="notes-nav-title">Kernel Exploitation Notes</div>',
+        '    <ul class="notes-nav-overview">',
+        '      <li><a href="{{ \'' + BASE_URL + '\' | relative_url }}"{% if page.note_id == \'overview\' %} class="is-active"{% endif %}>Overview</a></li>',
+        '    </ul>',
+    ]
+    for cat_slug, cat_title, cat_dir, notes in categories:
+        lines.append('    <div class="notes-nav-group-title">{}</div>'.format(cat_title))
+        lines.append('    <ul>')
+        for src_name, note_slug, title in notes:
+            href = "{}{}/{}/".format(BASE_URL, cat_slug, note_slug)
+            note_id = "{}/{}".format(cat_slug, note_slug)
+            lines.append(
+                '      <li><a href="{{{{ \'{}\' | relative_url }}}}"{{% if page.note_id == \'{}\' %}} class="is-active"{{% endif %}}>{}</a></li>'.format(
+                    href, note_id, title
+                )
+            )
+        lines.append('    </ul>')
+    lines.append('  </div>')
+    lines.append('</div>')
+
+    out_path = os.path.join(includes_dir, "kernel-notes-nav.html")
+    content = "\n".join(lines) + "\n"
+    if dry_run:
+        print("[dry-run] would write", out_path)
+        return
+    with open(out_path, "w", encoding="utf-8") as f:
+        f.write(content)
+    print("wrote", out_path)
+
+
+def render_tree(categories):
+    lines = ['<pre class="notes-tree">']
+    n_cats = len(categories)
+    for ci, (cat_slug, cat_title, cat_dir, notes) in enumerate(categories):
+        cat_branch = "└── " if ci == n_cats - 1 else "├── "
+        child_indent = "    " if ci == n_cats - 1 else "│   "
+        lines.append('{}<span class="notes-tree-cat">{}/</span>'.format(cat_branch, cat_title))
+        n_notes = len(notes)
+        for ni, (src_name, note_slug, title) in enumerate(notes):
+            note_branch = child_indent + ("└── " if ni == n_notes - 1 else "├── ")
+            href = "{}{}/{}/".format(BASE_URL, cat_slug, note_slug)
+            lines.append('{}<a href="{{{{ \'{}\' | relative_url }}}}">{}</a>'.format(note_branch, href, title))
+    lines.append('</pre>')
+    return "\n".join(lines)
+
+
+DEFAULT_INTRO = """These are my running notes on Linux kernel internals and exploitation, built up while
+working through kernel pwn challenges and reading the source tree directly. Every claim here is
+something I traced through actual kernel code rather than repeated from a blog post, and the
+call chains, struct layouts, and offsets are ones I verified myself, not assumed. The notes are
+grouped roughly the way I think about kernel exploitation: understand the allocators first
+(Internals), learn how to groom the heap into a useful layout (Heap Spraying, Page Spraying),
+build a working ROP chain once you have control (KROP), and know what to actually overwrite once
+you have arbitrary read/write (Targets). Some notes below are still stubs — I'd rather publish an
+outline than wait for something polished before sharing it. Updated whenever I dig further into
+something new."""
+
+
+def load_intro(out_root, dry_run):
+    intro_path = os.path.join(out_root, "_intro.md")
+    if os.path.exists(intro_path):
+        with open(intro_path, encoding="utf-8") as f:
+            return f.read().strip()
+    text = " ".join(DEFAULT_INTRO.split())
+    if dry_run:
+        print("[dry-run] would create", intro_path, "with a default intro paragraph")
+    else:
+        os.makedirs(out_root, exist_ok=True)
+        with open(intro_path, "w", encoding="utf-8") as f:
+            f.write(text + "\n")
+        print("wrote", intro_path, "(edit this file directly — reruns never overwrite it)")
+    return text
+
+
+def write_index(categories, out_root, dry_run):
+    intro_text = load_intro(out_root, dry_run)
+    lines = [
+        "---", "layout: default", 'title: "Kernel Exploitation Notes"',
+        'description: "Linux kernel internals and exploitation notes — allocators, heap spraying, ROP, page spraying, and common targets."',
+        'og_description: "Linux kernel internals and exploitation notes — allocators, heap spraying, ROP, page spraying, and common targets."',
+        'og_type: "article"',
+        'keywords: "kernel exploitation, linux kernel internals, heap spraying, rop, page spraying, zoozoo-sec"',
+        "permalink: " + BASE_URL, "note_id: overview", "---", "",
+        '<link rel="stylesheet" href="{{ \'/blogs/notes/notes-page.css\' | relative_url }}" />',
+        "{% include kernel-notes-nav.html %}", "",
+        '<section id="back">', '<div id="blueback">', "",
+        '<div class="note-content" markdown="1">', "",
+        "# Kernel Exploitation Notes", "",
+        intro_text,
+        "", "</div>",
+        "",
+    ]
+
+    lines.append(render_tree(categories))
+    lines.append('')
+    lines.append('</div>')
+    lines.append('</section>')
+    lines.append('')
+    lines.append("<script src=\"{{ '/blogs/notes/notes-nav.js' | relative_url }}\"></script>")
+
+    out_path = os.path.join(out_root, "index.md")
+    content = "\n".join(lines) + "\n"
+    if dry_run:
+        print("[dry-run] would write", out_path)
+        return
+    with open(out_path, "w", encoding="utf-8") as f:
+        f.write(content)
+    print("wrote", out_path)
+
+
+def main():
+    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("--vault", default=DEFAULT_VAULT, help="Path to the Obsidian vault's Internals-level folder")
+    ap.add_argument("--site-root", default=DEFAULT_SITE_ROOT, help="Path to the Jekyll site root")
+    ap.add_argument("--dry-run", action="store_true", help="Print what would happen without writing anything")
+    ap.add_argument("--prune", action="store_true", help="Delete site pages whose source note no longer exists")
+    ap.add_argument("--skip-index", action="store_true",
+                     help="Don't touch index.md — use this once you've hand-edited it beyond what "
+                          "_intro.md + the auto tree can express (e.g. added images), so a resync "
+                          "doesn't overwrite your changes.")
+    args = ap.parse_args()
+
+    vault_root = os.path.expanduser(args.vault)
+    if not os.path.isdir(vault_root):
+        sys.exit("Vault not found: " + vault_root)
+
+    out_root = os.path.join(args.site_root, "blogs", "notes", "kernel-exploitation")
+    includes_dir = os.path.join(args.site_root, "_includes")
+
+    categories = discover_vault(vault_root)
+    if not categories:
+        sys.exit("No categories/notes found under " + vault_root)
+
+    lookup = build_lookup(categories)
+
+    written_paths = set()
+    for cat_slug, cat_title, cat_dir, notes in categories:
+        out_cat_dir = os.path.join(out_root, cat_slug)
+        out_assets_dir = os.path.join(out_cat_dir, "assets")
+        if not args.dry_run:
+            os.makedirs(out_cat_dir, exist_ok=True)
+
+        for src_name, note_slug, title in notes:
+            src_path = os.path.join(vault_root, cat_dir, src_name)
+            r = process_note(src_path, cat_slug, note_slug, title, vault_root, lookup, out_assets_dir)
+
+            if r["tags"]:
+                pills = "".join('<span class="note-tag">#{}</span>'.format(t) for t in r["tags"])
+                tags_html = '\n<div class="note-tags">{}</div>\n'.format(pills)
+            else:
+                tags_html = ""
+
+            page = PAGE_TEMPLATE.format(
+                title=title,
+                description="Kernel exploitation notes ({}): {}".format(cat_title, title),
+                slug_keywords=(cat_slug + " " + note_slug).replace("-", " "),
+                permalink=BASE_URL + cat_slug + "/" + note_slug + "/",
+                cat_slug=cat_slug, note_slug=note_slug,
+                tags_html=tags_html, meta_html=r["meta_html"], content=r["body"],
+            )
+            out_path = os.path.join(out_cat_dir, note_slug + ".md")
+            written_paths.add(out_path)
+            if args.dry_run:
+                print("[dry-run] would write", out_path)
+                continue
+            with open(out_path, "w", encoding="utf-8") as f:
+                f.write(page)
+            print("wrote", out_path)
+
+    write_nav_include(categories, includes_dir, args.dry_run)
+    if args.skip_index:
+        print("skipped index.md (--skip-index)")
+    else:
+        write_index(categories, out_root, args.dry_run)
+
+    if args.prune:
+        for cat_slug, cat_title, cat_dir, notes in categories:
+            pass  # existing categories already handled above
+        for existing in os.listdir(out_root) if os.path.isdir(out_root) else []:
+            cat_path = os.path.join(out_root, existing)
+            if not os.path.isdir(cat_path) or existing.startswith("."):
+                continue
+            for fname in os.listdir(cat_path):
+                if not fname.endswith(".md"):
+                    continue
+                fpath = os.path.join(cat_path, fname)
+                if fpath not in written_paths:
+                    if args.dry_run:
+                        print("[dry-run] would prune", fpath)
+                    else:
+                        os.remove(fpath)
+                        print("pruned", fpath)
+    else:
+        for existing in os.listdir(out_root) if os.path.isdir(out_root) else []:
+            cat_path = os.path.join(out_root, existing)
+            if not os.path.isdir(cat_path) or existing.startswith("."):
+                continue
+            for fname in os.listdir(cat_path):
+                if fname.endswith(".md") and os.path.join(cat_path, fname) not in written_paths:
+                    print("NOTE: {}/{} has no matching source note (run with --prune to remove it)".format(existing, fname))
+
+    print("\nDone. {} categories, {} notes.".format(len(categories), sum(len(n) for _, _, _, n in categories)))
+
+
+if __name__ == "__main__":
+    main()

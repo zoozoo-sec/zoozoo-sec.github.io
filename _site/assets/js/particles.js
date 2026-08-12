@@ -8,7 +8,7 @@
   const MAX_SPEED = 0.5;
   const RADIUS = 1.1;
   const REPEL_RADIUS = 210; 
-  const CHOSEN_SPEED_MULTIPLIER = 2.5;
+  const CHOSEN_SPEED_MULTIPLIER = 3.5;
   const REPEL_STRENGTH = 5.2; 
 
   const GAME_ENABLED = document.body.dataset.particleGame === "on";

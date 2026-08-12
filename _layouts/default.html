@@ -8,16 +8,51 @@
     <meta name="author" content="{{ page.author | default: 'Sarvesh Aadhithya' }}">
 
     <!-- Open Graph Meta Tags for Social Media -->
+    <meta property="og:site_name" content="zoozoo">
     <meta property="og:title" content="{{ page.og_title | default: page.title | default: 'Sarvesh Aadhithya' }}">
     <meta property="og:description" content="{{ page.og_description | default: page.description | default: 'Explore my cybersecurity blogs, CTF writeups, and research.' }}">
     <meta property="og:image" content="{{ page.og_image | default: 'https://zoozoo-sec.github.io/assets/img/profile.png' }}">
     <meta property="og:url" content="{{ page.url | absolute_url }}">
     <meta property="og:type" content="{{ page.og_type | default: 'website' }}">
 
+    <!-- Twitter/X Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@_zoozoo">
+    <meta name="twitter:creator" content="@_zoozoo">
+    <meta name="twitter:title" content="{{ page.og_title | default: page.title | default: 'Sarvesh Aadhithya' }}">
+    <meta name="twitter:description" content="{{ page.og_description | default: page.description | default: 'Explore my cybersecurity blogs, CTF writeups, and research.' }}">
+    <meta name="twitter:image" content="{{ page.og_image | default: 'https://zoozoo-sec.github.io/assets/img/profile.png' }}">
+
     <meta name="google-site-verification" content="EkoD8s1_tAO9DoNE-wVHKgf472-GAPUwxLL1RjLf9BU" />
-    
-    
+
+
     <link rel="canonical" href="{{ page.url | absolute_url }}">
+
+    <!-- Structured Data (Google rich results) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "Person",
+          "name": "Sarvesh Aadhithya",
+          "alternateName": "zoozoo",
+          "url": "{{ '/' | absolute_url }}",
+          "sameAs": [
+            "https://x.com/_zoozoo/",
+            "https://github.com/zoozoo-sec"
+          ],
+          "jobTitle": "Low-level Security Researcher"
+        },
+        {
+          "@type": "WebSite",
+          "name": "Sarvesh Aadhithya's Portfolio",
+          "url": "{{ '/' | absolute_url }}",
+          "author": { "@type": "Person", "name": "Sarvesh Aadhithya" }
+        }
+      ]
+    }
+    </script>
 
     <!-- Title and Favicon -->
     <title>{{ page.title | default: 'Sarvesh Aadhithya' }}</title>

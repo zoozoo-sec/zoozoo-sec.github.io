@@ -14,6 +14,10 @@ permalink: /blogs/
 
 <section id="blogs">
   <div class="writeup-grid">
+    <a href="{{ '/blogs/notes/kernel-exploitation/' | relative_url }}" class="writeup-card">
+      <h2>Linux Kernel Exploitation Notes</h2><p>Linux Internals, Heap Spraying, Page Spraying, Cross-Cache attacks, ROP etc. </p>
+      <span class="date">September 2026</span>
+    </a>
     <a href="{{ '/blogs/PwningWasm-BreakingXssFilters' | relative_url }}" class="writeup-card">
       <h2>Pwning WebAssembly</h2><p> Bypassing XSS Filters in the WASM Sandbox</p>
       <span class="date">September 2025</span>
