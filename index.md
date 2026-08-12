@@ -17,7 +17,7 @@ author: "Sarvesh Aadhithya"
   </div>
 
   <h1 class="hero-name">Sarvesh Aadhithya</h1>
-  <p class="hero-role">Low-level <del class="hero-role-strike">Security Researcher</del> <span class="hero-role-alt">- Someone who Probably Knows C and Assembly</span></p>
+  <p class="hero-role"><del class="hero-role-strike">Low-level  Security Researcher</del> <span class="hero-role-alt">- Someone who Probably Knows C and Assembly</span></p>
   <p class="hero-bio">
     I dig into binaries, kernels, firmwares and browser internals to understand how they work and find out where they
     break. I write about the things I learn here, mostly through CTF writeups and posts on exploit development, memory corruption, and vulnerability research.
