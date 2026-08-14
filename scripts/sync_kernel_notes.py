@@ -89,12 +89,29 @@ NOTE_TITLE_OVERRIDES = {
 
 # Category display order — known ones first, any new category appended
 # alphabetically after these.
-CATEGORY_ORDER = ["internals", "heap-spraying", "krop", "page-spraying", "targets"]
+CATEGORY_ORDER = ["internals", "heap-spraying", "krop", "page-spraying", "targets", "misc"]
 
 TAG_LINE_RE = re.compile(r"^#[\w-]+(?:\s+#[\w-]+)*\s*$")
 WIKILINK_RE = re.compile(r"\[\[([^\]]+)\]\]")
 EMBED_RE = re.compile(r"!\[\[([^\]]+)\]\]")
 MD_LINK_RE = re.compile(r"\[([^\]]+)\]\(([^)]+)\)")
+
+# The site has no MathJax/KaTeX, so $$...$$ LaTeX (Obsidian renders this
+# natively) would show up as raw unrendered text if copied through as-is.
+# Convert it to a plain code block instead, translating the handful of
+# LaTeX macros that show up in these notes (arrow chains like a -> b -> c).
+LATEX_BLOCK_RE = re.compile(r"\$\$(.+?)\$\$", re.DOTALL)
+LATEX_MACRO_SUBS = [
+    (re.compile(r"\\rightarrow"), "->"),
+    (re.compile(r"\\longrightarrow"), "->"),
+    (re.compile(r"\\to\b"), "->"),
+    (re.compile(r"\\leftarrow"), "<-"),
+    (re.compile(r"\\times"), "*"),
+    (re.compile(r"\\cdot"), "*"),
+    (re.compile(r"\\neq"), "!="),
+    (re.compile(r"\\leq"), "<="),
+    (re.compile(r"\\geq"), ">="),
+]
 
 
 def slugify(name):
@@ -120,6 +137,27 @@ def discover_vault(vault_root):
     """Returns [(cat_slug, cat_title, cat_dir_name, [(src_name, note_slug, title), ...]), ...]"""
     categories = []
     known_cat_slugs = {}
+
+    # Notes sitting directly in the vault root (not inside any category
+    # subfolder) get grouped into a synthetic "Misc" category. cat_dir_name
+    # is "" for this one, meaning the source path is vault_root itself.
+    root_notes = []
+    for fname in sorted(os.listdir(vault_root)):
+        full = os.path.join(vault_root, fname)
+        if not os.path.isfile(full) or should_skip_file(fname):
+            continue
+        stem = fname[:-3]
+        nkey = stem.strip().strip("?").strip().lower()
+        note_slug = NOTE_SLUG_OVERRIDES.get(nkey, slugify(stem))
+        title = NOTE_TITLE_OVERRIDES.get(nkey, stem)
+        root_notes.append((fname, note_slug, title))
+    if root_notes:
+        key = "misc"
+        cat_slug = CATEGORY_SLUG_OVERRIDES.get(key, "misc")
+        cat_title = CATEGORY_TITLE_OVERRIDES.get(key, "Misc")
+        categories.append((cat_slug, cat_title, "", root_notes))
+        known_cat_slugs[cat_slug] = True
+
     for entry in sorted(os.listdir(vault_root)):
         full = os.path.join(vault_root, entry)
         if not os.path.isdir(full) or entry in SKIP_DIR_NAMES or entry.startswith("."):
@@ -241,6 +279,17 @@ def render_meta_html(fm, lookup, cur_cat, cur_slug):
     return '<div class="note-meta">{}</div>\n'.format("\n".join(rows))
 
 
+def convert_latex(text):
+    def sub(m):
+        inner = m.group(1).strip()
+        for pat, repl in LATEX_MACRO_SUBS:
+            inner = pat.sub(repl, inner)
+        inner = re.sub(r"\s+", " ", inner).strip()
+        inner = re.sub(r"\s*(->|<-)\s*", r"\1", inner)
+        return "```c\n{}\n```".format(inner)
+    return LATEX_BLOCK_RE.sub(sub, text)
+
+
 def convert_wikilinks(text, lookup):
     def sub(m):
         target = m.group(1).strip()
@@ -272,6 +321,7 @@ def process_note(src_path, cat_slug, note_slug, title, vault_root, lookup, out_a
     fm, body = split_frontmatter(raw)
     body = body.strip("\n")
     tags, body = extract_tags(body)
+    body = convert_latex(body)
 
     src_dir = os.path.dirname(src_path)
 
@@ -423,7 +473,7 @@ def write_index(categories, out_root, dry_run):
         "{% include kernel-notes-nav.html %}", "",
         '<section id="back">', '<div id="blueback">', "",
         '<div class="note-content" markdown="1">', "",
-        "# Kernel Exploitation Notes", "",
+        "# Linux Kernel Exploitation Notes", "",
         intro_text,
         "", "</div>",
         "",

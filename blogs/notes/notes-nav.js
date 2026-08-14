@@ -19,6 +19,19 @@
       nav.classList.contains("is-open") ? closePanel() : openPanel();
     });
 
+    var closeTimer = null;
+    var canHover = window.matchMedia && window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+    if (canHover) {
+      nav.addEventListener("mouseenter", function () {
+        clearTimeout(closeTimer);
+        openPanel();
+      });
+      nav.addEventListener("mouseleave", function () {
+        clearTimeout(closeTimer);
+        closeTimer = setTimeout(closePanel, 200);
+      });
+    }
+
     document.addEventListener("click", function (e) {
       if (!nav.contains(e.target)) closePanel();
     });
