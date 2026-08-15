@@ -348,6 +348,39 @@
     margin: 1rem 0;
 }
 
+.note-content pre,
+.note-content table,
+.notes-tree {
+    scrollbar-width: thin;
+    scrollbar-color: #333338 transparent;
+}
+
+.note-content pre::-webkit-scrollbar,
+.note-content table::-webkit-scrollbar,
+.notes-tree::-webkit-scrollbar {
+    height: 6px;
+    width: 6px;
+}
+
+.note-content pre::-webkit-scrollbar-track,
+.note-content table::-webkit-scrollbar-track,
+.notes-tree::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.note-content pre::-webkit-scrollbar-thumb,
+.note-content table::-webkit-scrollbar-thumb,
+.notes-tree::-webkit-scrollbar-thumb {
+    background: #333338;
+    border-radius: 999px;
+}
+
+.note-content pre::-webkit-scrollbar-thumb:hover,
+.note-content table::-webkit-scrollbar-thumb:hover,
+.notes-tree::-webkit-scrollbar-thumb:hover {
+    background: #45454c;
+}
+
 .note-content code {
     font-family: monospace;
     font-size: 0.85rem;
