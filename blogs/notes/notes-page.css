@@ -155,6 +155,21 @@
     margin: 0.85rem 0 0.3rem;
 }
 
+.notes-nav-subgroup-title {
+    font-family: monospace;
+    font-size: 0.62rem;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: #45454c;
+    margin: 0.4rem 0 0.2rem 1.15rem;
+}
+
+.notes-nav-panel ul.notes-nav-sublist {
+    padding-left: 1rem;
+    border-left: 1px solid #242428;
+    margin: 0 0 0.2rem 0.7rem;
+}
+
 .notes-nav-panel ul.notes-nav-overview {
     padding-bottom: 0.6rem;
     margin-bottom: 0.6rem;
@@ -487,6 +502,11 @@
 
 .notes-tree-cat {
     color: #5eead4;
+    font-weight: 600;
+}
+
+.notes-tree-subcat {
+    color: #3f9e8f;
     font-weight: 600;
 }
 

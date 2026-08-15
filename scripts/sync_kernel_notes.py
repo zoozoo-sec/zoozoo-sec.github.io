@@ -12,16 +12,26 @@ What it does, every run:
   1. Scans every category subfolder in the vault (each top-level folder =
      one category, e.g. "Heap Spraying"), skipping `.obsidian`, any file
      named "_Template.md", and any file with "MOC" in its name.
-  2. For each note: strips YAML frontmatter, resolves [[wiki-links]] and
+  2. Within a category, a note can either sit loose directly in that
+     folder, or be grouped inside one level of subdirectory (e.g.
+     "Internals/MM/Buddy Allocator.md"). A subdirectory like that becomes
+     a subgroup: its notes publish under <category>/<subgroup>/<note>/
+     instead of <category>/<note>/, and it renders as its own nested
+     branch in both the floating nav and the index tree diagram. This is
+     entirely optional — a category with no subdirectories behaves exactly
+     as before. Only one level of nesting is supported (a subdirectory
+     inside a subdirectory is not walked).
+  3. For each note: strips YAML frontmatter, resolves [[wiki-links]] and
      `related:` entries against every other note in the vault, copies
      any ![[embedded images]] into that category's assets/ folder,
      de-links local filesystem paths (they'd be dead links once published),
      extracts a trailing/leading "#tag #tag2" line into tag pills, and
      writes out a Jekyll page with a metadata panel built from whatever
      frontmatter fields are present.
-  3. Regenerates the shared floating nav include (grouped by category)
-     and the overview/index page — an intro paragraph followed by a
-     tree view of every category/note, each note name a real link.
+  4. Regenerates the shared floating nav include (grouped by category,
+     with subgroups nested underneath their category) and the
+     overview/index page — an intro paragraph followed by a tree view of
+     every category/subgroup/note, each note name a real link.
 
 The intro paragraph lives in its own file, blogs/notes/kernel-exploitation/
 _intro.md, created with a default the first time this runs. Edit that
@@ -87,6 +97,11 @@ NOTE_TITLE_OVERRIDES = {
     "kernel module internals": "Kernel Module Internals",
 }
 
+# One level of subdirectory inside a category folder (e.g. "Internals/MM")
+# becomes a subgroup. key = normalized (lowercased) subdirectory name.
+SUBCATEGORY_SLUG_OVERRIDES = {}
+SUBCATEGORY_TITLE_OVERRIDES = {}
+
 # Category display order — known ones first, any new category appended
 # alphabetically after these.
 CATEGORY_ORDER = ["internals", "heap-spraying", "krop", "page-spraying", "targets", "misc"]
@@ -133,30 +148,40 @@ def should_skip_file(filename):
     return any(p.search(stem) for p in SKIP_FILE_PATTERNS)
 
 
+def _note_tuple(fname):
+    stem = fname[:-3]
+    nkey = stem.strip().strip("?").strip().lower()
+    note_slug = NOTE_SLUG_OVERRIDES.get(nkey, slugify(stem))
+    title = NOTE_TITLE_OVERRIDES.get(nkey, stem)
+    return (fname, note_slug, title)
+
+
 def discover_vault(vault_root):
-    """Returns [(cat_slug, cat_title, cat_dir_name, [(src_name, note_slug, title), ...]), ...]"""
+    """Returns [(cat_slug, cat_title, cat_dir_name, [item, ...]), ...]
+
+    Each item is one of:
+      ("note", src_name, note_slug, title)                        — a loose note
+      ("group", sub_slug, sub_title, sub_dir_name, [(src_name, note_slug, title), ...])
+                                                                    — one level of subdirectory
+    """
     categories = []
-    known_cat_slugs = {}
 
     # Notes sitting directly in the vault root (not inside any category
     # subfolder) get grouped into a synthetic "Misc" category. cat_dir_name
     # is "" for this one, meaning the source path is vault_root itself.
+    # (The vault root itself is not scanned for sub-subdirectories — nesting
+    # only applies inside a real category folder.)
     root_notes = []
     for fname in sorted(os.listdir(vault_root)):
         full = os.path.join(vault_root, fname)
         if not os.path.isfile(full) or should_skip_file(fname):
             continue
-        stem = fname[:-3]
-        nkey = stem.strip().strip("?").strip().lower()
-        note_slug = NOTE_SLUG_OVERRIDES.get(nkey, slugify(stem))
-        title = NOTE_TITLE_OVERRIDES.get(nkey, stem)
-        root_notes.append((fname, note_slug, title))
+        root_notes.append(("note",) + _note_tuple(fname))
     if root_notes:
         key = "misc"
         cat_slug = CATEGORY_SLUG_OVERRIDES.get(key, "misc")
         cat_title = CATEGORY_TITLE_OVERRIDES.get(key, "Misc")
         categories.append((cat_slug, cat_title, "", root_notes))
-        known_cat_slugs[cat_slug] = True
 
     for entry in sorted(os.listdir(vault_root)):
         full = os.path.join(vault_root, entry)
@@ -165,30 +190,59 @@ def discover_vault(vault_root):
         key = entry.strip().lower()
         cat_slug = CATEGORY_SLUG_OVERRIDES.get(key, slugify(entry))
         cat_title = CATEGORY_TITLE_OVERRIDES.get(key, entry)
-        notes = []
-        for fname in sorted(os.listdir(full)):
-            if not os.path.isfile(os.path.join(full, fname)) or should_skip_file(fname):
-                continue
-            stem = fname[:-3]
-            nkey = stem.strip().strip("?").strip().lower()
-            note_slug = NOTE_SLUG_OVERRIDES.get(nkey, slugify(stem))
-            title = NOTE_TITLE_OVERRIDES.get(nkey, stem)
-            notes.append((fname, note_slug, title))
-        if notes:
-            categories.append((cat_slug, cat_title, entry, notes))
-            known_cat_slugs[cat_slug] = True
+
+        items = []
+        for sub_entry in sorted(os.listdir(full)):
+            sub_full = os.path.join(full, sub_entry)
+            if os.path.isdir(sub_full):
+                if sub_entry in SKIP_DIR_NAMES or sub_entry.startswith("."):
+                    continue
+                sub_key = sub_entry.strip().lower()
+                sub_slug = SUBCATEGORY_SLUG_OVERRIDES.get(sub_key, slugify(sub_entry))
+                sub_title = SUBCATEGORY_TITLE_OVERRIDES.get(sub_key, sub_entry)
+                group_notes = []
+                for fname in sorted(os.listdir(sub_full)):
+                    if not os.path.isfile(os.path.join(sub_full, fname)) or should_skip_file(fname):
+                        continue
+                    group_notes.append(_note_tuple(fname))
+                if group_notes:
+                    items.append(("group", sub_slug, sub_title, sub_entry, group_notes))
+            else:
+                if not os.path.isfile(sub_full) or should_skip_file(sub_entry):
+                    continue
+                items.append(("note",) + _note_tuple(sub_entry))
+
+        if items:
+            categories.append((cat_slug, cat_title, entry, items))
 
     categories.sort(key=lambda c: (CATEGORY_ORDER.index(c[0]) if c[0] in CATEGORY_ORDER else 999, c[0]))
     return categories
 
 
+def flatten_items(items):
+    """Yield (rel_dir_parts, src_name, note_slug, title, note_path) for every
+    note in a category's items list — rel_dir_parts are the source-side path
+    components under the category dir (e.g. [] for a loose note, ["MM"] for
+    one grouped under a "MM" subdirectory), and note_path is the output/URL
+    path fragment relative to the category (e.g. "buddy-allocator" or
+    "mm/buddy-allocator")."""
+    for item in items:
+        if item[0] == "note":
+            _, src_name, note_slug, title = item
+            yield [], src_name, note_slug, title, note_slug
+        else:
+            _, sub_slug, sub_title, sub_dir, group_notes = item
+            for src_name, note_slug, title in group_notes:
+                yield [sub_dir], src_name, note_slug, title, sub_slug + "/" + note_slug
+
+
 def build_lookup(categories):
     lookup = {}
-    for cat_slug, cat_title, cat_dir, notes in categories:
-        for src_name, note_slug, title in notes:
+    for cat_slug, cat_title, cat_dir, items in categories:
+        for rel_parts, src_name, note_slug, title, note_path in flatten_items(items):
             stem = src_name[:-3]
             for alias in {title, stem, title.rstrip("?")}:
-                lookup[norm(alias)] = (cat_slug, note_slug, title)
+                lookup[norm(alias)] = (cat_slug, note_path, title)
     return lookup
 
 
@@ -391,17 +445,29 @@ def write_nav_include(categories, includes_dir, dry_run):
         '      <li><a href="{{ \'' + BASE_URL + '\' | relative_url }}"{% if page.note_id == \'overview\' %} class="is-active"{% endif %}>Overview</a></li>',
         '    </ul>',
     ]
-    for cat_slug, cat_title, cat_dir, notes in categories:
+    def nav_note_li(indent, cat_slug, note_slug, title):
+        href = "{}{}/{}/".format(BASE_URL, cat_slug, note_slug)
+        note_id = "{}/{}".format(cat_slug, note_slug)
+        return '{}<li><a href="{{{{ \'{}\' | relative_url }}}}"{{% if page.note_id == \'{}\' %}} class="is-active"{{% endif %}}>{}</a></li>'.format(
+            indent, href, note_id, title
+        )
+
+    for cat_slug, cat_title, cat_dir, items in categories:
         lines.append('    <div class="notes-nav-group-title">{}</div>'.format(cat_title))
         lines.append('    <ul>')
-        for src_name, note_slug, title in notes:
-            href = "{}{}/{}/".format(BASE_URL, cat_slug, note_slug)
-            note_id = "{}/{}".format(cat_slug, note_slug)
-            lines.append(
-                '      <li><a href="{{{{ \'{}\' | relative_url }}}}"{{% if page.note_id == \'{}\' %}} class="is-active"{{% endif %}}>{}</a></li>'.format(
-                    href, note_id, title
-                )
-            )
+        for item in items:
+            if item[0] == "note":
+                _, src_name, note_slug, title = item
+                lines.append(nav_note_li('      ', cat_slug, note_slug, title))
+            else:
+                _, sub_slug, sub_title, sub_dir, group_notes = item
+                lines.append('      <li>')
+                lines.append('        <div class="notes-nav-subgroup-title">{}</div>'.format(sub_title))
+                lines.append('        <ul class="notes-nav-sublist">')
+                for src_name, note_slug, title in group_notes:
+                    lines.append(nav_note_li('          ', cat_slug, sub_slug + "/" + note_slug, title))
+                lines.append('        </ul>')
+                lines.append('      </li>')
         lines.append('    </ul>')
     lines.append('  </div>')
     lines.append('</div>')
@@ -419,15 +485,31 @@ def write_nav_include(categories, includes_dir, dry_run):
 def render_tree(categories):
     lines = ['<pre class="notes-tree">']
     n_cats = len(categories)
-    for ci, (cat_slug, cat_title, cat_dir, notes) in enumerate(categories):
-        cat_branch = "└── " if ci == n_cats - 1 else "├── "
-        child_indent = "    " if ci == n_cats - 1 else "│   "
+
+    def tree_note_line(branch, cat_slug, note_slug, title):
+        href = "{}{}/{}/".format(BASE_URL, cat_slug, note_slug)
+        return '{}<a href="{{{{ \'{}\' | relative_url }}}}">{}</a>'.format(branch, href, title)
+
+    for ci, (cat_slug, cat_title, cat_dir, items) in enumerate(categories):
+        cat_last = ci == n_cats - 1
+        cat_branch = "└── " if cat_last else "├── "
+        child_indent = "    " if cat_last else "│   "
         lines.append('{}<span class="notes-tree-cat">{}/</span>'.format(cat_branch, cat_title))
-        n_notes = len(notes)
-        for ni, (src_name, note_slug, title) in enumerate(notes):
-            note_branch = child_indent + ("└── " if ni == n_notes - 1 else "├── ")
-            href = "{}{}/{}/".format(BASE_URL, cat_slug, note_slug)
-            lines.append('{}<a href="{{{{ \'{}\' | relative_url }}}}">{}</a>'.format(note_branch, href, title))
+        n_items = len(items)
+        for ii, item in enumerate(items):
+            item_last = ii == n_items - 1
+            item_branch = child_indent + ("└── " if item_last else "├── ")
+            if item[0] == "note":
+                _, src_name, note_slug, title = item
+                lines.append(tree_note_line(item_branch, cat_slug, note_slug, title))
+            else:
+                _, sub_slug, sub_title, sub_dir, group_notes = item
+                lines.append('{}<span class="notes-tree-subcat">{}/</span>'.format(item_branch, sub_title))
+                sub_indent = child_indent + ("    " if item_last else "│   ")
+                n_group = len(group_notes)
+                for gi, (src_name, note_slug, title) in enumerate(group_notes):
+                    group_branch = sub_indent + ("└── " if gi == n_group - 1 else "├── ")
+                    lines.append(tree_note_line(group_branch, cat_slug, sub_slug + "/" + note_slug, title))
     lines.append('</pre>')
     return "\n".join(lines)
 
@@ -496,6 +578,27 @@ def write_index(categories, out_root, dry_run):
     print("wrote", out_path)
 
 
+def scan_existing_pages(out_root):
+    """Walk every already-published .md page under out_root/<category>/,
+    including one level of subgroup nesting, skipping assets/ folders."""
+    if not os.path.isdir(out_root):
+        return
+    for cat_name in sorted(os.listdir(out_root)):
+        cat_path = os.path.join(out_root, cat_name)
+        if not os.path.isdir(cat_path) or cat_name.startswith("."):
+            continue
+        for fname in sorted(os.listdir(cat_path)):
+            fpath = os.path.join(cat_path, fname)
+            if fname == "assets" or fname.startswith("."):
+                continue
+            if os.path.isdir(fpath):
+                for sub_fname in sorted(os.listdir(fpath)):
+                    if sub_fname.endswith(".md"):
+                        yield os.path.join(fpath, sub_fname)
+            elif fname.endswith(".md"):
+                yield fpath
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--vault", default=DEFAULT_VAULT, help="Path to the Obsidian vault's Internals-level folder")
@@ -522,15 +625,15 @@ def main():
     lookup = build_lookup(categories)
 
     written_paths = set()
-    for cat_slug, cat_title, cat_dir, notes in categories:
+    for cat_slug, cat_title, cat_dir, items in categories:
         out_cat_dir = os.path.join(out_root, cat_slug)
         out_assets_dir = os.path.join(out_cat_dir, "assets")
         if not args.dry_run:
             os.makedirs(out_cat_dir, exist_ok=True)
 
-        for src_name, note_slug, title in notes:
-            src_path = os.path.join(vault_root, cat_dir, src_name)
-            r = process_note(src_path, cat_slug, note_slug, title, vault_root, lookup, out_assets_dir)
+        for rel_parts, src_name, note_slug, title, note_path in flatten_items(items):
+            src_path = os.path.join(vault_root, cat_dir, *rel_parts, src_name)
+            r = process_note(src_path, cat_slug, note_path, title, vault_root, lookup, out_assets_dir)
 
             if r["tags"]:
                 pills = "".join('<span class="note-tag">#{}</span>'.format(t) for t in r["tags"])
@@ -541,12 +644,15 @@ def main():
             page = PAGE_TEMPLATE.format(
                 title=title,
                 description="Kernel exploitation notes ({}): {}".format(cat_title, title),
-                slug_keywords=(cat_slug + " " + note_slug).replace("-", " "),
-                permalink=BASE_URL + cat_slug + "/" + note_slug + "/",
-                cat_slug=cat_slug, note_slug=note_slug,
+                slug_keywords=(cat_slug + " " + note_path).replace("-", " ").replace("/", " "),
+                permalink=BASE_URL + cat_slug + "/" + note_path + "/",
+                cat_slug=cat_slug, note_slug=note_path,
                 tags_html=tags_html, meta_html=r["meta_html"], content=r["body"],
             )
-            out_path = os.path.join(out_cat_dir, note_slug + ".md")
+            out_note_dir = os.path.join(out_cat_dir, *note_path.split("/")[:-1])
+            if not args.dry_run:
+                os.makedirs(out_note_dir, exist_ok=True)
+            out_path = os.path.join(out_note_dir, note_slug + ".md")
             written_paths.add(out_path)
             if args.dry_run:
                 print("[dry-run] would write", out_path)
@@ -562,32 +668,21 @@ def main():
         write_index(categories, out_root, args.dry_run)
 
     if args.prune:
-        for cat_slug, cat_title, cat_dir, notes in categories:
-            pass  # existing categories already handled above
-        for existing in os.listdir(out_root) if os.path.isdir(out_root) else []:
-            cat_path = os.path.join(out_root, existing)
-            if not os.path.isdir(cat_path) or existing.startswith("."):
-                continue
-            for fname in os.listdir(cat_path):
-                if not fname.endswith(".md"):
-                    continue
-                fpath = os.path.join(cat_path, fname)
-                if fpath not in written_paths:
-                    if args.dry_run:
-                        print("[dry-run] would prune", fpath)
-                    else:
-                        os.remove(fpath)
-                        print("pruned", fpath)
+        for fpath in scan_existing_pages(out_root):
+            if fpath not in written_paths:
+                if args.dry_run:
+                    print("[dry-run] would prune", fpath)
+                else:
+                    os.remove(fpath)
+                    print("pruned", fpath)
     else:
-        for existing in os.listdir(out_root) if os.path.isdir(out_root) else []:
-            cat_path = os.path.join(out_root, existing)
-            if not os.path.isdir(cat_path) or existing.startswith("."):
-                continue
-            for fname in os.listdir(cat_path):
-                if fname.endswith(".md") and os.path.join(cat_path, fname) not in written_paths:
-                    print("NOTE: {}/{} has no matching source note (run with --prune to remove it)".format(existing, fname))
+        for fpath in scan_existing_pages(out_root):
+            if fpath not in written_paths:
+                print("NOTE: {} has no matching source note (run with --prune to remove it)".format(
+                    os.path.relpath(fpath, out_root)))
 
-    print("\nDone. {} categories, {} notes.".format(len(categories), sum(len(n) for _, _, _, n in categories)))
+    total_notes = sum(1 for _, _, _, items in categories for _ in flatten_items(items))
+    print("\nDone. {} categories, {} notes.".format(len(categories), total_notes))
 
 
 if __name__ == "__main__":

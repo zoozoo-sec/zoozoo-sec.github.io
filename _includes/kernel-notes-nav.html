@@ -9,11 +9,17 @@
     </ul>
     <div class="notes-nav-group-title">Internals</div>
     <ul>
-      <li><a href="{{ '/blogs/notes/kernel-exploitation/internals/buddy-allocator/' | relative_url }}"{% if page.note_id == 'internals/buddy-allocator' %} class="is-active"{% endif %}>Buddy Allocator</a></li>
-      <li><a href="{{ '/blogs/notes/kernel-exploitation/internals/cross-cache-mitigations/' | relative_url }}"{% if page.note_id == 'internals/cross-cache-mitigations' %} class="is-active"{% endif %}>How Google Mitigates Cross-Cache Attacks?</a></li>
       <li><a href="{{ '/blogs/notes/kernel-exploitation/internals/how-syscalls-work/' | relative_url }}"{% if page.note_id == 'internals/how-syscalls-work' %} class="is-active"{% endif %}>How Syscalls Work?</a></li>
       <li><a href="{{ '/blogs/notes/kernel-exploitation/internals/kernel-module-internals/' | relative_url }}"{% if page.note_id == 'internals/kernel-module-internals' %} class="is-active"{% endif %}>Kernel Module Internals</a></li>
-      <li><a href="{{ '/blogs/notes/kernel-exploitation/internals/slub-allocator/' | relative_url }}"{% if page.note_id == 'internals/slub-allocator' %} class="is-active"{% endif %}>Linux SLUB Allocator</a></li>
+      <li>
+        <div class="notes-nav-subgroup-title">MM</div>
+        <ul class="notes-nav-sublist">
+          <li><a href="{{ '/blogs/notes/kernel-exploitation/internals/mm/buddy-allocator/' | relative_url }}"{% if page.note_id == 'internals/mm/buddy-allocator' %} class="is-active"{% endif %}>Buddy Allocator</a></li>
+          <li><a href="{{ '/blogs/notes/kernel-exploitation/internals/mm/cross-cache-mitigations/' | relative_url }}"{% if page.note_id == 'internals/mm/cross-cache-mitigations' %} class="is-active"{% endif %}>How Google Mitigates Cross-Cache Attacks?</a></li>
+          <li><a href="{{ '/blogs/notes/kernel-exploitation/internals/mm/how-page-fault-is-handled/' | relative_url }}"{% if page.note_id == 'internals/mm/how-page-fault-is-handled' %} class="is-active"{% endif %}>How page fault is handled ?</a></li>
+          <li><a href="{{ '/blogs/notes/kernel-exploitation/internals/mm/slub-allocator/' | relative_url }}"{% if page.note_id == 'internals/mm/slub-allocator' %} class="is-active"{% endif %}>Linux SLUB Allocator</a></li>
+        </ul>
+      </li>
     </ul>
     <div class="notes-nav-group-title">Heap Spraying</div>
     <ul>
