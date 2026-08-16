@@ -30,8 +30,10 @@ What it does, every run:
      frontmatter fields are present.
   4. Regenerates the shared floating nav include (grouped by category,
      with subgroups nested underneath their category) and the
-     overview/index page — an intro paragraph followed by a tree view of
-     every category/subgroup/note, each note name a real link.
+     overview/index page — an intro paragraph, a live search box, then a
+     tree view of every category/subgroup/note, each note name a real
+     link. The search box's index (title/breadcrumb/href per note) is
+     rebuilt from scratch every run, so it never drifts from the tree.
 
 The intro paragraph lives in its own file, blogs/notes/kernel-exploitation/
 _intro.md, created with a default the first time this runs. Edit that
@@ -50,6 +52,7 @@ categories/notes get a slug auto-generated from their name/filename.
 """
 
 import argparse
+import json
 import os
 import re
 import shutil
@@ -219,27 +222,29 @@ def discover_vault(vault_root):
     return categories
 
 
-def flatten_items(items):
-    """Yield (rel_dir_parts, src_name, note_slug, title, note_path) for every
-    note in a category's items list — rel_dir_parts are the source-side path
-    components under the category dir (e.g. [] for a loose note, ["MM"] for
-    one grouped under a "MM" subdirectory), and note_path is the output/URL
-    path fragment relative to the category (e.g. "buddy-allocator" or
-    "mm/buddy-allocator")."""
+def flatten_items(cat_title, items):
+    """Yield (rel_dir_parts, src_name, note_slug, title, note_path, breadcrumb)
+    for every note in a category's items list — rel_dir_parts are the
+    source-side path components under the category dir (e.g. [] for a loose
+    note, ["MM"] for one grouped under a "MM" subdirectory), note_path is the
+    output/URL path fragment relative to the category (e.g. "buddy-allocator"
+    or "mm/buddy-allocator"), and breadcrumb is the human-readable category
+    (plus subgroup, if any) e.g. "Internals" or "Internals / MM"."""
     for item in items:
         if item[0] == "note":
             _, src_name, note_slug, title = item
-            yield [], src_name, note_slug, title, note_slug
+            yield [], src_name, note_slug, title, note_slug, cat_title
         else:
             _, sub_slug, sub_title, sub_dir, group_notes = item
+            breadcrumb = "{} / {}".format(cat_title, sub_title)
             for src_name, note_slug, title in group_notes:
-                yield [sub_dir], src_name, note_slug, title, sub_slug + "/" + note_slug
+                yield [sub_dir], src_name, note_slug, title, sub_slug + "/" + note_slug, breadcrumb
 
 
 def build_lookup(categories):
     lookup = {}
     for cat_slug, cat_title, cat_dir, items in categories:
-        for rel_parts, src_name, note_slug, title, note_path in flatten_items(items):
+        for rel_parts, src_name, note_slug, title, note_path, breadcrumb in flatten_items(cat_title, items):
             stem = src_name[:-3]
             for alias in {title, stem, title.rstrip("?")}:
                 lookup[norm(alias)] = (cat_slug, note_path, title)
@@ -364,13 +369,33 @@ def convert_local_links(text):
     return MD_LINK_RE.sub(sub, text)
 
 
+MD_STRIP_RE = re.compile(r"```[\w+-]*|`|[*_>#]|\[|\]|\(|\)")
+HTML_TAG_RE = re.compile(r"<[^>]+>")
+
+
+def plain_search_text(fm, tags, body):
+    """Flatten frontmatter values + tags + body into one plain-text blob for
+    substring search — doesn't need to read well, just needs every word/token
+    that appears in the note (including things like 'kmalloc-1024' sitting
+    inside a code block or a frontmatter `slab:` list) to survive."""
+    parts = []
+    for val in fm.values():
+        parts.extend(as_list(val))
+    parts.extend(tags)
+    text = HTML_TAG_RE.sub(" ", body)
+    text = MD_STRIP_RE.sub(" ", text)
+    text = re.sub(r"\s+", " ", text).strip()
+    parts.append(text)
+    return " ".join(parts)
+
+
 def process_note(src_path, cat_slug, note_slug, title, vault_root, lookup, out_assets_dir):
     with open(src_path, encoding="utf-8") as f:
         raw = f.read()
 
     if raw.strip() == "":
         return {"tags": [], "meta_html": "", "body": "*Note not written yet — to be added.*",
-                "is_empty": True}
+                "search_text": "", "is_empty": True}
 
     fm, body = split_frontmatter(raw)
     body = body.strip("\n")
@@ -395,8 +420,9 @@ def process_note(src_path, cat_slug, note_slug, title, vault_root, lookup, out_a
     body = convert_wikilinks(body, lookup)
     body = convert_local_links(body)
     meta_html = render_meta_html(fm, lookup, cat_slug, note_slug)
+    search_text = plain_search_text(fm, tags, body)
 
-    return {"tags": tags, "meta_html": meta_html, "body": body, "is_empty": False}
+    return {"tags": tags, "meta_html": meta_html, "body": body, "search_text": search_text, "is_empty": False}
 
 
 PAGE_TEMPLATE = """---
@@ -474,6 +500,40 @@ def write_nav_include(categories, includes_dir, dry_run):
 
     out_path = os.path.join(includes_dir, "kernel-notes-nav.html")
     content = "\n".join(lines) + "\n"
+    if dry_run:
+        print("[dry-run] would write", out_path)
+        return
+    with open(out_path, "w", encoding="utf-8") as f:
+        f.write(content)
+    print("wrote", out_path)
+
+
+def render_search_block():
+    """Just the markup — no data. The index itself lives in a separate
+    generated file (see write_search_data) loaded via <script src>, so
+    index.md's source doesn't carry a giant inlined JSON blob."""
+    lines = [
+        '<div class="notes-search" id="notes-search">',
+        '  <input type="text" id="notes-search-input" class="notes-search-input"',
+        '         placeholder="Search notes... ( / to focus )" autocomplete="off" spellcheck="false"',
+        '         aria-label="Search kernel exploitation notes" aria-controls="notes-search-results" />',
+        '  <div class="notes-search-results" id="notes-search-results" role="listbox" hidden></div>',
+        '</div>',
+    ]
+    return "\n".join(lines)
+
+
+def write_search_data(entries, out_root, dry_run):
+    """entries: [{title, breadcrumb, href, text}, ...] — one per note, built
+    in main() while each note is already open for processing (so full body
+    text is available, not just title/slug). 'text' backs in-body matches
+    like 'kmalloc-' finding every note that mentions any kmalloc-N size.
+
+    Written as its own small JS file (not embedded in index.md) so the page
+    source stays readable and the data can be cached/loaded independently."""
+    out_path = os.path.join(out_root, "search-data.js")
+    content = "// Auto-generated by scripts/sync_kernel_notes.py — do not hand-edit.\n"
+    content += "window.NOTES_SEARCH_INDEX = " + json.dumps(entries, ensure_ascii=False, indent=None) + ";\n"
     if dry_run:
         print("[dry-run] would write", out_path)
         return
@@ -561,12 +621,16 @@ def write_index(categories, out_root, dry_run):
         "",
     ]
 
+    lines.append(render_search_block())
+    lines.append('')
     lines.append(render_tree(categories))
     lines.append('')
     lines.append('</div>')
     lines.append('</section>')
     lines.append('')
     lines.append("<script src=\"{{ '/blogs/notes/notes-nav.js' | relative_url }}\"></script>")
+    lines.append("<script src=\"{{ '/blogs/notes/kernel-exploitation/search-data.js' | relative_url }}\"></script>")
+    lines.append("<script src=\"{{ '/blogs/notes/notes-search.js' | relative_url }}\"></script>")
 
     out_path = os.path.join(out_root, "index.md")
     content = "\n".join(lines) + "\n"
@@ -625,15 +689,22 @@ def main():
     lookup = build_lookup(categories)
 
     written_paths = set()
+    search_entries = []
     for cat_slug, cat_title, cat_dir, items in categories:
         out_cat_dir = os.path.join(out_root, cat_slug)
         out_assets_dir = os.path.join(out_cat_dir, "assets")
         if not args.dry_run:
             os.makedirs(out_cat_dir, exist_ok=True)
 
-        for rel_parts, src_name, note_slug, title, note_path in flatten_items(items):
+        for rel_parts, src_name, note_slug, title, note_path, breadcrumb in flatten_items(cat_title, items):
             src_path = os.path.join(vault_root, cat_dir, *rel_parts, src_name)
             r = process_note(src_path, cat_slug, note_path, title, vault_root, lookup, out_assets_dir)
+
+            search_entries.append({
+                "title": title, "breadcrumb": breadcrumb,
+                "href": BASE_URL + cat_slug + "/" + note_path + "/",
+                "text": r["search_text"],
+            })
 
             if r["tags"]:
                 pills = "".join('<span class="note-tag">#{}</span>'.format(t) for t in r["tags"])
@@ -662,6 +733,7 @@ def main():
             print("wrote", out_path)
 
     write_nav_include(categories, includes_dir, args.dry_run)
+    write_search_data(search_entries, out_root, args.dry_run)
     if args.skip_index:
         print("skipped index.md (--skip-index)")
     else:
@@ -681,7 +753,7 @@ def main():
                 print("NOTE: {} has no matching source note (run with --prune to remove it)".format(
                     os.path.relpath(fpath, out_root)))
 
-    total_notes = sum(1 for _, _, _, items in categories for _ in flatten_items(items))
+    total_notes = len(search_entries)
     print("\nDone. {} categories, {} notes.".format(len(categories), total_notes))
 
 
