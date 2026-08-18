@@ -25,9 +25,11 @@ What it does, every run:
      `related:` entries against every other note in the vault, copies
      any ![[embedded images]] into that category's assets/ folder,
      de-links local filesystem paths (they'd be dead links once published),
-     extracts a trailing/leading "#tag #tag2" line into tag pills, and
-     writes out a Jekyll page with a metadata panel built from whatever
-     frontmatter fields are present.
+     auto-links any bare "https://..." URL sitting in prose (outside code
+     spans, and not already part of a [label](url) link) into a real
+     clickable <a href>, extracts a trailing/leading "#tag #tag2" line into
+     tag pills, and writes out a Jekyll page with a metadata panel built
+     from whatever frontmatter fields are present.
   4. Regenerates the shared floating nav include (grouped by category,
      with subgroups nested underneath their category) and the
      overview/index page — an intro paragraph, a live search box, then a
@@ -369,6 +371,43 @@ def convert_local_links(text):
     return MD_LINK_RE.sub(sub, text)
 
 
+# Matches a fenced ``` code block ``` or an inline `code span` — used to keep
+# linkify_bare_urls() out of code, where a stray URL is often part of a
+# command/snippet and shouldn't turn into a link.
+CODE_SPAN_RE = re.compile(r"```.*?```|`[^`\n]*`", re.DOTALL)
+
+# A bare http(s) URL, NOT already the target of a `[label](url)` link (the
+# negative lookbehind for the literal "](" that would precede it there).
+BARE_URL_RE = re.compile(r"(?<!\]\()https?://[^\s<>\)\]\"'`]+")
+
+
+def linkify_bare_urls(text):
+    """Wrap plain-text URLs (e.g. a reference dropped in as
+    'https://example.com/writeup' with no markdown link syntax) in a real
+    <a href>, so they render clickable instead of sitting there as dead text.
+    Already-linked URLs and anything inside code are left untouched."""
+    def linkify_segment(segment):
+        def sub(m):
+            url = m.group(0)
+            trail = ""
+            while url and url[-1] in ".,;:!?":
+                trail = url[-1] + trail
+                url = url[:-1]
+            if not url:
+                return m.group(0)
+            return '<a href="{0}" target="_blank" rel="noopener">{0}</a>{1}'.format(url, trail)
+        return BARE_URL_RE.sub(sub, segment)
+
+    out = []
+    last = 0
+    for m in CODE_SPAN_RE.finditer(text):
+        out.append(linkify_segment(text[last:m.start()]))
+        out.append(m.group(0))  # code span, verbatim
+        last = m.end()
+    out.append(linkify_segment(text[last:]))
+    return "".join(out)
+
+
 MD_STRIP_RE = re.compile(r"```[\w+-]*|`|[*_>#]|\[|\]|\(|\)")
 HTML_TAG_RE = re.compile(r"<[^>]+>")
 
@@ -419,6 +458,7 @@ def process_note(src_path, cat_slug, note_slug, title, vault_root, lookup, out_a
     body = EMBED_RE.sub(embed_sub, body)
     body = convert_wikilinks(body, lookup)
     body = convert_local_links(body)
+    body = linkify_bare_urls(body)
     meta_html = render_meta_html(fm, lookup, cat_slug, note_slug)
     search_text = plain_search_text(fm, tags, body)
 
@@ -427,9 +467,9 @@ def process_note(src_path, cat_slug, note_slug, title, vault_root, lookup, out_a
 
 PAGE_TEMPLATE = """---
 layout: default
-title: "{title} — Kernel Exploitation Notes"
-description: "{description}"
-og_description: "{description}"
+title: {title_yaml}
+description: {description_yaml}
+og_description: {description_yaml}
 og_type: "article"
 keywords: "kernel exploitation, linux kernel, {slug_keywords}, zoozoo-sec"
 permalink: {permalink}
@@ -712,9 +752,15 @@ def main():
             else:
                 tags_html = ""
 
+            description = "Kernel exploitation notes ({}): {}".format(cat_title, title)
             page = PAGE_TEMPLATE.format(
                 title=title,
-                description="Kernel exploitation notes ({}): {}".format(cat_title, title),
+                # json.dumps gives a properly quote/backslash-escaped string —
+                # titles like `What if a process could "mov cr3, ..." ?` have
+                # literal double quotes that would otherwise break the YAML
+                # frontmatter block (and silently drop the whole page layout).
+                title_yaml=json.dumps(title + " — Kernel Exploitation Notes", ensure_ascii=False),
+                description_yaml=json.dumps(description, ensure_ascii=False),
                 slug_keywords=(cat_slug + " " + note_path).replace("-", " ").replace("/", " "),
                 permalink=BASE_URL + cat_slug + "/" + note_path + "/",
                 cat_slug=cat_slug, note_slug=note_path,
