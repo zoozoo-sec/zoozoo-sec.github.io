@@ -11,6 +11,8 @@
     <ul>
       <li><a href="{{ '/blogs/notes/kernel-exploitation/internals/how-syscalls-work/' | relative_url }}"{% if page.note_id == 'internals/how-syscalls-work' %} class="is-active"{% endif %}>How Syscalls Work?</a></li>
       <li><a href="{{ '/blogs/notes/kernel-exploitation/internals/kernel-module-internals/' | relative_url }}"{% if page.note_id == 'internals/kernel-module-internals' %} class="is-active"{% endif %}>Kernel Module Internals</a></li>
+      <li><a href="{{ '/blogs/notes/kernel-exploitation/internals/namespaces-cggroups-capabilities/' | relative_url }}"{% if page.note_id == 'internals/namespaces-cggroups-capabilities' %} class="is-active"{% endif %}>Namespaces-Cggroups-Capabilities</a></li>
+      <li><a href="{{ '/blogs/notes/kernel-exploitation/internals/virtual-file-system/' | relative_url }}"{% if page.note_id == 'internals/virtual-file-system' %} class="is-active"{% endif %}>Virtual File System</a></li>
       <li>
         <div class="notes-nav-subgroup-title">MM</div>
         <ul class="notes-nav-sublist">
@@ -22,7 +24,13 @@
           <li><a href="{{ '/blogs/notes/kernel-exploitation/internals/mm/what-if-a-process-could-mov-cr3-0xdeadface/' | relative_url }}"{% if page.note_id == 'internals/mm/what-if-a-process-could-mov-cr3-0xdeadface' %} class="is-active"{% endif %}>What if a process could "mov cr3, 0xdeadface" ?</a></li>
         </ul>
       </li>
-      <li><a href="{{ '/blogs/notes/kernel-exploitation/internals/namespaces-cggroups-capabilities/' | relative_url }}"{% if page.note_id == 'internals/namespaces-cggroups-capabilities' %} class="is-active"{% endif %}>Namespaces-Cggroups-Capabilities</a></li>
+    </ul>
+    <div class="notes-nav-group-title">Race Conditions</div>
+    <ul>
+      <li><a href="{{ '/blogs/notes/kernel-exploitation/race-conditions/fuse-filesystem-in-userspace/' | relative_url }}"{% if page.note_id == 'race-conditions/fuse-filesystem-in-userspace' %} class="is-active"{% endif %}>FUSE - Filesystem in Userspace</a></li>
+      <li><a href="{{ '/blogs/notes/kernel-exploitation/race-conditions/hole-punching-dev-shm/' | relative_url }}"{% if page.note_id == 'race-conditions/hole-punching-dev-shm' %} class="is-active"{% endif %}>Hole Punching - dev-shm</a></li>
+      <li><a href="{{ '/blogs/notes/kernel-exploitation/race-conditions/userfaultfd/' | relative_url }}"{% if page.note_id == 'race-conditions/userfaultfd' %} class="is-active"{% endif %}>Userfaultfd</a></li>
+      <li><a href="{{ '/blogs/notes/kernel-exploitation/race-conditions/timerfd-epoll/' | relative_url }}"{% if page.note_id == 'race-conditions/timerfd-epoll' %} class="is-active"{% endif %}>timerfd-epoll</a></li>
     </ul>
     <div class="notes-nav-group-title">Heap Spraying</div>
     <ul>
@@ -33,6 +41,14 @@
       <li><a href="{{ '/blogs/notes/kernel-exploitation/heap-spraying/sockets/' | relative_url }}"{% if page.note_id == 'heap-spraying/sockets' %} class="is-active"{% endif %}>sockets</a></li>
       <li><a href="{{ '/blogs/notes/kernel-exploitation/heap-spraying/timerfd-ctx/' | relative_url }}"{% if page.note_id == 'heap-spraying/timerfd-ctx' %} class="is-active"{% endif %}>timerfd_ctx</a></li>
       <li><a href="{{ '/blogs/notes/kernel-exploitation/heap-spraying/tty-struct/' | relative_url }}"{% if page.note_id == 'heap-spraying/tty-struct' %} class="is-active"{% endif %}>tty_struct</a></li>
+    </ul>
+    <div class="notes-nav-group-title">Cross-Cache Attacks</div>
+    <ul>
+      <li><a href="{{ '/blogs/notes/kernel-exploitation/cross-cache-attacks/dirty-creds/' | relative_url }}"{% if page.note_id == 'cross-cache-attacks/dirty-creds' %} class="is-active"{% endif %}>Dirty Creds</a></li>
+      <li><a href="{{ '/blogs/notes/kernel-exploitation/cross-cache-attacks/dirty-file/' | relative_url }}"{% if page.note_id == 'cross-cache-attacks/dirty-file' %} class="is-active"{% endif %}>Dirty File</a></li>
+      <li><a href="{{ '/blogs/notes/kernel-exploitation/cross-cache-attacks/dirty-page/' | relative_url }}"{% if page.note_id == 'cross-cache-attacks/dirty-page' %} class="is-active"{% endif %}>Dirty Page</a></li>
+      <li><a href="{{ '/blogs/notes/kernel-exploitation/cross-cache-attacks/pcplost-pcp-massaging/' | relative_url }}"{% if page.note_id == 'cross-cache-attacks/pcplost-pcp-massaging' %} class="is-active"{% endif %}>PCPLost - PCP Massaging</a></li>
+      <li><a href="{{ '/blogs/notes/kernel-exploitation/cross-cache-attacks/pmd-overwrite/' | relative_url }}"{% if page.note_id == 'cross-cache-attacks/pmd-overwrite' %} class="is-active"{% endif %}>PMD Overwrite</a></li>
     </ul>
     <div class="notes-nav-group-title">KROP</div>
     <ul>
@@ -49,22 +65,6 @@
     <div class="notes-nav-group-title">Misc</div>
     <ul>
       <li><a href="{{ '/blogs/notes/kernel-exploitation/misc/misc/' | relative_url }}"{% if page.note_id == 'misc/misc' %} class="is-active"{% endif %}>Misc</a></li>
-      <li><a href="{{ '/blogs/notes/kernel-exploitation/misc/untitled/' | relative_url }}"{% if page.note_id == 'misc/untitled' %} class="is-active"{% endif %}>Untitled</a></li>
-    </ul>
-    <div class="notes-nav-group-title">Cross-Cache Attacks</div>
-    <ul>
-      <li><a href="{{ '/blogs/notes/kernel-exploitation/cross-cache-attacks/dirty-creds/' | relative_url }}"{% if page.note_id == 'cross-cache-attacks/dirty-creds' %} class="is-active"{% endif %}>Dirty Creds</a></li>
-      <li><a href="{{ '/blogs/notes/kernel-exploitation/cross-cache-attacks/dirty-file/' | relative_url }}"{% if page.note_id == 'cross-cache-attacks/dirty-file' %} class="is-active"{% endif %}>Dirty File</a></li>
-      <li><a href="{{ '/blogs/notes/kernel-exploitation/cross-cache-attacks/dirty-page/' | relative_url }}"{% if page.note_id == 'cross-cache-attacks/dirty-page' %} class="is-active"{% endif %}>Dirty Page</a></li>
-      <li><a href="{{ '/blogs/notes/kernel-exploitation/cross-cache-attacks/pcplost-pcp-massaging/' | relative_url }}"{% if page.note_id == 'cross-cache-attacks/pcplost-pcp-massaging' %} class="is-active"{% endif %}>PCPLost - PCP Massaging</a></li>
-      <li><a href="{{ '/blogs/notes/kernel-exploitation/cross-cache-attacks/pmd-overwrite/' | relative_url }}"{% if page.note_id == 'cross-cache-attacks/pmd-overwrite' %} class="is-active"{% endif %}>PMD Overwrite</a></li>
-    </ul>
-    <div class="notes-nav-group-title">Race Conditions</div>
-    <ul>
-      <li><a href="{{ '/blogs/notes/kernel-exploitation/race-conditions/fuse-filesystem-in-userspace/' | relative_url }}"{% if page.note_id == 'race-conditions/fuse-filesystem-in-userspace' %} class="is-active"{% endif %}>FUSE - Filesystem in Userspace</a></li>
-      <li><a href="{{ '/blogs/notes/kernel-exploitation/race-conditions/hole-punching-dev-shm/' | relative_url }}"{% if page.note_id == 'race-conditions/hole-punching-dev-shm' %} class="is-active"{% endif %}>Hole Punching - dev-shm</a></li>
-      <li><a href="{{ '/blogs/notes/kernel-exploitation/race-conditions/userfaultfd/' | relative_url }}"{% if page.note_id == 'race-conditions/userfaultfd' %} class="is-active"{% endif %}>Userfaultfd</a></li>
-      <li><a href="{{ '/blogs/notes/kernel-exploitation/race-conditions/timerfd-epoll/' | relative_url }}"{% if page.note_id == 'race-conditions/timerfd-epoll' %} class="is-active"{% endif %}>timerfd-epoll</a></li>
     </ul>
   </div>
 </div>
