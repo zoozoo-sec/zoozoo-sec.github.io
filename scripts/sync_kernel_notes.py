@@ -80,14 +80,16 @@ CATEGORY_SLUG_OVERRIDES = {
     "internals": "internals",
     "heap spraying": "heap-spraying",
     "krop": "krop",
-    "page spraying(cross cache attacks)": "page-spraying",
+    "cross-cache attacks": "cross-cache-attacks",
+    "race conditions": "race-conditions",
     "targets": "targets",
 }
 CATEGORY_TITLE_OVERRIDES = {
     "internals": "Internals",
     "heap spraying": "Heap Spraying",
     "krop": "KROP",
-    "page spraying(cross cache attacks)": "Page Spraying (Cross-Cache Attacks)",
+    "cross-cache attacks": "Cross-Cache Attacks",
+    "race conditions": "Race Conditions",
     "targets": "Targets",
 }
 # key = normalized (lowercased) filename stem -> slug/title override
@@ -108,8 +110,11 @@ SUBCATEGORY_SLUG_OVERRIDES = {}
 SUBCATEGORY_TITLE_OVERRIDES = {}
 
 # Category display order — known ones first, any new category appended
-# alphabetically after these.
-CATEGORY_ORDER = ["internals", "heap-spraying", "krop", "page-spraying", "targets", "misc"]
+# alphabetically after these but still before "misc", which always stays last.
+CATEGORY_ORDER = [
+    "internals", "race-conditions", "heap-spraying", "cross-cache-attacks",
+    "krop", "targets", "misc",
+]
 
 TAG_LINE_RE = re.compile(r"^#[\w-]+(?:\s+#[\w-]+)*\s*$")
 WIKILINK_RE = re.compile(r"\[\[([^\]]+)\]\]")
@@ -196,31 +201,50 @@ def discover_vault(vault_root):
         cat_slug = CATEGORY_SLUG_OVERRIDES.get(key, slugify(entry))
         cat_title = CATEGORY_TITLE_OVERRIDES.get(key, entry)
 
+        # Loose notes always list before subdirectory groups (e.g. Internals'
+        # own notes before its MM/ subgroup), rather than interleaving
+        # alphabetically by whatever order os.listdir happens to hand back.
         items = []
-        for sub_entry in sorted(os.listdir(full)):
+        sub_entries = sorted(os.listdir(full))
+        for sub_entry in sub_entries:
             sub_full = os.path.join(full, sub_entry)
             if os.path.isdir(sub_full):
-                if sub_entry in SKIP_DIR_NAMES or sub_entry.startswith("."):
+                continue
+            if not os.path.isfile(sub_full) or should_skip_file(sub_entry):
+                continue
+            items.append(("note",) + _note_tuple(sub_entry))
+        for sub_entry in sub_entries:
+            sub_full = os.path.join(full, sub_entry)
+            if not os.path.isdir(sub_full):
+                continue
+            if sub_entry in SKIP_DIR_NAMES or sub_entry.startswith("."):
+                continue
+            sub_key = sub_entry.strip().lower()
+            sub_slug = SUBCATEGORY_SLUG_OVERRIDES.get(sub_key, slugify(sub_entry))
+            sub_title = SUBCATEGORY_TITLE_OVERRIDES.get(sub_key, sub_entry)
+            group_notes = []
+            for fname in sorted(os.listdir(sub_full)):
+                if not os.path.isfile(os.path.join(sub_full, fname)) or should_skip_file(fname):
                     continue
-                sub_key = sub_entry.strip().lower()
-                sub_slug = SUBCATEGORY_SLUG_OVERRIDES.get(sub_key, slugify(sub_entry))
-                sub_title = SUBCATEGORY_TITLE_OVERRIDES.get(sub_key, sub_entry)
-                group_notes = []
-                for fname in sorted(os.listdir(sub_full)):
-                    if not os.path.isfile(os.path.join(sub_full, fname)) or should_skip_file(fname):
-                        continue
-                    group_notes.append(_note_tuple(fname))
-                if group_notes:
-                    items.append(("group", sub_slug, sub_title, sub_entry, group_notes))
-            else:
-                if not os.path.isfile(sub_full) or should_skip_file(sub_entry):
-                    continue
-                items.append(("note",) + _note_tuple(sub_entry))
+                group_notes.append(_note_tuple(fname))
+            if group_notes:
+                items.append(("group", sub_slug, sub_title, sub_entry, group_notes))
 
         if items:
             categories.append((cat_slug, cat_title, entry, items))
 
-    categories.sort(key=lambda c: (CATEGORY_ORDER.index(c[0]) if c[0] in CATEGORY_ORDER else 999, c[0]))
+    def category_sort_key(c):
+        # "misc" always sorts last, structurally — not just because it's last
+        # in CATEGORY_ORDER today. A brand-new category folder you haven't
+        # added to CATEGORY_ORDER yet lands in the middle bucket (alphabetical,
+        # after every explicitly-ordered category) rather than after misc.
+        if c[0] == "misc":
+            return (2, c[0])
+        if c[0] in CATEGORY_ORDER:
+            return (0, CATEGORY_ORDER.index(c[0]))
+        return (1, c[0])
+
+    categories.sort(key=category_sort_key)
     return categories
 
 
