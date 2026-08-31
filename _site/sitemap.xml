@@ -6,392 +6,392 @@
 
     <url>
         <loc>http://localhost:4000/blogs/notes/kernel-exploitation/krop/aarch-rop/</loc>
-        <lastmod>2026-08-31T01:27:04+02:00</lastmod>
+        <lastmod>2026-08-31T14:37:41+02:00</lastmod>
     </url>
 
 
 
     <url>
         <loc>http://localhost:4000/blogs/notes/kernel-exploitation/internals/mm/buddy-allocator/</loc>
-        <lastmod>2026-08-31T01:27:04+02:00</lastmod>
+        <lastmod>2026-08-31T14:37:41+02:00</lastmod>
     </url>
 
 
 
     <url>
         <loc>http://localhost:4000/blogs/notes/kernel-exploitation/targets/commit-creds/</loc>
-        <lastmod>2026-08-31T01:27:04+02:00</lastmod>
+        <lastmod>2026-08-31T14:37:41+02:00</lastmod>
     </url>
 
 
 
     <url>
         <loc>http://localhost:4000/blogs/notes/kernel-exploitation/targets/core-pattern/</loc>
-        <lastmod>2026-08-31T01:27:04+02:00</lastmod>
+        <lastmod>2026-08-31T14:37:41+02:00</lastmod>
     </url>
 
 
 
     <url>
         <loc>http://localhost:4000/blogs/notes/kernel-exploitation/internals/mm/cross-cache-mitigations/</loc>
-        <lastmod>2026-08-31T01:27:04+02:00</lastmod>
+        <lastmod>2026-08-31T14:37:41+02:00</lastmod>
     </url>
 
 
 
     <url>
         <loc>http://localhost:4000/blogs/notes/kernel-exploitation/page-spraying/dirty-creds/</loc>
-        <lastmod>2026-08-31T01:27:04+02:00</lastmod>
+        <lastmod>2026-08-31T14:37:41+02:00</lastmod>
     </url>
 
 
 
     <url>
         <loc>http://localhost:4000/blogs/notes/kernel-exploitation/cross-cache-attacks/dirty-creds/</loc>
-        <lastmod>2026-08-31T01:27:04+02:00</lastmod>
+        <lastmod>2026-08-31T14:37:41+02:00</lastmod>
     </url>
 
 
 
     <url>
         <loc>http://localhost:4000/blogs/notes/kernel-exploitation/page-spraying/dirty-file/</loc>
-        <lastmod>2026-08-31T01:27:04+02:00</lastmod>
+        <lastmod>2026-08-31T14:37:41+02:00</lastmod>
     </url>
 
 
 
     <url>
         <loc>http://localhost:4000/blogs/notes/kernel-exploitation/cross-cache-attacks/dirty-file/</loc>
-        <lastmod>2026-08-31T01:27:04+02:00</lastmod>
+        <lastmod>2026-08-31T14:37:41+02:00</lastmod>
     </url>
 
 
 
     <url>
         <loc>http://localhost:4000/blogs/notes/kernel-exploitation/page-spraying/dirty-page/</loc>
-        <lastmod>2026-08-31T01:27:04+02:00</lastmod>
+        <lastmod>2026-08-31T14:37:41+02:00</lastmod>
     </url>
 
 
 
     <url>
         <loc>http://localhost:4000/blogs/notes/kernel-exploitation/cross-cache-attacks/dirty-page/</loc>
-        <lastmod>2026-08-31T01:27:04+02:00</lastmod>
+        <lastmod>2026-08-31T14:37:41+02:00</lastmod>
     </url>
 
 
 
     <url>
         <loc>http://localhost:4000/blogs/notes/kernel-exploitation/race-conditions/fuse-filesystem-in-userspace/</loc>
-        <lastmod>2026-08-31T01:27:04+02:00</lastmod>
+        <lastmod>2026-08-31T14:37:41+02:00</lastmod>
     </url>
 
 
 
     <url>
         <loc>http://localhost:4000/blogs/notes/kernel-exploitation/race-conditions/hole-punching-dev-shm/</loc>
-        <lastmod>2026-08-31T01:27:04+02:00</lastmod>
+        <lastmod>2026-08-31T14:37:41+02:00</lastmod>
     </url>
 
 
 
     <url>
         <loc>http://localhost:4000/blogs/notes/kernel-exploitation/internals/mm/how-page-fault-is-handled/</loc>
-        <lastmod>2026-08-31T01:27:04+02:00</lastmod>
+        <lastmod>2026-08-31T14:37:41+02:00</lastmod>
     </url>
 
 
 
     <url>
         <loc>http://localhost:4000/blogs/notes/kernel-exploitation/internals/how-syscalls-work/</loc>
-        <lastmod>2026-08-31T01:27:04+02:00</lastmod>
+        <lastmod>2026-08-31T14:37:41+02:00</lastmod>
     </url>
 
 
 
     <url>
         <loc>http://localhost:4000/blogs/PwningWasm-BreakingXssFilters/</loc>
-        <lastmod>2026-08-31T01:27:04+02:00</lastmod>
+        <lastmod>2026-08-31T14:37:41+02:00</lastmod>
     </url>
 
 
 
     <url>
         <loc>http://localhost:4000/blogs/notes/kernel-exploitation/</loc>
-        <lastmod>2026-08-31T01:27:04+02:00</lastmod>
+        <lastmod>2026-08-31T14:37:41+02:00</lastmod>
     </url>
 
 
 
     <url>
         <loc>http://localhost:4000/blogs/</loc>
-        <lastmod>2026-08-31T01:27:04+02:00</lastmod>
+        <lastmod>2026-08-31T14:37:41+02:00</lastmod>
     </url>
 
 
 
     <url>
         <loc>http://localhost:4000/writeups/Pentathon2025/</loc>
-        <lastmod>2026-08-31T01:27:04+02:00</lastmod>
+        <lastmod>2026-08-31T14:37:41+02:00</lastmod>
     </url>
 
 
 
     <url>
         <loc>http://localhost:4000/writeups/PentestingWindows/</loc>
-        <lastmod>2026-08-31T01:27:04+02:00</lastmod>
+        <lastmod>2026-08-31T14:37:41+02:00</lastmod>
     </url>
 
 
 
     <url>
         <loc>http://localhost:4000/writeups/HackTheBox-CyberApocalypse2025/</loc>
-        <lastmod>2026-08-31T01:27:04+02:00</lastmod>
+        <lastmod>2026-08-31T14:37:41+02:00</lastmod>
     </url>
 
 
 
     <url>
         <loc>http://localhost:4000/writeups/PentestingActiveDirectory/</loc>
-        <lastmod>2026-08-31T01:27:04+02:00</lastmod>
+        <lastmod>2026-08-31T14:37:41+02:00</lastmod>
     </url>
 
 
 
     <url>
         <loc>http://localhost:4000/writeups/JustCTF2025/</loc>
-        <lastmod>2026-08-31T01:27:04+02:00</lastmod>
+        <lastmod>2026-08-31T14:37:41+02:00</lastmod>
     </url>
 
 
 
     <url>
         <loc>http://localhost:4000/writeups/PentestingLinux/</loc>
-        <lastmod>2026-08-31T01:27:04+02:00</lastmod>
+        <lastmod>2026-08-31T14:37:41+02:00</lastmod>
     </url>
 
 
 
     <url>
         <loc>http://localhost:4000/writeups/</loc>
-        <lastmod>2026-08-31T01:27:04+02:00</lastmod>
+        <lastmod>2026-08-31T14:37:41+02:00</lastmod>
     </url>
 
 
 
     <url>
         <loc>http://localhost:4000/</loc>
-        <lastmod>2026-08-31T01:27:04+02:00</lastmod>
+        <lastmod>2026-08-31T14:37:41+02:00</lastmod>
     </url>
 
 
 
     <url>
         <loc>http://localhost:4000/blogs/notes/kernel-exploitation/internals/kernel-module-internals/</loc>
-        <lastmod>2026-08-31T01:27:04+02:00</lastmod>
+        <lastmod>2026-08-31T14:37:41+02:00</lastmod>
     </url>
 
 
 
     <url>
         <loc>http://localhost:4000/blogs/notes/kernel-exploitation/misc/misc/</loc>
-        <lastmod>2026-08-31T01:27:04+02:00</lastmod>
+        <lastmod>2026-08-31T14:37:41+02:00</lastmod>
     </url>
 
 
 
     <url>
         <loc>http://localhost:4000/blogs/notes/kernel-exploitation/targets/modprobe-path/</loc>
-        <lastmod>2026-08-31T01:27:04+02:00</lastmod>
+        <lastmod>2026-08-31T14:37:41+02:00</lastmod>
     </url>
 
 
 
     <url>
         <loc>http://localhost:4000/blogs/notes/kernel-exploitation/heap-spraying/msg-msg/</loc>
-        <lastmod>2026-08-31T01:27:04+02:00</lastmod>
+        <lastmod>2026-08-31T14:37:41+02:00</lastmod>
     </url>
 
 
 
     <url>
         <loc>http://localhost:4000/blogs/notes/kernel-exploitation/internals/namespaces-cggroups-capabilities/</loc>
-        <lastmod>2026-08-31T01:27:04+02:00</lastmod>
+        <lastmod>2026-08-31T14:37:41+02:00</lastmod>
     </url>
 
 
 
     <url>
         <loc>http://localhost:4000/blogs/notes/kernel-exploitation/internals/mm/page-cache/</loc>
-        <lastmod>2026-08-31T01:27:04+02:00</lastmod>
+        <lastmod>2026-08-31T14:37:41+02:00</lastmod>
     </url>
 
 
 
     <url>
         <loc>http://localhost:4000/blogs/notes/kernel-exploitation/internals/mm/pcp-massaging/</loc>
-        <lastmod>2026-08-31T01:27:04+02:00</lastmod>
+        <lastmod>2026-08-31T14:37:41+02:00</lastmod>
     </url>
 
 
 
     <url>
         <loc>http://localhost:4000/blogs/notes/kernel-exploitation/page-spraying/pcp-massaging/</loc>
-        <lastmod>2026-08-31T01:27:04+02:00</lastmod>
+        <lastmod>2026-08-31T14:37:41+02:00</lastmod>
     </url>
 
 
 
     <url>
         <loc>http://localhost:4000/blogs/notes/kernel-exploitation/cross-cache-attacks/pcp-massaging/</loc>
-        <lastmod>2026-08-31T01:27:04+02:00</lastmod>
+        <lastmod>2026-08-31T14:37:41+02:00</lastmod>
     </url>
 
 
 
     <url>
         <loc>http://localhost:4000/blogs/notes/kernel-exploitation/cross-cache-attacks/pcplost-pcp-massaging/</loc>
-        <lastmod>2026-08-31T01:27:04+02:00</lastmod>
+        <lastmod>2026-08-31T14:37:41+02:00</lastmod>
     </url>
 
 
 
     <url>
         <loc>http://localhost:4000/blogs/notes/kernel-exploitation/heap-spraying/pipe-buffer/</loc>
-        <lastmod>2026-08-31T01:27:04+02:00</lastmod>
+        <lastmod>2026-08-31T14:37:41+02:00</lastmod>
     </url>
 
 
 
     <url>
         <loc>http://localhost:4000/blogs/notes/kernel-exploitation/page-spraying/pmd-overwrite/</loc>
-        <lastmod>2026-08-31T01:27:04+02:00</lastmod>
+        <lastmod>2026-08-31T14:37:41+02:00</lastmod>
     </url>
 
 
 
     <url>
         <loc>http://localhost:4000/blogs/notes/kernel-exploitation/cross-cache-attacks/pmd-overwrite/</loc>
-        <lastmod>2026-08-31T01:27:04+02:00</lastmod>
+        <lastmod>2026-08-31T14:37:41+02:00</lastmod>
     </url>
 
 
 
     <url>
         <loc>http://localhost:4000/blogs/notes/kernel-exploitation/krop/rop/</loc>
-        <lastmod>2026-08-31T01:27:04+02:00</lastmod>
+        <lastmod>2026-08-31T14:37:41+02:00</lastmod>
     </url>
 
 
 
     <url>
         <loc>http://localhost:4000/blogs/notes/kernel-exploitation/krop/ropbot-angrop/</loc>
-        <lastmod>2026-08-31T01:27:04+02:00</lastmod>
+        <lastmod>2026-08-31T14:37:41+02:00</lastmod>
     </url>
 
 
 
     <url>
         <loc>http://localhost:4000/blogs/notes/kernel-exploitation/heap-spraying/seq-file/</loc>
-        <lastmod>2026-08-31T01:27:04+02:00</lastmod>
+        <lastmod>2026-08-31T14:37:41+02:00</lastmod>
     </url>
 
 
 
     <url>
         <loc>http://localhost:4000/blogs/notes/kernel-exploitation/heap-spraying/setxattr/</loc>
-        <lastmod>2026-08-31T01:27:04+02:00</lastmod>
+        <lastmod>2026-08-31T14:37:41+02:00</lastmod>
     </url>
 
 
 
     <url>
         <loc>http://localhost:4000/sitemap.xml</loc>
-        <lastmod>2026-08-31T01:27:04+02:00</lastmod>
+        <lastmod>2026-08-31T14:37:41+02:00</lastmod>
     </url>
 
 
 
     <url>
         <loc>http://localhost:4000/blogs/notes/kernel-exploitation/internals/mm/slub-allocator/</loc>
-        <lastmod>2026-08-31T01:27:04+02:00</lastmod>
+        <lastmod>2026-08-31T14:37:41+02:00</lastmod>
     </url>
 
 
 
     <url>
         <loc>http://localhost:4000/blogs/notes/kernel-exploitation/heap-spraying/sockets/</loc>
-        <lastmod>2026-08-31T01:27:04+02:00</lastmod>
+        <lastmod>2026-08-31T14:37:41+02:00</lastmod>
     </url>
 
 
 
     <url>
         <loc>http://localhost:4000/blogs/notes/kernel-exploitation/heap-spraying/timerfd-ctx/</loc>
-        <lastmod>2026-08-31T01:27:04+02:00</lastmod>
+        <lastmod>2026-08-31T14:37:41+02:00</lastmod>
     </url>
 
 
 
     <url>
         <loc>http://localhost:4000/blogs/notes/kernel-exploitation/race-conditions/timerfd-epoll/</loc>
-        <lastmod>2026-08-31T01:27:04+02:00</lastmod>
+        <lastmod>2026-08-31T14:37:41+02:00</lastmod>
     </url>
 
 
 
     <url>
         <loc>http://localhost:4000/blogs/notes/kernel-exploitation/heap-spraying/tty-struct/</loc>
-        <lastmod>2026-08-31T01:27:04+02:00</lastmod>
+        <lastmod>2026-08-31T14:37:41+02:00</lastmod>
     </url>
 
 
 
     <url>
         <loc>http://localhost:4000/blogs/notes/kernel-exploitation/misc/untitled/</loc>
-        <lastmod>2026-08-31T01:27:04+02:00</lastmod>
+        <lastmod>2026-08-31T14:37:41+02:00</lastmod>
     </url>
 
 
 
     <url>
         <loc>http://localhost:4000/blogs/notes/kernel-exploitation/race-conditions/userfaultfd/</loc>
-        <lastmod>2026-08-31T01:27:04+02:00</lastmod>
+        <lastmod>2026-08-31T14:37:41+02:00</lastmod>
     </url>
 
 
 
     <url>
         <loc>http://localhost:4000/blogs/notes/kernel-exploitation/internals/virtual-file-system/</loc>
-        <lastmod>2026-08-31T01:27:04+02:00</lastmod>
+        <lastmod>2026-08-31T14:37:41+02:00</lastmod>
     </url>
 
 
 
     <url>
         <loc>http://localhost:4000/blogs/notes/kernel-exploitation/internals/mm/what-if-a-process-could-mov-cr3-0xcafebabe/</loc>
-        <lastmod>2026-08-31T01:27:04+02:00</lastmod>
+        <lastmod>2026-08-31T14:37:41+02:00</lastmod>
     </url>
 
 
 
     <url>
         <loc>http://localhost:4000/blogs/notes/kernel-exploitation/internals/mm/what-if-a-process-could-mov-cr3-0xdeadface/</loc>
-        <lastmod>2026-08-31T01:27:04+02:00</lastmod>
+        <lastmod>2026-08-31T14:37:41+02:00</lastmod>
     </url>
 
 
 
     <url>
         <loc>http://localhost:4000/blogs/notes/kernel-exploitation/krop/x86-rop/</loc>
-        <lastmod>2026-08-31T01:27:04+02:00</lastmod>
+        <lastmod>2026-08-31T14:37:41+02:00</lastmod>
     </url>
 
 
 
     <url>
         <loc>http://localhost:4000/feed.xml</loc>
-        <lastmod>2026-08-31T01:27:04+02:00</lastmod>
+        <lastmod>2026-08-31T14:37:41+02:00</lastmod>
     </url>
 
 
